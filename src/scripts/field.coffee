@@ -1,3 +1,4 @@
+Uploader = require('./uploader.coffee').Uploader
 
 
 class Field
