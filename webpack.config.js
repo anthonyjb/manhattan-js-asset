@@ -59,7 +59,7 @@ module.exports = {
     },
 
     output: {
-        library: 'ManhattanTypeahead',
+        library: 'ManhattanAssets',
         libraryTarget: 'umd',
         path: path.join(__dirname, 'dist'),
         filename: '[name].js'
@@ -93,7 +93,7 @@ module.exports = {
             {
                 test: /\.scss$/,
                 loaders: [
-                    'file?name=typeahead.css',
+                    'file?name=[name].css',
                     'extract',
                     'css',
                     'sass'
