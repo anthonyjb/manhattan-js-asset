@@ -58,7 +58,6 @@ class Field
                 # Update the value of the input
                 if @_asset
                     @input.value = JSON.stringify(@_asset.toJSONType())
-
                 else
                     @input.value = ''
 
@@ -78,7 +77,7 @@ class Field
         # Check if the input field is populated and if so extract the asset
         @_asset = null
         if @input.value
-            @_asset = Asset.fromJSONType(@input.value)
+            @_asset = Asset.fromJSONType(JSON.parse(@input.value))
 
         # Set an uploader to upload file with
         @_uploader = null
