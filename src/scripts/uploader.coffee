@@ -133,6 +133,9 @@ class Uploader
             queued = @_queued_uploads.shift()
             @_start_upload(queued[0], queued[1])
 
+        # Dispatch an end event
+        $.dispatch(@input, @_et('upload-end'), {'ref': ref})
+
     _start_upload: (req, formData) ->
         # Start the referenced upload
 

@@ -6,7 +6,7 @@ class Viewer
     # The `Viewer` class provides a UI to manage uploaded assets (temporary or
     # permenant).
 
-    constructor: (asset, options={}) ->
+    constructor: (asset) ->
 
         # The asset being viewed
         @_asset = asset
@@ -16,13 +16,13 @@ class Viewer
 
         # Create a base element for the view
         @_dom.view = $.create('div', {'class': @_bem('mh-assets-view')})
-        @_template()
 
         # Define read-only properties
         Object.defineProperty(this, 'asset', {value: @_asset})
         Object.defineProperty(this, 'view', {value: @_dom.view})
 
-        # Populate the view with the asset
+        # Template and populate the view
+        @_template()
         @_populate()
 
     # Private methods
