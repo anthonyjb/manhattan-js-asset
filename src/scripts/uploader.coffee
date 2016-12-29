@@ -221,21 +221,22 @@ class Uploader
         # Handle the end of the upload
 
         # Load
-        on_complete = (uploader, req) ->
+        on_load = (uploader, req) ->
             return (ev) ->
                 # Attempt to parse the response
                 res = ev.target.responseText
-                behaviourName = @_behaviours.response
-                behaviour = @constructor.behaviours.response[behaviourName]
-                assetOrError = behaviour(this, file)
+                behaviourName = uploader._behaviours.response
+                behaviours = uploader.constructor.behaviours
+                behaviour = behaviours.response[behaviourName]
+                assetOrError = behaviour(this, req.responseText)
 
                 # Handle the response
                 if assetOrError instanceof Asset
-                    uploader._on_complete(req, assetOrError)
+                    uploader._on_success(req, assetOrError)
                 else
                     uploader._on_error(req, assetOrError.message)
 
-        req.addEventListener('load', on_complete(this, req))
+        req.addEventListener('load', on_load(this, req))
 
         # Error
         on_error = (uploader, req) ->
@@ -287,7 +288,7 @@ class Uploader
                 # format.
                 res = JSON.parse(raw_res)
                 if res.status is 'success'
-                    return Asset.from_json_type(res.payload)
+                    return Asset.fromJSONType(res.payload.asset)
                 else
                     return new Error(res.payload.reason)
 

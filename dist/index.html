@@ -16,9 +16,11 @@
         </form>
         <script src="http://localhost:5999/index.js"></script>
         <script>
-
             var input = document.getElementsByName('my_image')[0];
-            field = new ManhattanAssets.Field(input);
+            field = new ManhattanAssets.Field(
+                input,
+                {endpoint: 'http://wake-up-to-organic.local/cms/upload-asset'}
+                );
         </script>
     </body>
 </html>

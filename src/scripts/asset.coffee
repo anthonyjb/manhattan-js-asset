@@ -35,7 +35,7 @@ class Asset
         @_urls = urls
 
         # Meta data describing the asset
-        @meta = AssetMeta(@_coreMeta, @_userMeta)
+        @meta = new AssetMeta(coreMeta, userMeta)
 
         # Define read-only properties for the asset
         Object.defineProperty(this, 'key', {value: @_key})
@@ -105,15 +105,23 @@ class AssetMeta
         # Core meta data can't be set but it can be overridden by user defined
         # meta data. We define get properties get/set properties for all core
         # meta data properties.
-        for k, v of @_coreMeta
-            Object.defineProperty(this, k, {
-                get: () =>
-                    if @_coreOverrides[k] != undefined
-                        return @_coreOverrides[k]
-                    if @_coreOverrides[k] != undefined
-                        return @_coreMeta[k]
-                set: (value) =>
-                    @_coreOverrides[k] = k
+        getter = (name) =>
+            _this = this
+            return () ->
+                if _this._coreOverrides[name] != undefined
+                    return _this._coreOverrides[name]
+                if _this._coreMeta[name] != undefined
+                    return _this._coreMeta[name]
+
+        setter = (name) =>
+            _this = this
+            return (value) ->
+                _this._coreOverrides[name] = value
+
+        for name, _ of @_coreMeta
+            Object.defineProperty(this, name, {
+                get: getter(name),
+                set: setter(name)
                 })
 
         # User defined meta is store directly against the object

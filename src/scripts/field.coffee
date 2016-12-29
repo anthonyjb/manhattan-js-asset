@@ -4,7 +4,7 @@ Acceptor = require('./acceptor.coffee').Acceptor
 Asset = require('./asset.coffee').Asset
 Monitor = require('./monitor.coffee').Monitor
 Uploader = require('./uploader.coffee').Uploader
-Viewer = require('./uploader.coffee').Viewer
+Viewer = require('./viewer.coffee').Viewer
 
 
 class Field
@@ -57,7 +57,7 @@ class Field
 
                 # Update the value of the input
                 if @_asset
-                    @input.value = JSON.stringify(asset.toJSONType())
+                    @input.value = JSON.stringify(@_asset.toJSONType())
 
                 else
                     @input.value = ''
@@ -66,7 +66,7 @@ class Field
                 @_update()
 
                 # Dispatch a change event
-                $.dispatch($field, @_et('change'), {asset: @asset})
+                $.dispatch(@field, @_et('change'), {asset: @asset})
             })
         Object.defineProperty(this, 'field', {value: @_dom.field})
         Object.defineProperty(this, 'input', {value: @_dom.input})
@@ -106,8 +106,6 @@ class Field
 
     _update: () ->
         # Update the field to reflect it's current state
-
-        console.log @asset, @upload
 
         # Clear the existing state
         @field.innerHTML = ''

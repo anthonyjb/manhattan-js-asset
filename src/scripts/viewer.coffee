@@ -57,15 +57,16 @@ class Viewer
 
         # Set the information about the asset
         @_dom.filename.textContent = @asset.filename
-        if @asset.meta['length']
+
+        if @asset.meta.length
 
             # Convert to kb
-            size = @asset.meta['length'] / 1000
+            size = @asset.meta.length / 1000
             unit = 'kb'
 
             if size > 1000
                 # Convert to mb
-                size = @asset.meta['length'] / 1000
+                size = size / 1000
                 unit = 'mb'
 
             # Format the string to include commas
