@@ -9,13 +9,19 @@ class Asset
     # format and can be managed as simple native objects but the Asset class
     # simplifies this process and is recommended over this approach.
 
-    constructor: (key, type, urls, coreMeta, userMeta) ->
+    constructor: (key, filename, type, contentType, urls, coreMeta, userMeta) ->
 
         # A unique key for the asset
         @_key = key
 
+        # The assets filename
+        @_filename = filename
+
         # The type of asset (file or image)
         @_type = type
+
+        # The asset's content type (e.g text/csv)
+        @_contentType = contentType
 
         # A table of useful URLs for the asset, this typically includes:
         #
@@ -28,14 +34,21 @@ class Asset
         # - 'thumb' a URL to a thumbnail of the asset can be retreived from.
         @_urls = urls
 
-        # A table of meta data describing the asset's core attributes
-        @_coreMeta = coreMeta or {}
-
-        # A table of used defined meta information for the assets
-        @_userMeta = userMeta or {}
+        # Meta data describing the asset
+        @meta = AssetMeta(@_coreMeta, @_userMeta)
 
         # Define read-only properties for the asset
-        Object.defineProperty(this, 'input', {value: @_dom.input})
+        Object.defineProperty(this, 'key', {value: @_key})
+        Object.defineProperty(this, 'filename', {value: @_filename})
+        Object.defineProperty(this, 'type', {value: @_type})
+        Object.defineProperty(this, 'contentType', {value: @_contentType})
+        Object.defineProperty(this, 'urls', {
+            get: () =>
+                urls = {}
+                for k, v of @_urls
+                    urls[k] = v
+                return urls
+            })
 
     # I/O methods
     #
@@ -45,11 +58,13 @@ class Asset
     to_json_type: () ->
         # Return a JSON safe data object representing the asset
         return {
-            'key': data.key,
-            'type': data.type,
-            'urls': data.urls,
-            'core_meta': data.coreMeta,
-            'user_meta': data.userMeta
+            'key': @key,
+            'filename': @filename,
+            'type': @type,
+            'content_type': @contentType,
+            'urls': @urls,
+            'core_meta': @meta.getCoreMeta(),
+            'user_meta': @meta.getUserMeta()
             }
 
     @from_json_type: (data) ->
@@ -64,8 +79,62 @@ class Asset
 
         return new Asset(
             data.key,
+            data.filename,
             data.type,
+            data.content_type
             urls,
             data.core_meta,
             data.user_meta
             )
+
+
+class AssetMeta
+
+    # The `AssetMeta` class provides a single interface to asset meta data held
+    # against both the core and user meta data tables.
+
+    constructor: (coreMeta, userMeta) ->
+
+        # A table of meta data describing the asset's core attributes
+        @_coreMeta = coreMeta or {}
+
+        # A tabke of user defined meta data that overrides core meta data
+        # attributes.
+        @_coreOverrides = {}
+
+        # Core meta data can't be set but it can be overridden by user defined
+        # meta data. We define get properties get/set properties for all core
+        # meta data properties.
+        for k, v of @_coreMeta
+            Object.defineProperty(this, k, {
+                get: () =>
+                    if @_coreOverrides[k] != undefined
+                        return @_coreOverrides[k]
+                    if @_coreOverrides[k] != undefined
+                        return @_coreMeta[k]
+                set: (value) =>
+                    @_coreOverrides[k] = k
+                })
+
+        # User defined meta is store directly against the object
+        for k, v of (userMeta or {})
+            @[k] = v
+
+    # Public methods
+
+    getCoreMeta: () ->
+        # Return the core meta data
+        return JSON.parse(JSON.stringify(@_coreMeta))
+
+    getUserMeta: () ->
+        # Return the used defined meta data
+        data = JSON.parse(JSON.stringify(@_coreOverrides))
+
+        for k, v of this
+            if @hasOwnProperty(k) and not @[k] instanceof Function
+                data[k] = v
+
+        return JSON.parse(JSON.stringify(data))
+
+
+module.exports = {Asset: Asset}
