@@ -18,12 +18,15 @@ class Acceptor
         @_dom.acceptor = $.create('div', {'class': @_bem('mh-assets-acceptor')})
         @_dom.input = $.create('input', {
             'class': @_bem('mh-assets-acceptor', 'input')
-            'type': 'hidden',
+            'type': 'file',
             'name': "acceptor__#{@_newId()}"
             })
+        @_dom.acceptor.appendChild(@_dom.input)
+
         @_dom.label = $.create('div', {
             'class': @_bem('mh-assets-acceptor', 'label')})
-        @_dom.label.textContent = @_dom.label
+        @_dom.label.textContent = label
+        @_dom.acceptor.appendChild(@_dom.label)
 
         # Define read-only properties
         Object.defineProperty(this, 'acceptor', {value: @_dom.acceptor})
@@ -40,7 +43,7 @@ class Acceptor
             name = "#{name}--#{modifier}"
         return name
 
-    _newId: () =>
+    _newId: () ->
         # Return a new session unique Id
         Acceptor._counter += 1
         return Acceptor._counter

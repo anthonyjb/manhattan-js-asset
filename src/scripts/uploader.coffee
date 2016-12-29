@@ -140,14 +140,14 @@ class Uploader
         # Start the referenced upload
 
         # Add the upload to the uploads table
-        @_uploads[ref] = {'progress': 0}
+        @_uploads[req] = {'progress': 0}
+
+        # Dispatch a start event
+        $.dispatch(@input, @_et('upload-start'), {'ref': req})
 
         # Start the upload
         req.open('POST', @endpoint, true)
         req.send(formData)
-
-        # Dispatch a start event
-        $.dispatch(@input, @_et('upload-start'), {'ref': req})
 
     _et: (eventName) ->
         # Generate an event type name
@@ -200,7 +200,7 @@ class Uploader
 
         @_clear(ref)
 
-    _upload: (file) =>
+    _upload: (file) ->
         # Upload a file
 
         # Build the payload for the request
@@ -235,21 +235,21 @@ class Uploader
                 else
                     uploader._on_error(req, assetOrError.message)
 
-        req.addEventListener('load')
+        req.addEventListener('load', on_complete(this, req))
 
         # Error
         on_error = (uploader, req) ->
             return (ev) ->
                 uploader._on_error(req)
 
-        req.addEventListener('load')
+        req.addEventListener('error', on_error(this, req))
 
         # Abort
         on_abort = (uploader, req) ->
             return (ev) ->
                 uploader._on_abort(req)
 
-        req.addEventListener('load')
+        req.addEventListener('abort', on_abort(this, req))
 
         # Check if the maximum upload limit has been met
         if @uploadCount < @maxConcurrentUploads

@@ -1,6 +1,6 @@
 $ = require 'manhattan-essentials'
 
-Acceptor = require('./asset.coffee').Acceptor
+Acceptor = require('./acceptor.coffee').Acceptor
 Asset = require('./asset.coffee').Asset
 Monitor = require('./monitor.coffee').Monitor
 Uploader = require('./uploader.coffee').Uploader
@@ -41,10 +41,11 @@ class Field
         # (we also store a reverse reference to this instance against the
         # input).
         @_dom.input = input
-        @_dom.input.__mh_typeahead = this
+        @_dom.input.__mh_asset_field = this
 
         # Create a DOM element for the field as a sibling of the input field
-        @_dom.field = $.create
+        @_dom.field = $.create('div', {'class': @_bem('mh-asset-field')})
+        input.parentNode.insertBefore(@_dom.field, input)
 
         # Define read-only properties
         Object.defineProperty(this, 'asset', {
@@ -53,6 +54,13 @@ class Field
             set: (value) =>
                 # Set the value
                 @_asset = value
+
+                # Update the value of the input
+                if @_asset
+                    @input.value = JSON.stringify(asset.toJSONType())
+
+                else
+                    @input.value = ''
 
                 # Update the field state
                 @_update()
@@ -65,7 +73,7 @@ class Field
         Object.defineProperty(this, 'upload', {get: () => return @_upload})
 
         # Hide the input field
-        @input.classList.style['display'] = 'none'
+        @input.style['display'] = 'none'
 
         # Check if the input field is populated and if so extract the asset
         @_asset = null
@@ -73,31 +81,13 @@ class Field
             @_asset = Asset.fromJSONType(@input.value)
 
         # Set an uploader to upload file with
-        @_uploader = Uploader(@input, {endpoint: @endpoint})
+        @_uploader = null
 
         # A reference to the current upload request, if there is one
         @_upload = null
 
         # Update the field to reflect it's current state
         @_update()
-
-        # Listen for and handle relevant upload events
-        $.listen @input,
-            'mh-assets--upload-abort': (ev) =>
-                @_upload = null
-                @_update()
-
-            'mh-assets--upload-error': (ev) =>
-                @_upload = null
-                @_update()
-
-            'mh-assets--upload-start': (ev) =>
-                @_upload = ev.ref
-                @_update()
-
-            'mh-assets--upload-success': (ev) =>
-                @_upload = null
-                @asset = ev.asset
 
     # Private methods
 
@@ -117,12 +107,14 @@ class Field
     _update: () ->
         # Update the field to reflect it's current state
 
+        console.log @asset, @upload
+
         # Clear the existing state
         @field.innerHTML = ''
 
         # If the field is populated add a viewer...
         if @asset
-            viewer = Viewer(@asset)
+            viewer = new Viewer(@asset)
 
             # Handle remove asset events
             $.listen viewer.view,
@@ -133,13 +125,33 @@ class Field
 
         # ...else if the field is uploading a file add a monitor
         else if @upload
-            monitor = Monitor(@upload)
+            monitor = new Monitor(@_uploader, @upload)
             @field.appendChild(monitor.monitor)
 
         # ...else add a file acceptor
         else
-            acceptor = Acceptor(label: @label)
+            acceptor = new Acceptor(@label)
             @field.appendChild(acceptor.acceptor)
 
+            # Change the uploader inline with the acceptor
+            @_uploader = new Uploader(acceptor.input, {endpoint: @endpoint})
+
+            # Listen for and handle relevant upload events
+            $.listen acceptor.input,
+                'mh-assets--upload-abort': (ev) =>
+                    @_upload = null
+                    @_update()
+
+                'mh-assets--upload-error': (ev) =>
+                    @_upload = null
+                    @_update()
+
+                'mh-assets--upload-start': (ev) =>
+                    @_upload = ev.ref
+                    @_update()
+
+                'mh-assets--upload-success': (ev) =>
+                    @_upload = null
+                    @asset = ev.asset
 
 module.exports = {Field: Field}

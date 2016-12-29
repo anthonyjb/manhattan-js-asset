@@ -18,18 +18,14 @@ class Monitor
 
         # Create a base element for the monitor
         @_dom.monitor = $.create('div', {'class': @_bem('mh-assets-monitor')})
-        @_template()
 
         # Define read-only properties
         Object.defineProperty(this, 'uploader', {value: @_uploader})
         Object.defineProperty(this, 'upload', {value: @_upload})
         Object.defineProperty(this, 'monitor', {value: @_dom.monitor})
 
-        # Template the monitor
-        @_template()
-
         # Listen for upload progress events
-        $.listen @uploader.input
+        $.listen @uploader.input,
             'mh-assets--upload-progress': (ev) =>
                 # We're only interested in events for the upload we're
                 # monitoring.
@@ -51,6 +47,9 @@ class Monitor
 
                 # Dispatch a complete event
                 $.dispatch(@monitor, @_et('monitor-complete'))
+
+        # Template the monitor
+        @_template()
 
     # Private methods
 
@@ -75,7 +74,7 @@ class Monitor
             'div',
             {'class': @_bem('mh-asset-monitor', 'gauge')}
             )
-        @view.appendChild(@_dom.gauge)
+        @monitor.appendChild(@_dom.gauge)
 
         @_dom.progress = $.create(
             'div',
@@ -88,7 +87,7 @@ class Monitor
             'div',
             {'class': @_bem('mh-asset-monitor', 'cancel')}
             )
-        @_dom.content.appendChild(@_dom.cancel)
+        @monitor.appendChild(@_dom.cancel)
 
         $.listen @_dom.cancel,
             'click': (ev) =>
