@@ -150,7 +150,7 @@ class Viewer
                 ev.preventDefault()
 
                 # Dispatch a remove asset event against the view
-                $.dispatch(@view, @_et('remove'), {asset: @asset})
+                $.dispatch(@view, @_et('remove-asset'), {asset: @asset})
 
 
 module.exports = {Viewer: Viewer}

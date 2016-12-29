@@ -31,6 +31,15 @@ class Acceptor
 
     # Private methods
 
+    _bem: (block, element='', modifier='') ->
+        # Build and return a class name
+        name = block
+        if element
+            name = "#{name}__#{element}"
+        if modifier
+            name = "#{name}--#{modifier}"
+        return name
+
     _newId: () =>
         # Return a new session unique Id
         Acceptor._counter += 1

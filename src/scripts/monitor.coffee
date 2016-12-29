@@ -94,8 +94,7 @@ class Monitor
             'click': (ev) =>
                 ev.preventDefault()
 
-                # Dispatch a remove asset event against the view
-                $.dispatch(@view, @_et('cancel'), {upload: @upload})
-
+                # Cancel the upload
+                @uploader.cancel(@upload)
 
 module.exports = {Monitor: Monitor}

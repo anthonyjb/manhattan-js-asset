@@ -55,7 +55,7 @@ class Asset
     # NOTE: Attribute names  use underscores and not camelCase as this is the
     # default conventions in manhattan applications.
 
-    to_json_type: () ->
+    toJSONType: () ->
         # Return a JSON safe data object representing the asset
         return {
             'key': @key,
@@ -67,7 +67,7 @@ class Asset
             'user_meta': @meta.getUserMeta()
             }
 
-    @from_json_type: (data) ->
+    @fromJSONType: (data) ->
         # Return an Asset initialized using the given data.
 
         # Build the URLs for the asset

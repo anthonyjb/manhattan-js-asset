@@ -1,3 +1,5 @@
+$ = require 'manhattan-essentials'
+
 Acceptor = require('./asset.coffee').Acceptor
 Asset = require('./asset.coffee').Asset
 Monitor = require('./monitor.coffee').Monitor
@@ -12,7 +14,25 @@ class Field
     #
     # NOTE: To upload/manage multiple assets against see the `Gallery` class.
 
+    # The prefix that identifies attributes used to configure the plugin
+    @clsPrefix: 'data-mh-asset-field--'
+
     constructor: (input, options={}) ->
+
+        # Configure the instance
+        $.config(
+            this,
+            {
+                # The end-point where files are uploaded to
+                endpoint: '/cms/upload-asset',
+
+                # The label that should be displayed in the file acceptor
+                label: 'Select a file...'
+            },
+            options,
+            input,
+            @constructor.clsPrefix
+            )
 
         # Domain for related DOM elements
         @_dom = {}
@@ -23,12 +43,103 @@ class Field
         @_dom.input = input
         @_dom.input.__mh_typeahead = this
 
+        # Create a DOM element for the field as a sibling of the input field
+        @_dom.field = $.create
 
+        # Define read-only properties
+        Object.defineProperty(this, 'asset', {
+            get: () =>
+                return @_asset
+            set: (value) =>
+                # Set the value
+                @_asset = value
 
+                # Update the field state
+                @_update()
 
-# - Hide the existing input field using CSS
-# - Add a DOM element that provide support for uploading an element and while
-#   uploading shows the upload progress and provides the option to cancel it.
+                # Dispatch a change event
+                $.dispatch($field, @_et('change'), {asset: @asset})
+            })
+        Object.defineProperty(this, 'field', {value: @_dom.field})
+        Object.defineProperty(this, 'input', {value: @_dom.input})
+        Object.defineProperty(this, 'upload', {get: () => return @_upload})
+
+        # Hide the input field
+        @input.classList.style['display'] = 'none'
+
+        # Check if the input field is populated and if so extract the asset
+        @_asset = null
+        if @input.value
+            @_asset = Asset.fromJSONType(@input.value)
+
+        # Set an uploader to upload file with
+        @_uploader = Uploader(@input, {endpoint: @endpoint})
+
+        # A reference to the current upload request, if there is one
+        @_upload = null
+
+        # Update the field to reflect it's current state
+        @_update()
+
+        # Listen for and handle relevant upload events
+        $.listen @input,
+            'mh-assets--upload-abort': (ev) =>
+                @_upload = null
+                @_update()
+
+            'mh-assets--upload-error': (ev) =>
+                @_upload = null
+                @_update()
+
+            'mh-assets--upload-start': (ev) =>
+                @_upload = ev.ref
+                @_update()
+
+            'mh-assets--upload-success': (ev) =>
+                @_upload = null
+                @asset = ev.asset
+
+    # Private methods
+
+    _bem: (block, element='', modifier='') ->
+        # Build and return a class name
+        name = block
+        if element
+            name = "#{name}__#{element}"
+        if modifier
+            name = "#{name}--#{modifier}"
+        return name
+
+    _et: (eventName) ->
+        # Generate an event type name
+        return "mh-assets--#{eventName}"
+
+    _update: () ->
+        # Update the field to reflect it's current state
+
+        # Clear the existing state
+        @field.innerHTML = ''
+
+        # If the field is populated add a viewer...
+        if @asset
+            viewer = Viewer(@asset)
+
+            # Handle remove asset events
+            $.listen viewer.view,
+                'mh-assets--remove-asset': () =>
+                    @asset = null
+
+            @field.appendChild(viewer.view)
+
+        # ...else if the field is uploading a file add a monitor
+        else if @upload
+            monitor = Monitor(@upload)
+            @field.appendChild(monitor.monitor)
+
+        # ...else add a file acceptor
+        else
+            acceptor = Acceptor(label: @label)
+            @field.appendChild(acceptor.acceptor)
 
 
 module.exports = {Field: Field}
