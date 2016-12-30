@@ -1,0 +1,63 @@
+.mh-assets-monitor {
+    position: relative;
+    width: 100%;
+
+    &::after {
+        clear: both;
+        content: ' ';
+        display: table;
+    }
+
+    &__gauge {
+        background: #d4dce0;
+        border-radius: 3px;
+        float: left;
+        height: 40px;
+        max-width: 200px;
+        overflow: hidden;
+        position: relative;
+        width: calc(80% - 50px);
+
+        &::after {
+            color: rgba(0, 0, 0, 0.5);
+            content: attr(data-mh-progress);
+            display: block;
+            font-family: sans-serif;
+            font-size: 16px;
+            left: 0;
+            line-height: 40px;
+            position: absolute;
+            text-align: center;
+            top: 0 ;
+            width: 100%;
+        }
+    }
+
+    &__progress {
+        background: #e26a6a;
+        height: 40px;
+        width: 0;
+    }
+
+    &__cancel {
+        background: #999;
+        border-radius: 3px;
+        float: left;
+        height: 40px;
+        margin-left: 10px;
+        position: relative;
+        width: 40px;
+
+        &::after {
+            background: transparent url('../images/cancel.svg') 5px 5px no-repeat;
+            content: '';
+            display: block;
+            height: 40px;
+            left: 0;
+            position: absolute;
+            top: 0;
+            width: 40px;
+        }
+    }
+}
+

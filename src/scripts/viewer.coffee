@@ -45,9 +45,9 @@ class Viewer
 
         # Flag the type of asset being viewed with a CSS modifier
         if @asset.type is 'image'
-            @view.classList.add(@_bem('mh-asset-view', '', 'image'))
+            @view.classList.add(@_bem('mh-assets-view', '', 'image'))
         else
-            @view.classList.add(@_bem('mh-asset-view', '', 'file'))
+            @view.classList.add(@_bem('mh-assets-view', '', 'file'))
 
         # Set the content for the asset based on type
         if @asset.type is 'image'
@@ -84,65 +84,65 @@ class Viewer
         # Content
         @_dom.content = $.create(
             'div',
-            {'class': @_bem('mh-asset-view', 'content')}
+            {'class': @_bem('mh-assets-view', 'content')}
             )
         @view.appendChild(@_dom.content)
 
         # Content > Icon
         @_dom.icon = $.create(
             'div',
-            {'class': @_bem('mh-asset-view', 'icon')}
+            {'class': @_bem('mh-assets-view', 'icon')}
             )
         @_dom.content.appendChild(@_dom.icon)
 
         # Content > Thumb
         @_dom.icon = $.create(
             'div',
-            {'class': @_bem('mh-asset-view', 'thumb')}
+            {'class': @_bem('mh-assets-view', 'thumb')}
             )
         @_dom.content.appendChild(@_dom.icon)
 
         # Info
         @_dom.info = $.create(
             'div',
-            {'class': @_bem('mh-asset-view', 'info')}
+            {'class': @_bem('mh-assets-view', 'info')}
             )
         @view.appendChild(@_dom.info)
 
         # Info > Filename
         @_dom.filename = $.create(
             'div',
-            {'class': @_bem('mh-asset-view', 'filename')}
+            {'class': @_bem('mh-assets-view', 'filename')}
             )
         @_dom.info.appendChild(@_dom.filename)
 
         # Info > File size
         @_dom.fileSize = $.create(
             'div',
-            {'class': @_bem('mh-asset-view', 'file-size')}
+            {'class': @_bem('mh-assets-view', 'file-size')}
             )
         @_dom.info.appendChild(@_dom.fileSize)
 
         # Actions
         @_dom.actions = $.create(
             'div',
-            {'class': @_bem('mh-asset-view', 'actions')}
+            {'class': @_bem('mh-assets-view', 'actions')}
             )
         @view.appendChild(@_dom.actions)
 
         # Actions > Download
         @_dom.download = $.create('a', {'download': true, 'target': '_blank'})
-        @_dom.download.classList.add(@_bem('mh-asset-view', 'action'))
+        @_dom.download.classList.add(@_bem('mh-assets-view', 'action'))
         @_dom.download.classList.add(
-            @_bem('mh-asset-view', 'action', 'download'))
+            @_bem('mh-assets-view', 'action', 'download'))
         @_dom.download.textContent = 'Download'
         @_dom.actions.appendChild(@_dom.download)
 
         # Actions > Remove
         @_dom.remove = $.create('a', {'href': '#'})
-        @_dom.remove.classList.add(@_bem('mh-asset-view', 'action'))
+        @_dom.remove.classList.add(@_bem('mh-assets-view', 'action'))
         @_dom.remove.classList.add(
-            @_bem('mh-asset-view', 'action', 'remove'))
+            @_bem('mh-assets-view', 'action', 'remove'))
         @_dom.remove.textContent = 'Remove'
         @_dom.actions.appendChild(@_dom.remove)
 

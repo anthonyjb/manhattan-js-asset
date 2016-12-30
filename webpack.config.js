@@ -98,6 +98,17 @@ module.exports = {
                     'css',
                     'sass'
                     ]
+            },
+
+            // Images
+            {
+                test: /\.(svg)$/,
+                loader: 'url',
+                include: path.resolve(__dirname, 'src/images'),
+                query: {
+                    limit: 25000,
+                    name: '[path][name].[ext]'
+                }
             }
         ]
     },

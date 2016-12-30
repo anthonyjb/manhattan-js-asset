@@ -32,6 +32,12 @@ class Monitor
                 if ev.ref != @upload
                     return
 
+                # Update the gauge progress percentage
+                @_dom.gauge.setAttribute(
+                    'data-mh-progress',
+                    "#{parseInt(ev.progress * 100)}%"
+                    )
+
                 # Update the width of the progress bar
                 @_dom.progress.style['width'] = "#{ev.progress * 100}%"
 
@@ -72,20 +78,23 @@ class Monitor
         # Gauge & Progress
         @_dom.gauge = $.create(
             'div',
-            {'class': @_bem('mh-asset-monitor', 'gauge')}
-            )
+            {
+                'class': @_bem('mh-assets-monitor', 'gauge'),
+                'data-mh-progress': '0%'
+            }
+        )
         @monitor.appendChild(@_dom.gauge)
 
         @_dom.progress = $.create(
             'div',
-            {'class': @_bem('mh-asset-monitor', 'progress')}
+            {'class': @_bem('mh-assets-monitor', 'progress')}
             )
         @_dom.gauge.appendChild(@_dom.progress)
 
         # Cancel
         @_dom.cancel = $.create(
             'div',
-            {'class': @_bem('mh-asset-monitor', 'cancel')}
+            {'class': @_bem('mh-assets-monitor', 'cancel')}
             )
         @monitor.appendChild(@_dom.cancel)
 

@@ -1,5 +1,12 @@
 @import 'acceptor';
+@import 'monitor';
+@import 'viewer';
+
 
 .mh-asset-field {
     width: 400px;
+
+    * {
+        box-sizing: border-box;
+    }
 }
