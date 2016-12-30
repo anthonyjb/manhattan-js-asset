@@ -273,9 +273,9 @@ class Uploader
                 formData.append('file', file)
 
                 # Look for a CSRF token to include with the form data
-                crsfToken = $.one("[name='crsf_token']", uploader.input.form)
-                if crsfToken
-                    formData.append('crsf_token', crsfToken.value)
+                csfrToken = $.one('[name="csrf_token"]', uploader.input.form)
+                if csfrToken
+                    formData.append('csrf_token', csfrToken.value)
 
                 return formData
 
@@ -286,7 +286,11 @@ class Uploader
             'manhattan': (uploader, raw_res) ->
                 # By default we expect the result to use the manhattan response
                 # format.
-                res = JSON.parse(raw_res)
+                try
+                    res = JSON.parse(raw_res)
+                catch e
+                    return new Error('Unable to parse response')
+
                 if res.status is 'success'
                     return Asset.fromJSONType(res.payload.asset)
                 else
