@@ -96,11 +96,11 @@ class Viewer
         @_dom.content.appendChild(@_dom.icon)
 
         # Content > Thumb
-        @_dom.icon = $.create(
+        @_dom.thumb = $.create(
             'div',
             {'class': @_bem('mh-assets-view', 'thumb')}
             )
-        @_dom.content.appendChild(@_dom.icon)
+        @_dom.content.appendChild(@_dom.thumb)
 
         # Info
         @_dom.info = $.create(

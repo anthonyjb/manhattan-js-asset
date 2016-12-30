@@ -9,7 +9,8 @@ class Asset
     # format and can be managed as simple native objects but the Asset class
     # simplifies this process and is recommended over this approach.
 
-    constructor: (key, filename, type, contentType, urls, coreMeta, userMeta) ->
+    constructor: (key, filename, type, contentType, urls, coreMeta, userMeta,
+        variations) ->
 
         # A unique key for the asset
         @_key = key
@@ -37,6 +38,11 @@ class Asset
         # Meta data describing the asset
         @meta = new AssetMeta(coreMeta, userMeta)
 
+        # The asset variations (these are not accessible to read or modify via
+        # the asset class but are kept to information about image draft and
+        # thumb URLs on output).
+        @_variations = variations
+
         # Define read-only properties for the asset
         Object.defineProperty(this, 'key', {value: @_key})
         Object.defineProperty(this, 'filename', {value: @_filename})
@@ -62,9 +68,10 @@ class Asset
             'filename': @filename,
             'type': @type,
             'content_type': @contentType,
-            'urls': @urls,
+            'url': @urls.origin,
             'core_meta': @meta.getCoreMeta(),
-            'user_meta': @meta.getUserMeta()
+            'user_meta': @meta.getUserMeta(),
+            'variations': @_variations
             }
 
     @fromJSONType: (data) ->
@@ -74,8 +81,11 @@ class Asset
         urls = {'origin': data.url}
 
         if data.type is 'image'
-            urls.draft = data.variations['--base--'].url
-            urls.thumb = data.variations['--thumb--'].url
+            if data.variations
+                if data.variations['--base--']
+                    urls.draft = data.variations['--base--'].url
+                if data.variations['--thumb--']
+                    urls.thumb = data.variations['--thumb--'].url
 
         return new Asset(
             data.key,
@@ -84,7 +94,8 @@ class Asset
             data.content_type
             urls,
             data.core_meta,
-            data.user_meta
+            data.user_meta,
+            data.variations
             )
 
 
