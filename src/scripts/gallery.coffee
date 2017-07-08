@@ -40,6 +40,9 @@ class Gallery
             @constructor.clsPrefix
             )
 
+        # A list of assets in the gallery
+        @_assets = []
+
         # Domain for related DOM elements
         @_dom = {}
 
@@ -83,12 +86,13 @@ class Gallery
         @_assetViewers = {}
 
         # Check if the input field is populated and if so extract the assets
-        @_assets = []
+        initalAssets = []
         if @input.value
             for raw_asset in JSON.parse(@input.value)
-                @_assets.push(Asset.fromJSONType(raw_asset))
+                initalAssets.push(Asset.fromJSONType(raw_asset))
 
-        # @@ Add each asset to the assets view
+        # Add the initial assets to the gallery
+        @addAssets(initalAssets)
 
         # A reference to the current file uploader
         @_uploader = null
@@ -107,9 +111,6 @@ class Gallery
         # Add the asset to the existing list of assets
         @_assets.push(asset)
 
-        # Sync the list of assets with the input field
-        @_syncInput()
-
         # Add the asset to the assets view
         viewer = new Viewer(asset)
         @_assetViewers[asset.key] = viewer
@@ -120,6 +121,36 @@ class Gallery
                 @removeAsset(ev.asset)
 
         @assetsView.appendChild(viewer.view)
+
+        # Sync the list of assets with the input field
+        @_syncInput()
+
+        # Enable sorting
+        @_updateSorting()
+
+        # Trigger an event
+        $.dispatch(@input, @_et('change'), {asset: @asset})
+
+    addAssets: (assets) ->
+        # Add one or more assets to the gallery
+        for asset in assets
+
+            # Add the asset to the existing list of assets
+            @_assets.push(asset)
+
+            # Add the asset to the assets view
+            viewer = new Viewer(asset)
+            @_assetViewers[asset.key] = viewer
+
+            # Handle asset events
+            $.listen viewer.view,
+                'mh-assets--remove-asset': (ev) =>
+                    @removeAsset(ev.asset)
+
+            @assetsView.appendChild(viewer.view)
+
+        # Sync the list of assets with the input field
+        @_syncInput()
 
         # Enable sorting
         @_updateSorting()

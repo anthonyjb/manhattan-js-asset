@@ -999,7 +999,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  Gallery.clsPrefix = 'data-mh-asset-gallery--';
 
 	  function Gallery(input, options) {
-	    var j, len, raw_asset, ref;
+	    var initalAssets, j, len, raw_asset, ref;
 	    if (options == null) {
 	      options = {};
 	    }
@@ -1007,6 +1007,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      endpoint: '/upload-asset',
 	      label: 'Select a file...'
 	    }, options, input, this.constructor.clsPrefix);
+	    this._assets = [];
 	    this._dom = {};
 	    this._dom.input = input;
 	    this._dom.input.__mh_asset_gallery = this;
@@ -1049,14 +1050,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	      value: this._dom.uploadControl
 	    });
 	    this._assetViewers = {};
-	    this._assets = [];
+	    initalAssets = [];
 	    if (this.input.value) {
 	      ref = JSON.parse(this.input.value);
 	      for (j = 0, len = ref.length; j < len; j++) {
 	        raw_asset = ref[j];
-	        this._assets.push(Asset.fromJSONType(raw_asset));
+	        initalAssets.push(Asset.fromJSONType(raw_asset));
 	      }
 	    }
+	    this.addAssets(initalAssets);
 	    this._uploader = null;
 	    this._upload = null;
 	    this._updateUploadControl();
@@ -1065,7 +1067,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  Gallery.prototype.addAsset = function(asset) {
 	    var viewer;
 	    this._assets.push(asset);
-	    this._syncInput();
 	    viewer = new Viewer(asset);
 	    this._assetViewers[asset.key] = viewer;
 	    $.listen(viewer.view, {
@@ -1076,6 +1077,30 @@ return /******/ (function(modules) { // webpackBootstrap
 	      })(this)
 	    });
 	    this.assetsView.appendChild(viewer.view);
+	    this._syncInput();
+	    this._updateSorting();
+	    return $.dispatch(this.input, this._et('change'), {
+	      asset: this.asset
+	    });
+	  };
+
+	  Gallery.prototype.addAssets = function(assets) {
+	    var asset, j, len, viewer;
+	    for (j = 0, len = assets.length; j < len; j++) {
+	      asset = assets[j];
+	      this._assets.push(asset);
+	      viewer = new Viewer(asset);
+	      this._assetViewers[asset.key] = viewer;
+	      $.listen(viewer.view, {
+	        'mh-assets--remove-asset': (function(_this) {
+	          return function(ev) {
+	            return _this.removeAsset(ev.asset);
+	          };
+	        })(this)
+	      });
+	      this.assetsView.appendChild(viewer.view);
+	    }
+	    this._syncInput();
 	    this._updateSorting();
 	    return $.dispatch(this.input, this._et('change'), {
 	      asset: this.asset
