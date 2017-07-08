@@ -18,6 +18,7 @@ class Monitor
 
         # Create a base element for the monitor
         @_dom.monitor = $.create('div', {'class': @_bem('mh-assets-monitor')})
+        @_dom.monitor.__mh_monitor = this
 
         # Define read-only properties
         Object.defineProperty(this, 'uploader', {value: @_uploader})

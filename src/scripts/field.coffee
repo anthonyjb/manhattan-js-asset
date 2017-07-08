@@ -24,7 +24,7 @@ class Field
             this,
             {
                 # The end-point where files are uploaded to
-                endpoint: '/cms/upload-asset',
+                endpoint: '/upload-asset',
 
                 # The label that should be displayed in the file acceptor
                 label: 'Select a file...'
@@ -51,6 +51,7 @@ class Field
         Object.defineProperty(this, 'asset', {
             get: () =>
                 return @_asset
+
             set: (value) =>
                 # Set the value
                 @_asset = value
@@ -65,7 +66,7 @@ class Field
                 @_update()
 
                 # Dispatch a change event
-                $.dispatch(@field, @_et('change'), {asset: @asset})
+                $.dispatch(@input, @_et('change'), {asset: @asset})
             })
         Object.defineProperty(this, 'field', {value: @_dom.field})
         Object.defineProperty(this, 'input', {value: @_dom.input})
@@ -113,7 +114,7 @@ class Field
         if @asset
             viewer = new Viewer(@asset)
 
-            # Handle remove asset events
+            # Handle asset events
             $.listen viewer.view,
                 'mh-assets--remove-asset': () =>
                     @asset = null
@@ -150,5 +151,6 @@ class Field
                 'mh-assets--upload-success': (ev) =>
                     @_upload = null
                     @asset = ev.asset
+
 
 module.exports = {Field: Field}

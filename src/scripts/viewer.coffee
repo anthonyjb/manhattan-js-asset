@@ -16,6 +16,7 @@ class Viewer
 
         # Create a base element for the view
         @_dom.view = $.create('div', {'class': @_bem('mh-assets-view')})
+        @_dom.view.__mh_viewer = this
 
         # Define read-only properties
         Object.defineProperty(this, 'asset', {value: @_asset})

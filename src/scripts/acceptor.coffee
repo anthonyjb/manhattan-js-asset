@@ -16,6 +16,8 @@ class Acceptor
 
         # Create the acceptor
         @_dom.acceptor = $.create('div', {'class': @_bem('mh-assets-acceptor')})
+        @_dom.acceptor.__mh_acceptor = this
+
         @_dom.input = $.create('input', {
             'class': @_bem('mh-assets-acceptor', 'input')
             'type': 'file',
