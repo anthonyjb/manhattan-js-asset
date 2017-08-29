@@ -1,6 +1,7 @@
 {
   "name": "manhattan-assets",
   "version": "0.0.4",
+  "version": "0.0.6",
   "description": "Support for uploading and managing assets to manhattan via the browser.",
   "main": "dist/index.js",
   "scripts": {
