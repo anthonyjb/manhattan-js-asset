@@ -82,8 +82,8 @@ class Asset
 
         if data.type is 'image'
             if data.variations
-                if data.variations['--base--']
-                    urls.draft = data.variations['--base--'].url
+                if data.variations['--draft--']
+                    urls.draft = data.variations['--draft--'].url
                 if data.variations['--thumb--']
                     urls.thumb = data.variations['--thumb--'].url
 
