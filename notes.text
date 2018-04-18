@@ -5,3 +5,4 @@
 - Rotation support
 - Crop support
 - Progress support
+- Prevent submission of related form until an upload is finished
