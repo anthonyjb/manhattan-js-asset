@@ -28,16 +28,55 @@
     height: 48px;
 }
 
+.uploader--file {
+    display: inline-flex;
+    justify-content: center;
+}
+
 .asset--image,
 .uploader--image {
     height: 304px;
 }
 
-.uploader__label {
+.uploader--image {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+
+.uploader--image .uploader__label {
+    background: transparent url('images/file.svg') top center no-repeat;
+    background-size: 64px;
     color: #fff;
     font-family: sans-serif;
+    padding-top: 64px;
+}
+
+.uploader--file .uploader__label {
+    background: transparent url('images/file.svg') center left no-repeat;
+    color: #fff;
+    display: inline-block;
+    font-family: sans-serif;
     line-height: 48px;
+    padding-left: 32px;
+}
+
+.uploader--file .uploader__label {
+    background: transparent url('images/file.svg') left center no-repeat;
+    color: #fff;
+    display: inline-block;
+    font-family: sans-serif;
+    line-height: 48px;
+    padding-left: 32px;
     text-align: center;
+}
+
+.uploader--drop-target {
+    background: #353b48;
+}
+
+.uploader--drop-target .uploader__label {
+    background-image: url('images/drop.svg');
 }
 
 .asset__preview {
@@ -178,6 +217,8 @@
     <body>
         <form>
 
+            <!-- Populated -->
+
             <div class="asset-field">
                 <div class="asset asset--image">
                     <div 
@@ -222,9 +263,35 @@
             <!-- Upload -->
 
             <div class="asset-field">
+                <div class="uploader uploader--image">
+                    <div class="uploader__label uploader__label--select">
+                        Select an image...
+                    </div>
+                </div>
+            </div>
+
+            <div class="asset-field">
                 <div class="uploader uploader--file">
                     <div class="uploader__label uploader__label--select">
                         Select a file...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Drop -->
+
+            <div class="asset-field">
+                <div class="uploader uploader--image uploader--drop-target">
+                    <div class="uploader__label uploader__label--select">
+                        Drop here...
+                    </div>
+                </div>
+            </div>
+
+            <div class="asset-field">
+                <div class="uploader uploader--file uploader--drop-target">
+                    <div class="uploader__label uploader__label--drop">
+                        Drop here...
                     </div>
                 </div>
             </div>

@@ -1,0 +1,41 @@
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+        <title>manhattan-assets</title>
+        <link
+            rel="stylesheet"
+            type="text/css"
+            href="assets.css"
+            >
+    </head>
+    <body>
+        <form>
+
+            <div>
+                <label>File field</label>
+                <input 
+                    type="hidden" 
+                    name="field-field" 
+                    data-mh-field-field
+                    >
+            </div>
+
+        </form>
+
+        <script src="../node_modules/manhattan-essentials/umd/index.js"></script>
+        <script src="../umd/index.js"></script>
+        <script>
+
+            const $ = window['manhattan-essentials']
+            const FileField = window['manhattan-assets']
+                .fields
+                .FileField
+
+            for (let fieldElm of $.many('[data-mh-field-field]')) {
+                let field = new FileField(fieldElm)
+                field.init()
+            }
+
+        </script>
+    </body>
+</html>

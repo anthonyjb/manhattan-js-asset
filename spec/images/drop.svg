@@ -7,17 +7,17 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="32"
-   height="32"
-   viewBox="0 0 8.4666659 8.4666659"
-   version="1.1"
    id="svg8"
-   sodipodi:docname="edit.svg"
+   version="1.1"
+   viewBox="0 0 8.4666659 8.4666659"
+   height="32"
+   width="32"
+   sodipodi:docname="drop.svg"
    inkscape:version="0.92.3 (unknown)">
   <sodipodi:namedview
      pagecolor="#ffffff"
      bordercolor="#666666"
-     borderopacity="1"
+     borderopacity="0.31372549"
      objecttolerance="10"
      gridtolerance="10"
      guidetolerance="10"
@@ -25,11 +25,13 @@
      inkscape:pageshadow="2"
      inkscape:window-width="1855"
      inkscape:window-height="1056"
-     id="namedview4222"
+     id="namedview17"
      showgrid="false"
-     inkscape:zoom="20.85965"
-     inkscape:cx="16"
-     inkscape:cy="16"
+     inkscape:showpageshadow="false"
+     units="px"
+     inkscape:zoom="21.374881"
+     inkscape:cx="18.920332"
+     inkscape:cy="16.050712"
      inkscape:window-x="65"
      inkscape:window-y="24"
      inkscape:window-maximized="1"
@@ -49,8 +51,9 @@
     </rdf:RDF>
   </metadata>
   <path
-     style="fill:#ffffff;stroke-width:0.72782683"
-     d="M 14 8 L 14 10.349609 A 6 6 0 0 0 13.417969 10.589844 L 11.757812 8.9296875 L 8.9296875 11.757812 L 10.591797 13.419922 A 6 6 0 0 0 10.351562 14 L 8 14 L 8 18 L 10.349609 18 A 6 6 0 0 0 10.589844 18.582031 L 8.9296875 20.242188 L 11.757812 23.070312 L 13.419922 21.408203 A 6 6 0 0 0 14 21.648438 L 14 24 L 18 24 L 18 21.650391 A 6 6 0 0 0 18.582031 21.410156 L 20.242188 23.070312 L 23.070312 20.242188 L 21.408203 18.580078 A 6 6 0 0 0 21.648438 18 L 24 18 L 24 14 L 21.650391 14 A 6 6 0 0 0 21.410156 13.417969 L 23.070312 11.757812 L 20.242188 8.9296875 L 18.580078 10.591797 A 6 6 0 0 0 18 10.351562 L 18 8 L 14 8 z M 16 13.5 A 2.4999999 2.4999999 0 0 1 18.5 16 A 2.4999999 2.4999999 0 0 1 16 18.5 A 2.4999999 2.4999999 0 0 1 13.5 16 A 2.4999999 2.4999999 0 0 1 16 13.5 z "
-     transform="scale(0.26458331)"
-     id="rect18" />
+     style="fill:#ffffff;stroke-width:0.52916664"
+     d="M 3.5718747,2.1166668 H 4.8947912 V 4.7624997 H 5.8208328 L 4.233333,6.3499994 2.6458331,4.7624997 h 0.9260416 z"
+     id="rect3899"
+     inkscape:connector-curvature="0"
+     sodipodi:nodetypes="cccccccc" />
 </svg>
