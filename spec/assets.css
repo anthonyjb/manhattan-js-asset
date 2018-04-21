@@ -1,6 +1,4 @@
 .mh-acceptor {
-  background: #2d3436;
-  border-radius: 3px;
   bottom: 0;
   left: 0;
   overflow: hidden;
@@ -10,7 +8,7 @@
   .mh-acceptor:hover {
     background: #353b48; }
   .mh-acceptor__drop-zone {
-    background: #40739e;
+    background: #353b48;
     bottom: 0;
     left: 0;
     opacity: 0;
@@ -74,6 +72,8 @@
   box-sizing: border-box; }
 
 .mh-file-field {
+  background: #2d3436;
+  border-radius: 3px;
   color: #fff;
   font-family: sans-serif;
   margin-bottom: 20px;

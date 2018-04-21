@@ -1,6 +1,7 @@
 import * as $ from 'manhattan-essentials'
 
 import {Acceptor} from './acceptor.js'
+import {Uploader} from './uploader.js'
 
 
 // -- Class definition --
@@ -78,7 +79,10 @@ export class FileField {
 
         $.config(
             this._behaviours,
-            {'acceptor': 'default'},
+            {
+                'acceptor': 'default',
+                'uploader': 'default'
+            },
             options,
             input,
             prefix
@@ -150,7 +154,14 @@ export class FileField {
                 this._acceptor.acceptor, 
                 {
                     'accepted': (event) => { 
-                        console.log(event) 
+                        const cls = this.constructor
+                        let behaviour = this._behaviours.uploader
+                        this._acceptor.destroy()
+                        this._uploader = cls.behaviours.uploader[behaviour](
+                            this,
+                            event.files[0]
+                        )
+                        this._uploader.init()
                     }
                 }
             ) 
@@ -182,6 +193,21 @@ FileField.behaviours = {
                 inst._options.accept,
                 false
             )
+        }
+    },
+
+
+    /**
+     * The `uploader` behaviour is used to create a file uploader UI component
+     * for the field.
+     */
+    'uploader': {
+
+        /**
+         * Return an uploader configured using the field options.
+         */
+        'default': (inst, file) => {
+            return new Uploader(inst.field, file)
         }
     }
 }

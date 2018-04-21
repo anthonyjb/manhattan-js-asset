@@ -1,10 +1,14 @@
 @import "acceptor";
+@import "uploader";
+
 
 * {
     box-sizing: border-box;
 }
 
 .mh-file-field {
+    background: #2d3436;
+    border-radius: 3px;
     color: #fff;
     font-family: sans-serif;
     margin-bottom: 20px;
