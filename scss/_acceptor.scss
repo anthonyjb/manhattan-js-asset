@@ -2,8 +2,12 @@
 .mh-acceptor {
     background: #2d3436;
     border-radius: 3px;
+    bottom: 0;
+    left: 0;
     overflow: hidden;
-    position: relative;
+    position: absolute;
+    right: 0;
+    top: 0;
 
     &:hover {
         background: #353b48;
@@ -46,14 +50,11 @@
     }
 
     .mh-file-field--file & {
-        height: 48px;
-    
         &__drop-zone,
         &__faceplate {
             align-items: center;
             display: inline-flex;
             justify-content: center;
-            line-height: 48px;
 
             &::before {
                 background-color: transparent;
@@ -66,6 +67,36 @@
             }
         }
     
+        &__drop-zone::before {
+            background-image: url('images/drop.svg');
+        }
+
+        &__faceplate::before {
+            background-image: url('images/file.svg');
+        }
+    }
+
+    .mh-file-field--image & {
+
+        &__drop-zone,
+        &__faceplate {
+            align-items: center;
+            display: inline-flex;
+            flex-direction: column;
+            justify-content: center;
+
+            &::before {
+                background-color: transparent;
+                background-position: center center;
+                background-repeat: no-repeat;
+                background-size: cover;
+                content: '';
+                display: block;
+                height: 48px;
+                width: 48px;
+            }
+        }
+
         &__drop-zone::before {
             background-image: url('images/drop.svg');
         }

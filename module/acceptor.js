@@ -256,6 +256,7 @@ Acceptor.css = {
     'input': 'mh-acceptor__input'
 }
 
+// @@ Build CSS for images
 // @@ See if we can remove some of the custom properties
 // @@ Add destroy method
 // @@ Lint the code
