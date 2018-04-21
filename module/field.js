@@ -8,7 +8,7 @@ import {Acceptor} from './acceptor.js'
 /**
  * An file field UI component.
  */
- export class FileField {
+export class FileField {
 
     constructor(input, options={}, prefix='data-mh-file-field--') {
 
@@ -78,9 +78,7 @@ import {Acceptor} from './acceptor.js'
 
         $.config(
             this._behaviours,
-            {
-                'acceptor': 'default'
-            },
+            {'acceptor': 'default'},
             options,
             input,
             prefix
@@ -115,7 +113,7 @@ import {Acceptor} from './acceptor.js'
      * Remove the file field.
      */
     destroy() {
-
+        return this.todo
     }
 
     /**
@@ -150,7 +148,11 @@ import {Acceptor} from './acceptor.js'
         
             $.listen(
                 this._acceptor.acceptor, 
-                {'accepted': (event) => { console.log(event) }}
+                {
+                    'accepted': (event) => { 
+                        console.log(event) 
+                    }
+                }
             ) 
         }
     }
@@ -173,7 +175,7 @@ FileField.behaviours = {
         'default': (inst) => {
             return new Acceptor(
                 inst.field,
-                inst.input.name + '__acceptor',
+                `${inst.input.name}__acceptor`,
                 inst._options.label,
                 inst._options.dropLabel,
                 inst._options.allowDrop,

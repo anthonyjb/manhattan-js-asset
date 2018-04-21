@@ -10,7 +10,7 @@ import * as $ from 'manhattan-essentials'
  * to drag a file on to the acceptor.
  */
 
- export class Acceptor {
+export class Acceptor {
 
     constructor(
         container, 
@@ -61,40 +61,40 @@ import * as $ from 'manhattan-essentials'
         this._handlers = {
 
             'acceptDrop': (event) => {
-                let files = event.dataTransfer.files
+                let {files} = event.dataTransfer
 
                 // If the acceptor doesn't support accepting multiple files
                 // then select only the first file dropped.
                 if (!this._multiple) {
-                    files = files[0]
+                    files = [files[0]]
                 }
 
                 // Trigger an 'accepted' event against the acceptor element
                 $.dispatch(
                     this.acceptor,
                     'accepted',
-                    {'files': files}
+                    {files}
                 )
             },
 
             'change': (event) => {
-                let files = event.target.files
+                let {files} = event.target
 
                 // If the acceptor doesn't support accepting multiple files
                 // then select only the first file dropped.
                 if (!this._multiple) {
-                    files = files[0]
+                    files = [files[0]]
                 }
 
                 // Clear the input's value to ensure the same files can be
                 // re-uploaded using the acceptor in a single session.
-                this.input.value = ''
+                this._dom.input.value = ''
 
                 // Trigger an 'accepted' event against the acceptor element
                 $.dispatch(
                     this.acceptor,
                     'accepted',
-                    {'files': files}
+                    {files}
                 )
             },
 
@@ -105,9 +105,9 @@ import * as $ from 'manhattan-essentials'
                 // applicable.
                 this.__dragEndTimout = setTimeout(
                     () => { 
-                        this.acceptor.classList.remove(
-                            this.constructor.css['fileInbound']
-                        )
+                        this.acceptor
+                            .classList
+                            .remove(this.constructor.css['fileInbound'])
                     },
                     150
                 )
@@ -117,9 +117,9 @@ import * as $ from 'manhattan-essentials'
                 // Clear any timeout set to remove the file inbound CSS class
                 clearTimeout(this.__dragEndTimout)
 
-                this.acceptor.classList.add(
-                    this.constructor.css['fileInbound']
-                )
+                this.acceptor
+                    .classList
+                    .add(this.constructor.css['fileInbound'])
             },
 
             'preventDefault': (event) => {
@@ -136,21 +136,31 @@ import * as $ from 'manhattan-essentials'
         return this._dom.acceptor
     }
 
-    get container() {
-        return this._dom.container
-    }
-
-    get input() {
-        return this._dom.input
-    }
-
     // -- Public methods --
 
     /**
      * Remove the acceptor.
      */
     destroy() {
+        // Remove event listeners
+        $.ignore(
+            document,
+            {
+                'dragenter dragover dragleave drop':
+                    this._handlers.preventDefault,
+                'dragenter dragover': this._handlers.dragStart,
+                'dragleave drop': this._handlers.dragEnd
+            }
+        )
 
+        // Remove the acceptor element
+        this.acceptor.parentNode.removeChild(this.acceptor)
+
+        // Clear DOM element references
+        this._dom.acceptor = null
+        this._dom.dropZone = null
+        this._dom.faceplate = null
+        this._dom.input = null
     }
 
     /**
@@ -173,14 +183,14 @@ import * as $ from 'manhattan-essentials'
         )
 
         if (this._accept !== '') {
-            this.input.setAttribute('accept', this._accept)
+            this._dom.input.setAttribute('accept', this._accept)
         }
 
         if (this._multiple) {
-            this.input.setAttribute('multiple', '')
+            this._dom.input.setAttribute('multiple', '')
         }
 
-        this.acceptor.appendChild(this.input)
+        this.acceptor.appendChild(this._dom.input)
 
         // Create the faceplate for the acceptor, the faceplate allows a
         // custom appearance to be presented for the file input.
@@ -200,7 +210,7 @@ import * as $ from 'manhattan-essentials'
         }
 
         // Add the acceptor element to the container
-        this.container.appendChild(this.acceptor)
+        this._dom.container.appendChild(this.acceptor)
 
         // Set up event listeners
         $.listen(
@@ -219,7 +229,7 @@ import * as $ from 'manhattan-essentials'
         )
 
         $.listen(
-            this.input,
+            this._dom.input,
             {'change': this._handlers.change}
         )
     }
@@ -255,9 +265,3 @@ Acceptor.css = {
      */
     'input': 'mh-acceptor__input'
 }
-
-// @@ Build CSS for images
-// @@ See if we can remove some of the custom properties
-// @@ Add destroy method
-// @@ Lint the code
-// @@ Write tests for the code
