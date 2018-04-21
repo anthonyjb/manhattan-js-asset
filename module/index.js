@@ -1,3 +1,3 @@
-import * as fields from './fields'
+import * as field from './field'
 
-export {fields}
+export {field}

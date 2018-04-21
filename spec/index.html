@@ -15,8 +15,9 @@
                 <label>File field</label>
                 <input 
                     type="hidden" 
-                    name="field-field" 
-                    data-mh-field-field
+                    name="file-field" 
+                    data-mh-file-field
+                    data-mh-file-field--allow-drop
                     >
             </div>
 
@@ -28,10 +29,10 @@
 
             const $ = window['manhattan-essentials']
             const FileField = window['manhattan-assets']
-                .fields
+                .field
                 .FileField
 
-            for (let fieldElm of $.many('[data-mh-field-field]')) {
+            for (let fieldElm of $.many('[data-mh-file-field]')) {
                 let field = new FileField(fieldElm)
                 field.init()
             }

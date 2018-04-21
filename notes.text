@@ -1,5 +1,6 @@
 - Drag and drop support
-- Multiple file upload
+- Multiple file upload (with semaphore support to prevent overloading of the 
+  system)
 - Gallery with order support
 - Meta attribute editing
 - Rotation support

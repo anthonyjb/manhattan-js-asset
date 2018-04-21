@@ -1,0 +1,77 @@
+
+.mh-acceptor {
+    background: #2d3436;
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+
+    &:hover {
+        background: #353b48;
+    }
+
+    &__drop-zone {
+        background: #40739e;
+        bottom: 0;
+        left: 0;
+        opacity: 0;
+        position: absolute;
+        right: 0;
+        top: 0;
+        z-index: 0;
+    }
+
+    &__faceplate {
+        bottom: 0;
+        left: 0;
+        position: absolute;
+        right: 0;
+        top: 0;
+    }
+
+    &__input {
+        cursor: pointer;
+        font-size: 999px;
+        outline: none;
+        position: absolute;
+        right: 0;
+        top: 0;
+        z-index: 1;
+    }
+
+    &--file-inbound {
+        .mh-acceptor__drop-zone {
+            opacity: 1;
+            z-index: 2;
+        }
+    }
+
+    .mh-file-field--file & {
+        height: 48px;
+    
+        &__drop-zone,
+        &__faceplate {
+            align-items: center;
+            display: inline-flex;
+            justify-content: center;
+            line-height: 48px;
+
+            &::before {
+                background-color: transparent;
+                background-position: center center;
+                background-repeat: no-repeat;
+                content: '';
+                display: block;
+                height: 32px;
+                width: 32px;
+            }
+        }
+    
+        &__drop-zone::before {
+            background-image: url('images/drop.svg');
+        }
+
+        &__faceplate::before {
+            background-image: url('images/file.svg');
+        }
+    }
+}

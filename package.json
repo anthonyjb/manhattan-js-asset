@@ -18,7 +18,8 @@
     "dev-build": "webpack --mode development || exit 0",
     "lint": "eslint module spec *.js --quiet || exit 0",
     "test": "cross-env NODE_ENV=test nyc mocha ./spec/**/*.spec.js || exit 0",
-    "watch": "webpack --mode development --watch || exit 0"
+    "watch": "webpack --mode development --watch || exit 0",
+    "watch-css": "node-sass --include-path scss scss/ -wo spec/"
   },
   "nyc": {
     "exclude": [
