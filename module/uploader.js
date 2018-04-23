@@ -16,7 +16,6 @@ function defaultStatusTemplate(progress) {
 /**
  * File uploader UI component for form fields. 
  */
-
 export class Uploader {
 
     constructor(

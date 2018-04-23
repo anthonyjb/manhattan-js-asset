@@ -4,6 +4,10 @@ import {Acceptor} from './acceptor.js'
 import {Uploader} from './uploader.js'
 
 
+// @@
+// - Viewer variation settings
+
+
 // -- Class definition --
 
 /**
