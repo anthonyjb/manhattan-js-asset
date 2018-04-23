@@ -2,6 +2,7 @@ import * as $ from 'manhattan-essentials'
 
 import {Acceptor} from './acceptor.js'
 import {Uploader} from './uploader.js'
+import {FileViewer, ImageViewer} from './viewers.js'
 
 
 // @@
@@ -91,7 +92,8 @@ export class FileField {
             {
                 'acceptor': 'default',
                 'formData': 'minimal',
-                'uploader': 'default'
+                'uploader': 'default',
+                'viewer': 'default'
             },
             options,
             input,
@@ -151,9 +153,20 @@ export class FileField {
             this.input.nextSibling
         )
 
-        if (this.input.value) {
+        if (!this.input.value) {
             // @@ If the field is populated then convert the value to an `Asset`
             // instance and insert the viewer.
+            
+            let behaviour = this._behaviours.viewer
+            this._viewer = cls.behaviours.viewer[behaviour](
+                this,
+                {
+                    'filename': 'some-filename.doc',
+                    'core_meta': {'length': 45000}
+                }
+            )
+            this._viewer.init()
+
         } else {
             // If not then create a file acceptor for the field.
             let behaviour = this._behaviours.acceptor
@@ -261,6 +274,28 @@ FileField.behaviours = {
          */
         'default': (inst, endpoint, formData) => {
             return new Uploader(inst.field, endpoint, formData)
+        }
+    },
+
+    /**
+     * The `viewer` behaviour is used to create a file viewer UI component for
+     * the field. 
+     */
+    'viewer': {
+
+        /**
+         * Return the default uploader configuration.
+         */
+        'default': (inst, asset) => {
+            if (inst._options.fileType === 'file') {
+                return new FileViewer(
+                    inst.field, 
+                    asset['filename'],
+                    asset['core_meta']['length']
+                )
+            } else {
+                return new ImageViewer(inst.field)
+            }
         }
     }
 }
