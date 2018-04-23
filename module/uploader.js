@@ -6,6 +6,8 @@ import * as $ from 'manhattan-essentials'
 function defaultStatusTemplate(progress) {
     if (progress === -1) {
         return 'Waiting'
+    } else if (progress === 100) {
+        return 'Done'
     }
     return `Uploading ${progress}%`
 }
@@ -21,14 +23,19 @@ export class Uploader {
 
     constructor(
         container, 
-        file, 
+        endpoint,
+        formData, 
         orientation='horizontal',
         statusTemplate=defaultStatusTemplate,
         semaphore=null
     ) {
 
-        // The file to be uploaded
-        this._file = file
+        // The endpoint to upload the file to
+        this._endpoint = endpoint
+
+        // The (Form)Data to upload (this should include the file appended to
+        // the body.)
+        this._formData = formData
 
         // The orientation of the progress meter, if 'horizontal' the progress
         // bar's width is updated to match the progress, if 'vertical' then 
@@ -60,7 +67,22 @@ export class Uploader {
 
         // Set up event handlers
         this._handlers = {
-            // cancel
+            
+            'abort': () => {
+
+            },
+
+            'error': () => {
+
+            },
+
+            'progress': () => {
+
+            },
+
+            'load': () => {
+
+            }
         }
     }
 
@@ -114,10 +136,46 @@ export class Uploader {
         // Add the uploader element to the container
         this._dom.container.appendChild(this.uploader)
     
-        // @@ Upload the file
-        // - Setup an XHR object (add notes around fetch not supporting 
-        //   progress yet (custom _fetch function to provide promise 
-        //   support?).
+        // Begin the file upload
+        this.__uploadInterval = setInterval(
+            () => {
+                this._upload()
+            },
+            200
+        )
+    }
+
+    // -- Private methods --
+
+    /**
+     * Start uploading the file, if a semaphore has been provided for the 
+     * uploader then the upload request will ignored if there the maximum 
+     * number of uploads has already been reached.
+     */
+    _upload() {
+
+        // If there's a semaphore attempt to aquire a resource (e.g check we
+        // haven't reached the maximum number of uploads).
+        if (this._semaphore && !this._semaphore.aquire()) {
+            return
+        }
+
+        // Prevent any future upload requests
+        clearInterval(this.__uploadInterval)
+
+        // Send the file
+        //
+        // REVIEW: Since `fetch` currently doesn't provide a mechanism for 
+        // querying the progress of an upload we are forced to use
+        // `XMLHttpRequest`. Once progress can be queries for `fetch` this 
+        // code should be updated to use the more modern approach.
+        //
+        // ~ Anthony Blackshaw <ant@getme.co.uk>, 23rd April 2018
+
+        const xhr = new XMLHttpRequest()
+
+        console.log(this._endpoint)
+        console.log(this._formData)
     }
 
 }

@@ -39,6 +39,11 @@
         position: absolute;
         right: 8px;
         top: 8px;
+
+        .mh-uploader--finished & {
+            display: none;
+        }
+
     }
 
     .mh-file-field--file & {

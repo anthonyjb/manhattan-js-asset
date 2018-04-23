@@ -132,6 +132,8 @@
     position: absolute;
     right: 8px;
     top: 8px; }
+    .mh-uploader--finished .mh-uploader__cancel {
+      display: none; }
   .mh-file-field--file .mh-uploader__progress-meter {
     top: 0; }
   .mh-file-field--file .mh-uploader__status {

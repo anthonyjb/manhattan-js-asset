@@ -50,6 +50,11 @@ export class FileField {
                 'dropLabel': 'Drop file here',
 
                 /**
+                 * The endpoint that any file will be uploaded to.
+                 */
+                'endpoint': '/upload',
+
+                /**
                  * The type of file that the field will accept, can be either 
                  * 'file' or 'image'. The type does not validate the or 
                  * enforce the types of files that can be accepted, instead it 
@@ -81,6 +86,7 @@ export class FileField {
             this._behaviours,
             {
                 'acceptor': 'default',
+                'formData': 'minimal',
                 'uploader': 'default'
             },
             options,
@@ -155,11 +161,14 @@ export class FileField {
                 {
                     'accepted': (event) => { 
                         const cls = this.constructor
-                        let behaviour = this._behaviours.uploader
+                        let formData = this._behaviours.formData
+                        let uploader = this._behaviours.uploader
+
                         this._acceptor.destroy()
-                        this._uploader = cls.behaviours.uploader[behaviour](
+                        this._uploader = cls.behaviours.uploader[uploader](
                             this,
-                            event.files[0]
+                            this._options.endpoint,
+                            cls.behaviours.formData[formData](event.files[0])
                         )
                         this._uploader.init()
                     }
@@ -199,6 +208,23 @@ FileField.behaviours = {
         }
     },
 
+    /**
+     * The `formData` behaviour is used to create a `FormData` instance that
+     * contains the file to be uploaded and any other parameters required, for
+     * example a CSRF token.
+     */
+    'formData': {
+
+        /**
+         * Return the minimal form data required to upload a file.
+         */
+        'minimal': (inst, file) => {
+            const formData = new FormData()
+            formData.append('file', file)
+            return formData
+        }
+
+    },
 
     /**
      * The `uploader` behaviour is used to create a file uploader UI component
@@ -209,8 +235,8 @@ FileField.behaviours = {
         /**
          * Return the default uploader configuration.
          */
-        'default': (inst, file) => {
-            return new Uploader(inst.field, file)
+        'default': (inst, endpoint, formData) => {
+            return new Uploader(inst.field, endpoint, formData)
         }
     }
 }
