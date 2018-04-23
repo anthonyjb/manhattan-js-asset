@@ -1,3 +1,17 @@
+.mh-uploader__cancel {
+  background-color: rgba(0, 0, 0, 0.1);
+  background-position: center center;
+  background-repeat: no-repeat;
+  border-radius: 50%;
+  cursor: pointer;
+  height: 32px;
+  width: 32px;
+  z-index: 2; }
+  .mh-uploader__cancel:active {
+    background-size: 95%; }
+  .mh-uploader__cancel:hover {
+    background-color: rgba(0, 0, 0, 0.2); }
+
 .mh-acceptor {
   bottom: 0;
   left: 0;
@@ -96,6 +110,15 @@
   position: absolute;
   right: 0;
   top: 0; }
+  .mh-uploader__progress-meter {
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    right: 0; }
+  .mh-uploader__progress-bar {
+    background: #0984e3;
+    height: 100%;
+    width: 0; }
   .mh-uploader__status {
     bottom: 0;
     left: 0;
@@ -104,6 +127,13 @@
     top: 0; }
     .mh-uploader__status::before {
       background-image: url("../images/upload.svg"); }
+  .mh-uploader__cancel {
+    background-image: url("../images/cancel.svg");
+    position: absolute;
+    right: 8px;
+    top: 8px; }
+  .mh-file-field--file .mh-uploader__progress-meter {
+    top: 0; }
   .mh-file-field--file .mh-uploader__status {
     align-items: center;
     display: flex;
@@ -117,6 +147,9 @@
       height: 16px;
       margin-right: 8px;
       width: 16px; }
+  .mh-file-field--image .mh-uploader__progress-meter {
+    background: #353b48;
+    height: 16px; }
   .mh-file-field--image .mh-uploader__status {
     align-items: center;
     display: flex;
@@ -143,7 +176,8 @@
   margin-bottom: 20px;
   margin-top: 10px;
   max-width: 480px;
-  position: relative; }
+  position: relative;
+  user-select: none; }
   .mh-file-field--file {
     height: 48px; }
   .mh-file-field--image::before {

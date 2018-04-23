@@ -7,6 +7,19 @@
     right: 0;
     top: 0;
 
+    &__progress-meter {
+        bottom: 0;
+        left: 0;
+        position: absolute;
+        right: 0;
+    }
+
+    &__progress-bar {
+        background: #0984e3;
+        height: 100%;
+        width: 0;
+    }
+
     &__status {
         bottom: 0;
         left: 0;
@@ -19,7 +32,20 @@
         }
     }
 
+    &__cancel {
+        @extend %icon-btn;
+
+        background-image: url('#{$mh_assets_image_path}cancel.svg');
+        position: absolute;
+        right: 8px;
+        top: 8px;
+    }
+
     .mh-file-field--file & {
+        &__progress-meter {
+            top: 0;
+        }
+
         &__status {
             align-items: center;
             display: flex;
@@ -39,6 +65,11 @@
     }
 
     .mh-file-field--image & {
+        &__progress-meter {
+            background: #353b48;
+            height: 16px;
+        }
+
         &__status {
             align-items: center;
             display: flex;
@@ -58,5 +89,3 @@
         }
     }
 }
-
-// @@ START HERE - Style the progress meter bar
