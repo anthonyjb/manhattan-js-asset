@@ -50,11 +50,6 @@ export class FileField {
                 'dropLabel': 'Drop file here',
 
                 /**
-                 * The endpoint that any file will be uploaded to.
-                 */
-                'endpoint': '/upload',
-
-                /**
                  * The type of file that the field will accept, can be either 
                  * 'file' or 'image'. The type does not validate the or 
                  * enforce the types of files that can be accepted, instead it 
@@ -72,7 +67,12 @@ export class FileField {
                  * If true then no remove button will be displayed in the 
                  * viewer component.
                  */
-                'preventRemove': false
+                'preventRemove': false,
+
+                /**
+                 * The URL that any file will be uploaded to.
+                 */
+                'url': '/upload'
             },
             options,
             input,
@@ -160,26 +160,46 @@ export class FileField {
                 this._acceptor.acceptor, 
                 {
                     'accepted': (event) => { 
-                        const cls = this.constructor
-                        let formData = this._behaviours.formData
-                        let uploader = this._behaviours.uploader
+                        let {formData} = this._behaviours
+                        let {uploader} = this._behaviours
 
                         this._acceptor.destroy()
                         this._uploader = cls.behaviours.uploader[uploader](
                             this,
-                            this._options.endpoint,
-                            cls.behaviours.formData[formData](event.files[0])
+                            this._options.url,
+                            cls.behaviours.formData[formData](
+                                this,
+                                event.files[0]
+                            )
                         )
                         this._uploader.init()
+
+                        $.listen(
+                            this._uploader.uploader,
+                            {
+                                'aborted': (e) => {
+                                    this._uploader.destroy()
+                                },
+
+                                'error': (e) => {
+                                    this._uploader.destroy()
+                                },
+
+                                'uploaded': (e) => {
+                                    this._uploader.destroy()
+                                    return e.response
+                                }
+                            }
+                        )
                     }
                 }
             ) 
-
-            // @@ Pretend to upload a file
-            $.dispatch(this._acceptor.acceptor, 'accepted', {files: [null]})
         }
     }
 }
+
+// @@
+// - Should we display an error that can be cleared?
 
 
 // -- Behaviours --

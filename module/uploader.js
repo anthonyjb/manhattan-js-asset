@@ -4,10 +4,8 @@ import * as $ from 'manhattan-essentials'
 // -- Defaults --
 
 function defaultStatusTemplate(progress) {
-    if (progress === -1) {
+    if (progress < 0) {
         return 'Waiting'
-    } else if (progress === 100) {
-        return 'Done'
     }
     return `Uploading ${progress}%`
 }
@@ -23,15 +21,15 @@ export class Uploader {
 
     constructor(
         container, 
-        endpoint,
+        url,
         formData, 
         orientation='horizontal',
         statusTemplate=defaultStatusTemplate,
         semaphore=null
     ) {
 
-        // The endpoint to upload the file to
-        this._endpoint = endpoint
+        // The URL to upload the file to
+        this._url = url
 
         // The (Form)Data to upload (this should include the file appended to
         // the body.)
@@ -50,8 +48,8 @@ export class Uploader {
         // restriction is optional.
         this._semaphore = semaphore
 
-        // The state of the uploader ('pending', 'uploading', 'finished')
-        this._state = 'pending'
+        // The request object created when the upload begins
+        this._xhr = null
 
         // Domain for related DOM elements
         this._dom = {
@@ -68,29 +66,52 @@ export class Uploader {
         // Set up event handlers
         this._handlers = {
             
-            'abort': () => {
-
+            'cancel': (event) => {
+                // Abort the upload
+                event.preventDefault()
+                if (this._xhr) {
+                    this._xhr.abort()
+                }
             },
 
-            'error': () => {
+            'reqAbort': (event) => {
+                // Clear the handle to the request
+                this._xhr = null
 
+                // Dispatch a cancelled event against the uploader
+                $.dispatch(this.uploader, 'aborted')
             },
 
-            'progress': () => {
+            'reqError': (event) => {
+                // Clear the handle to the request
+                this._xhr = null
 
+                // Dispatch a error event against the uploader
+                $.dispatch(this.uploader, 'error')
             },
 
-            'load': () => {
+            'reqProgress': (event) => {
+                // Update the progress bar
+                if (event.lengthComputable) {
+                    this._progress(event.loaded / event.total)
+                } else {
+                    this._progress(0)
+                }
+            },
 
+            'reqLoad': (event) => {
+                const {response} = this._xhr
+
+                // Clear the handle to the request
+                this._xhr = null
+
+                // Dispatch an uploaded event
+                $.dispatch(this.uploader, 'uploaded', {response})
             }
         }
     }
 
     // -- Getters & Setters --
-
-    get state() {
-        return this._state
-    }
 
     get uploader() {
         return this._dom.uploader
@@ -102,7 +123,29 @@ export class Uploader {
      * Remove the uploader.
      */
     destroy() {
-    
+        // Abort any outstanding request
+        if (this._xhr) {
+            $.ignore(
+                this._xhr,
+                { 
+                    'abort': this._handlers.reqAbort,
+                    'error': this._handlers.reqError,
+                    'progress': this._handlers.reqProgress,
+                    'load': this._handlers.reqLoad
+                }
+            )
+            this._xhr.abort()
+        }
+
+        // Remove the uploader element
+        this.uploader.parentNode.removeChild(this.uploader)
+
+        // Clear DOM element references
+        this._dom.bar = null
+        this._dom.container = null
+        this._dom.meter = null
+        this._dom.status = null
+        this._dom.uploader = null
     }
 
     /**
@@ -126,7 +169,6 @@ export class Uploader {
 
         // Create the status element
         this._dom.status = $.create('div', {'class': cls.css['status']})
-        this._dom.status.innerHTML = this._statusTemplate(-1)
         this.uploader.appendChild(this._dom.status)
 
         // Create the cancel button element
@@ -135,8 +177,12 @@ export class Uploader {
 
         // Add the uploader element to the container
         this._dom.container.appendChild(this.uploader)
-    
+
+        // Add event listeners
+        $.listen(this._dom.cancel, {'click': this._handlers.cancel})
+
         // Begin the file upload
+        this._progress(-1)
         this.__uploadInterval = setInterval(
             () => {
                 this._upload()
@@ -148,11 +194,29 @@ export class Uploader {
     // -- Private methods --
 
     /**
+     * Update the progress bar and status to reflect the current upload
+     * progress. A value of less than 0 indicates the upload is pending.
+     */
+    _progress(percent) {
+        // Update the progress bar
+        const boundPercent = Math.min(Math.max(percent, 0), 100)
+        if (this._orientation === 'horizontal') {
+            this._dom.bar.style.width = `${boundPercent}%`
+        } else {
+            this._dom.bar.style.height = `${boundPercent}%`
+        }
+
+        // Update the status
+        this._dom.status.innerHTML = this._statusTemplate(percent)
+    }
+
+    /**
      * Start uploading the file, if a semaphore has been provided for the 
      * uploader then the upload request will ignored if there the maximum 
      * number of uploads has already been reached.
      */
     _upload() {
+        const cls = this.constructor 
 
         // If there's a semaphore attempt to aquire a resource (e.g check we
         // haven't reached the maximum number of uploads).
@@ -163,6 +227,11 @@ export class Uploader {
         // Prevent any future upload requests
         clearInterval(this.__uploadInterval)
 
+        // Remove the pending CSS class from the uploader and add the 
+        // uploading class.
+        this.uploader.classList.remove(cls.css['pending'])
+        this.uploader.classList.add(cls.css['uploading'])
+
         // Send the file
         //
         // REVIEW: Since `fetch` currently doesn't provide a mechanism for 
@@ -171,11 +240,22 @@ export class Uploader {
         // code should be updated to use the more modern approach.
         //
         // ~ Anthony Blackshaw <ant@getme.co.uk>, 23rd April 2018
+        this._xhr = new XMLHttpRequest()
 
-        const xhr = new XMLHttpRequest()
+        // Add event listeners to the request
+        $.listen(
+            this._xhr,
+            { 
+                'abort': this._handlers.reqAbort,
+                'error': this._handlers.reqError,
+                'progress': this._handlers.reqProgress,
+                'load': this._handlers.reqLoad
+            }
+        )
 
-        console.log(this._endpoint)
-        console.log(this._formData)
+        // Send the request
+        this._xhr.open('POST', this._url, true)
+        this._xhr.send(this._formData)
     }
 
 }
@@ -196,17 +276,12 @@ Uploader.css = {
     'cancel': 'mh-uploader__cancel',
 
     /**
-     * Applied to the uploader when in the finished state.
-     */
-    'finished': 'mh-uploader--finished',
-
-    /**
      * Applied to the progress meter within the uploader.
      */
     'meter': 'mh-uploader__progress-meter',
 
     /**
-     * Applied to the uploader when in the pending state.
+     * Applied to the uploader before it begins uploading the file.
      */
     'pending': 'mh-uploader--pending',
 
@@ -221,7 +296,7 @@ Uploader.css = {
     'uploader': 'mh-uploader',
 
     /**
-     * Applied to the uploader when in the uploading state.
+     * Applied to the uploader when in uploading.
      */
     'uploading': 'mh-uploader--uploading'
 }
