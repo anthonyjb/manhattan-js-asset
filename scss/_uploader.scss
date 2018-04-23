@@ -1,0 +1,62 @@
+
+.mh-uploader {
+    bottom: 0;
+    left: 0;
+    overflow: hidden;
+    position: absolute;
+    right: 0;
+    top: 0;
+
+    &__status {
+        bottom: 0;
+        left: 0;
+        position: absolute;
+        right: 0;
+        top: 0;
+
+        &::before {
+            background-image: url('#{$mh_assets_image_path}upload.svg');
+        }
+    }
+
+    .mh-file-field--file & {
+        &__status {
+            align-items: center;
+            display: flex;
+            justify-content: center;
+
+            &::before {
+                background-color: transparent;
+                background-position: center center;
+                background-repeat: no-repeat;
+                content: '';
+                display: block;
+                height: 16px;
+                margin-right: 8px;
+                width: 16px;
+            }
+        }
+    }
+
+    .mh-file-field--image & {
+        &__status {
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+
+            &::before {
+                background-color: transparent;
+                background-position: center center;
+                background-repeat: no-repeat;
+                background-size: 32px;
+                content: '';
+                display: block;
+                height: 48px;
+                width: 32px;
+            }
+        }
+    }
+}
+
+// @@ START HERE - Style the progress meter bar

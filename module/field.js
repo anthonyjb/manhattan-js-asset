@@ -67,7 +67,7 @@ export class FileField {
                  * If true then no remove button will be displayed in the 
                  * viewer component.
                  */
-                'preventRemove': false 
+                'preventRemove': false
             },
             options,
             input,
@@ -165,6 +165,9 @@ export class FileField {
                     }
                 }
             ) 
+
+            // @@ Pretend to upload a file
+            $.dispatch(this._acceptor.acceptor, 'accepted', {files: [null]})
         }
     }
 }
@@ -204,7 +207,7 @@ FileField.behaviours = {
     'uploader': {
 
         /**
-         * Return an uploader configured using the field options.
+         * Return the default uploader configuration.
          */
         'default': (inst, file) => {
             return new Uploader(inst.field, file)
