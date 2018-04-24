@@ -30,7 +30,7 @@ export function formatBytes(bytes) {
     const units = ['bytes', 'kb', 'mb', 'gb', 'tb', 'pb']
     const unit = Math.floor(Math.log(bytes) / Math.log(1024))
     const size = parseFloat((bytes / Math.pow(1024, unit)).toFixed(1))
-    return  `${size} ${units[unit]}`
+    return `${size} ${units[unit]}`
 }
 
 
@@ -256,7 +256,7 @@ export class ImageViewer {
 
         // Create the image element
         const imageElm = $.create('div', {'class': cls.css['image']})
-        imageElm.style.backgroundImage = `url('${ this._imageURL}')`
+        imageElm.style.backgroundImage = `url('${this._imageURL}')`
         this.viewer.appendChild(imageElm)
 
         // Create the buttons
