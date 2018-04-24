@@ -1,0 +1,53 @@
+
+.mh-file-viewer {
+    bottom: 0;
+    left: 0;
+    overflow: hidden;
+    position: absolute;
+    right: 0;
+    top: 0;
+
+    &__info {
+        align-items: center;
+        display: flex;
+        justify-content: left;
+    }
+
+    &__filename {
+        display: block;
+        font-weight: bold;
+        line-height: 48px;
+        max-width: calc(100% - 240px);
+        overflow: hidden; 
+        padding-left: 8px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    &__file-size {
+        display: block;
+        margin-left: 8px;
+    }
+
+    &__props {
+        @extend %icon-btn;
+
+        background-image: url('../images/props.svg');
+        position: absolute;
+        right: 48px;
+        top: 8px;
+    }
+
+    &__remove {
+        @extend %icon-btn;
+
+        background-image: url('../images/remove.svg');
+        position: absolute;
+        right: 8px;
+        top: 8px;
+    }
+}
+
+.mh-image-viewer {
+
+}

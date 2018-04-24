@@ -5,11 +5,35 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   width="32"
-   height="32"
-   viewBox="0 0 8.4666659 8.4666659"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="16"
+   height="16"
+   viewBox="0 0 4.233333 4.233333"
    version="1.1"
-   id="svg8">
+   id="svg8"
+   sodipodi:docname="cancel.svg"
+   inkscape:version="0.92.3 (unknown)">
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1855"
+     inkscape:window-height="1056"
+     id="namedview135"
+     showgrid="false"
+     inkscape:zoom="7.375"
+     inkscape:cx="16"
+     inkscape:cy="16"
+     inkscape:window-x="65"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg8" />
   <defs
      id="defs2" />
   <metadata
@@ -26,16 +50,16 @@
   </metadata>
   <rect
      transform="rotate(-45)"
-     y="3.8701704"
-     x="-0.52916652"
+     y="0.8767519"
+     x="-0.50257462"
      height="4.2333331"
      width="1.0583333"
      id="rect18"
      style="fill:#ffffff;stroke-width:0.19257084" />
   <rect
      transform="rotate(45)"
-     y="-2.1166921"
-     x="5.4576702"
+     y="-5.1101103"
+     x="2.4642518"
      height="4.2333331"
      width="1.0583333"
      id="rect18-3"

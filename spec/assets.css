@@ -1,4 +1,4 @@
-.mh-uploader__cancel {
+.mh-uploader__cancel, .mh-file-viewer__props, .mh-file-viewer__remove {
   background-color: rgba(0, 0, 0, 0.1);
   background-position: center center;
   background-repeat: no-repeat;
@@ -7,9 +7,9 @@
   height: 32px;
   width: 32px;
   z-index: 2; }
-  .mh-uploader__cancel:active {
-    background-size: 95%; }
-  .mh-uploader__cancel:hover {
+  .mh-uploader__cancel:active, .mh-file-viewer__props:active, .mh-file-viewer__remove:active {
+    background-size: 14px; }
+  .mh-uploader__cancel:hover, .mh-file-viewer__props:hover, .mh-file-viewer__remove:hover {
     background-color: rgba(0, 0, 0, 0.2); }
 
 .mh-acceptor {
@@ -166,6 +166,40 @@
       display: block;
       height: 48px;
       width: 32px; }
+
+.mh-file-viewer {
+  bottom: 0;
+  left: 0;
+  overflow: hidden;
+  position: absolute;
+  right: 0;
+  top: 0; }
+  .mh-file-viewer__info {
+    align-items: center;
+    display: flex;
+    justify-content: left; }
+  .mh-file-viewer__filename {
+    display: block;
+    font-weight: bold;
+    line-height: 48px;
+    max-width: calc(100% - 240px);
+    overflow: hidden;
+    padding-left: 8px;
+    text-overflow: ellipsis;
+    white-space: nowrap; }
+  .mh-file-viewer__file-size {
+    display: block;
+    margin-left: 8px; }
+  .mh-file-viewer__props {
+    background-image: url("../images/props.svg");
+    position: absolute;
+    right: 48px;
+    top: 8px; }
+  .mh-file-viewer__remove {
+    background-image: url("../images/remove.svg");
+    position: absolute;
+    right: 8px;
+    top: 8px; }
 
 * {
   box-sizing: border-box; }
