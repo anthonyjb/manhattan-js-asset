@@ -4,6 +4,23 @@ import * as $ from 'manhattan-essentials'
 // -- Utils --
 
 /**
+ * Shortcut for creating an icon button within a viewer.
+ */
+function createButton(viewerElm, css, eventType) {
+    const buttonElm = $.create('div', {'class': css})
+    $.listen(
+        buttonElm, 
+        {
+            'click': (event) => {
+                event.preventDefault()
+                $.dispatch(viewerElm, eventType)
+            }
+        }
+    )
+    return buttonElm
+}
+
+/**
  * Format the size of a file in bytes to use common units.
  */ 
 export function formatBytes(bytes) {
@@ -24,9 +41,16 @@ export function formatBytes(bytes) {
  */
 export class FileViewer {
 
-    constructor(container, filename, fileSize) {
-
-        console.log(fileSize)
+    constructor(
+        container, 
+        filename, 
+        fileSize,
+        buttons={
+            'download': true, 
+            'props': true, 
+            'remove': true
+        }
+    ) {
 
         // The file's filename
         this._filename = filename
@@ -34,22 +58,18 @@ export class FileViewer {
         // The size of the file (in bytes) 
         this._fileSize = fileSize
 
+        // A set of flags which indicate which buttons should be displayed in
+        // the viewer.
+        this._buttons = buttons
+
         // Domain for related DOM elements
         this._dom = {
             'container': null,
-            'info': null,
-            'filename': null,
-            'fileSize': null,
-            'props': null,
-            'remove': null,
             'viewer': null
         }
 
         // Store a reference to the container element
         this._dom.container = container
-
-        // Set up event handlers
-        this._handlers = {}
     }
 
     // -- Getters & Setters --
@@ -65,6 +85,14 @@ export class FileViewer {
      */
     destroy() {
 
+        // Remove the viewer element
+        if (this.viewer !== null) {
+            this.viewer.parentNode.removeChild(this.viewer)
+        }
+
+        // Clear DOM element references
+        this._dom.container = null
+        this._dom.viewer = null
     }
 
     /**
@@ -77,25 +105,35 @@ export class FileViewer {
         this._dom.viewer = $.create('div', {'class': cls.css['viewer']})
 
         // Create the file info element
-        this._dom.info = $.create('div', {'class': cls.css['info']})
-        this.viewer.appendChild(this._dom.info)
+        const infoElm = $.create('div', {'class': cls.css['info']})
+        this.viewer.appendChild(infoElm)
 
-        this._dom.filename = $.create('div', {'class': cls.css['filename']})
-        this._dom.filename.textContent = this._filename
-        this._dom.info.appendChild(this._dom.filename)
+        const filenameElm = $.create('div', {'class': cls.css['filename']})
+        filenameElm.textContent = this._filename
+        infoElm.appendChild(filenameElm)
 
-        this._dom.fileSize = $.create('div', {'class': cls.css['fileSize']})
-        this._dom.fileSize.textContent = formatBytes(this._fileSize)
-        this._dom.info.appendChild(this._dom.fileSize)
+        const fileSizeElm = $.create('div', {'class': cls.css['fileSize']})
+        fileSizeElm.textContent = formatBytes(this._fileSize)
+        infoElm.appendChild(fileSizeElm)
+    
+        // Create the buttons
+        const buttonsElm = $.create('div', {'class': cls.css['buttons']})
+        for (let button of ['download', 'props', 'remove']) {
+            if (this._buttons[button]) {
+                let buttonElm = createButton(
+                    this.viewer, 
+                    cls.css[button], 
+                    button
+                )
+                buttonsElm.appendChild(buttonElm)
+            }
+        }
 
-        // Create the props button element
-        this._dom.props = $.create('div', {'class': cls.css['props']})
-        this.viewer.appendChild(this._dom.props)
+        // If there are buttons add the buttons element to the viewer
+        if (buttonsElm.children.length > 0) {
+            this.viewer.appendChild(buttonsElm)
+        }
 
-        // Create the remove button element
-        this._dom.remove = $.create('div', {'class': cls.css['remove']})
-        this.viewer.appendChild(this._dom.remove)
-        
         // Add the viewer element to the container
         this._dom.container.appendChild(this.viewer)
     }
@@ -105,6 +143,16 @@ export class FileViewer {
 // -- CSS classes --
 
 FileViewer.css = {
+
+    /**
+     * Applied to the buttons component within the viewer.
+     */
+    'buttons': 'mh-file-viewer__buttons',
+
+    /**
+     * Applied to the download button within the buttons component.
+     */
+    'download': 'mh-file-viewer__download',
 
     /**
      * Applied to the element that displays the file's filename within the 
@@ -124,12 +172,12 @@ FileViewer.css = {
     'info': 'mh-file-viewer__info',
 
     /**
-     * Applied to the properties button within the viewer.
+     * Applied to the properties button within the buttons component.
      */
     'props': 'mh-file-viewer__props',
 
     /**
-     * Applied to the remove button within the viewer.
+     * Applied to the remove button within the buttons component.
      */
     'remove': 'mh-file-viewer__remove',
 
@@ -146,8 +194,32 @@ FileViewer.css = {
  */
 export class ImageViewer {
 
-    constructor(container, imageURL) {
+    constructor(
+        container, 
+        imageURL,
+        buttons={
+            'download': true, 
+            'edit': true, 
+            'props': true, 
+            'remove': true
+        }
+    ) {
 
+        // The image to view
+        this._imageURL = imageURL
+
+        // A set of flags which indicate which buttons should be displayed in
+        // the viewer.
+        this._buttons = buttons
+
+        // Domain for related DOM elements
+        this._dom = {
+            'container': null,
+            'viewer': null
+        }
+
+        // Store a reference to the container element
+        this._dom.container = container
     }
 
     // -- Getters & Setters --
@@ -163,13 +235,50 @@ export class ImageViewer {
      */
     destroy() {
 
+        // Remove the viewer element
+        if (this.viewer !== null) {
+            this.viewer.parentNode.removeChild(this.viewer)
+        }
+
+        // Clear DOM element references
+        this._dom.container = null
+        this._dom.viewer = null
     }
 
     /**
      * Initialize the image viewer.
      */
     init() {
+        const cls = this.constructor
 
+        // Create the viewer element
+        this._dom.viewer = $.create('div', {'class': cls.css['viewer']})
+
+        // Create the image element
+        const imageElm = $.create('div', {'class': cls.css['image']})
+        imageElm.style.backgroundImage = `url('${ this._imageURL}')`
+        this.viewer.appendChild(imageElm)
+
+        // Create the buttons
+        const buttonsElm = $.create('div', {'class': cls.css['buttons']})
+        for (let button of ['download', 'edit', 'props', 'remove']) {
+            if (this._buttons[button]) {
+                let buttonElm = createButton(
+                    this.viewer, 
+                    cls.css[button], 
+                    button
+                )
+                buttonsElm.appendChild(buttonElm)
+            }
+        }
+
+        // If there are buttons add the buttons element to the viewer
+        if (buttonsElm.children.length > 0) {
+            this.viewer.appendChild(buttonsElm)
+        }
+
+        // Add the viewer element to the container
+        this._dom.container.appendChild(this.viewer)
     }
 }
 
@@ -179,8 +288,38 @@ export class ImageViewer {
 ImageViewer.css = {
 
     /**
+     * Applied to the buttons component within the viewer.
+     */
+    'buttons': 'mh-image-viewer__buttons',
+
+    /**
+     * Applied to the download button within the viewer.
+     */
+    'download': 'mh-image-viewer__download',
+
+    /**
+     * Applied to the edit button within the viewer.
+     */
+    'edit': 'mh-image-viewer__edit',
+
+    /**
      * Applied to the image viewer.
      */
-    'viewer': 'mh-image-viewer'
+    'viewer': 'mh-image-viewer',
+
+    /**
+     * Applied to image component within the viewer.
+     */
+    'image': 'mh-image-viewer__image',
+
+    /**
+     * Applied to the properties button within the viewer.
+     */
+    'props': 'mh-image-viewer__props',
+
+    /**
+     * Applied to the remove button within the viewer.
+     */
+    'remove': 'mh-image-viewer__remove'
 
 }

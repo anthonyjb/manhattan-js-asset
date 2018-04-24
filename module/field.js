@@ -75,6 +75,12 @@ export class FileField {
                 'preventRemove': false,
 
                 /**
+                 * The image variation to display as the preview in the 
+                 * viewer (if applicable).
+                 */
+                'preview': 'preview',
+
+                /**
                  * The URL that any file will be uploaded to.
                  */
                 'url': '/upload'
@@ -140,7 +146,7 @@ export class FileField {
         
         // Create the field element
         this._dom.field = $.create(
-            'div', 
+            'div',
             {
                 'class': [
                     cls.css['field'], 
@@ -162,7 +168,12 @@ export class FileField {
                 this,
                 {
                     'filename': 'some-filename.doc',
-                    'core_meta': {'length': 45000}
+                    'core_meta': {'length': 45000},
+                    'variations': {
+                        'preview': {
+                            'url': '../images/image.png'
+                        }
+                    }
                 }
             )
             this._viewer.init()
@@ -294,7 +305,10 @@ FileField.behaviours = {
                     asset['core_meta']['length']
                 )
             } else {
-                return new ImageViewer(inst.field)
+                return new ImageViewer(
+                    inst.field, 
+                    asset['variations'][inst._options.preview].url
+                )
             }
         }
     }

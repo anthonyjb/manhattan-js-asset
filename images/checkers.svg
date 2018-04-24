@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -9,33 +11,33 @@
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="16"
    height="16"
-   viewBox="0 0 4.233333 4.233333"
+   viewBox="0 0 4.2333332 4.2333335"
    version="1.1"
    id="svg8"
-   sodipodi:docname="edit.svg"
-   inkscape:version="0.92.3 (unknown)">
-  <sodipodi:namedview
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1"
-     objecttolerance="10"
-     gridtolerance="10"
-     guidetolerance="10"
-     inkscape:pageopacity="0"
-     inkscape:pageshadow="2"
-     inkscape:window-width="1855"
-     inkscape:window-height="1056"
-     id="namedview819"
-     showgrid="false"
-     inkscape:zoom="28.5625"
-     inkscape:cx="8"
-     inkscape:cy="8"
-     inkscape:window-x="65"
-     inkscape:window-y="24"
-     inkscape:window-maximized="1"
-     inkscape:current-layer="svg8" />
+   inkscape:version="0.92.3 (unknown)"
+   sodipodi:docname="checkers.svg">
   <defs
      id="defs2" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="0.31372549"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="31.678384"
+     inkscape:cx="5.6555334"
+     inkscape:cy="11.299861"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     units="px"
+     inkscape:showpageshadow="false"
+     inkscape:window-width="1855"
+     inkscape:window-height="1056"
+     inkscape:window-x="65"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1" />
   <metadata
      id="metadata5">
     <rdf:RDF>
@@ -48,10 +50,15 @@
       </cc:Work>
     </rdf:RDF>
   </metadata>
-  <path
-     style="fill:#ffffff;fill-opacity:1;stroke-width:0.27173823"
-     d="M 3.0983738,0.19957823 2.6306422,0.66729984 3.5661056,1.6027431 4.0338372,1.1350214 Z M 2.5370959,0.76084416 0.47907636,2.8188193 0.19843748,4.0348955 1.4145397,3.7542626 3.4725592,1.6962874 Z"
-     id="rect821"
-     inkscape:connector-curvature="0"
-     sodipodi:nodetypes="ccccccccccc" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-292.76665)">
+    <path
+       style="fill:#353b48;stroke-width:0.99999994;fill-opacity:1"
+       d="M 8 0 L 8 8 L 16 8 L 16 0 L 8 0 z M 8 8 L 0 8 L 0 16 L 8 16 L 8 8 z "
+       transform="matrix(0.26458333,0,0,0.26458333,0,292.76665)"
+       id="rect10" />
+  </g>
 </svg>

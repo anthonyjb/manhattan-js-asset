@@ -54,7 +54,6 @@ export class Uploader {
         this._dom = {
             'bar': null,
             'container': null,
-            'meter': null,
             'status': null,
             'uploader': null
         }
@@ -137,12 +136,13 @@ export class Uploader {
         }
 
         // Remove the uploader element
-        this.uploader.parentNode.removeChild(this.uploader)
-
+        if (this.uploader !== null) {
+            this.uploader.parentNode.removeChild(this.uploader)
+        }
+        
         // Clear DOM element references
         this._dom.bar = null
         this._dom.container = null
-        this._dom.meter = null
         this._dom.status = null
         this._dom.uploader = null
     }
@@ -160,25 +160,25 @@ export class Uploader {
         )
         
         // Create the progress meter and bar elements
-        this._dom.meter = $.create('div', {'class': cls.css['meter']})
-        this.uploader.appendChild(this._dom.meter)
+        const meterElm = $.create('div', {'class': cls.css['meter']})
+        this.uploader.appendChild(meterElm)
 
         this._dom.bar = $.create('div', {'class': cls.css['bar']})
-        this._dom.meter.appendChild(this._dom.bar)
+        meterElm.appendChild(this._dom.bar)
 
         // Create the status element
         this._dom.status = $.create('div', {'class': cls.css['status']})
         this.uploader.appendChild(this._dom.status)
 
         // Create the cancel button element
-        this._dom.cancel = $.create('div', {'class': cls.css['cancel']})
-        this.uploader.appendChild(this._dom.cancel)
+        const cancelElm = $.create('div', {'class': cls.css['cancel']})
+        this.uploader.appendChild(cancelElm)
 
         // Add the uploader element to the container
         this._dom.container.appendChild(this.uploader)
 
         // Add event listeners
-        $.listen(this._dom.cancel, {'click': this._handlers.cancel})
+        $.listen(cancelElm, {'click': this._handlers.cancel})
 
         // Begin the file upload
         this._progress(-1)

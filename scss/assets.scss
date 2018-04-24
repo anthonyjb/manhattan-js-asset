@@ -3,7 +3,7 @@ $mh_assets_image_path: '../images/' !default;
 
 
 %icon-btn {
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: rgba(0, 0, 0, 0.25);
     background-position: center center;
     background-repeat: no-repeat;
     border-radius: 50%;
@@ -17,7 +17,7 @@ $mh_assets_image_path: '../images/' !default;
     }
 
     &:hover {
-        background-color: rgba(0, 0, 0, 0.2);
+        background-color: rgba(0, 0, 0, 0.5);
     }
 }
 
@@ -39,6 +39,7 @@ $mh_assets_image_path: '../images/' !default;
     margin-bottom: 20px;
     margin-top: 10px;
     max-width: 480px;
+    overflow: hidden;
     position: relative;
     user-select: none; 
 

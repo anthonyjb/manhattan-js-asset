@@ -154,7 +154,9 @@ export class Acceptor {
         )
 
         // Remove the acceptor element
-        this.acceptor.parentNode.removeChild(this.acceptor)
+        if (this.acceptor !== null) {
+            this.acceptor.parentNode.removeChild(this.acceptor)
+        }
 
         // Clear DOM element references
         this._dom.acceptor = null

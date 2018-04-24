@@ -1,5 +1,5 @@
-.mh-uploader__cancel, .mh-file-viewer__props, .mh-file-viewer__remove {
-  background-color: rgba(0, 0, 0, 0.1);
+.mh-uploader__cancel, .mh-file-viewer__download, .mh-file-viewer__props, .mh-file-viewer__remove, .mh-image-viewer__download, .mh-image-viewer__edit, .mh-image-viewer__props, .mh-image-viewer__remove {
+  background-color: rgba(0, 0, 0, 0.25);
   background-position: center center;
   background-repeat: no-repeat;
   border-radius: 50%;
@@ -7,10 +7,10 @@
   height: 32px;
   width: 32px;
   z-index: 2; }
-  .mh-uploader__cancel:active, .mh-file-viewer__props:active, .mh-file-viewer__remove:active {
+  .mh-uploader__cancel:active, .mh-file-viewer__download:active, .mh-file-viewer__props:active, .mh-file-viewer__remove:active, .mh-image-viewer__download:active, .mh-image-viewer__edit:active, .mh-image-viewer__props:active, .mh-image-viewer__remove:active {
     background-size: 14px; }
-  .mh-uploader__cancel:hover, .mh-file-viewer__props:hover, .mh-file-viewer__remove:hover {
-    background-color: rgba(0, 0, 0, 0.2); }
+  .mh-uploader__cancel:hover, .mh-file-viewer__download:hover, .mh-file-viewer__props:hover, .mh-file-viewer__remove:hover, .mh-image-viewer__download:hover, .mh-image-viewer__edit:hover, .mh-image-viewer__props:hover, .mh-image-viewer__remove:hover {
+    background-color: rgba(0, 0, 0, 0.5); }
 
 .mh-acceptor {
   bottom: 0;
@@ -168,6 +168,7 @@
       width: 32px; }
 
 .mh-file-viewer {
+  background: #353b48;
   bottom: 0;
   left: 0;
   overflow: hidden;
@@ -190,16 +191,53 @@
   .mh-file-viewer__file-size {
     display: block;
     margin-left: 8px; }
-  .mh-file-viewer__props {
-    background-image: url("../images/props.svg");
-    position: absolute;
-    right: 48px;
-    top: 8px; }
-  .mh-file-viewer__remove {
-    background-image: url("../images/remove.svg");
+  .mh-file-viewer__buttons {
+    display: flex;
+    justify-content: space-between;
     position: absolute;
     right: 8px;
-    top: 8px; }
+    top: 8px;
+    width: 112px; }
+  .mh-file-viewer__download {
+    background-image: url("../images/drop.svg"); }
+  .mh-file-viewer__props {
+    background-image: url("../images/props.svg"); }
+  .mh-file-viewer__remove {
+    background-image: url("../images/remove.svg"); }
+
+.mh-image-viewer {
+  background: transparent url("../images/checkers.svg") top left repeat;
+  bottom: 0;
+  left: 0;
+  overflow: hidden;
+  position: absolute;
+  right: 0;
+  top: 0; }
+  .mh-image-viewer__buttons {
+    bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    left: calc(50% - 76px);
+    position: absolute;
+    width: 152px; }
+  .mh-image-viewer__image {
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    bottom: 0;
+    left: 0;
+    overflow: hidden;
+    position: absolute;
+    right: 0;
+    top: 0; }
+  .mh-image-viewer__download {
+    background-image: url("../images/drop.svg"); }
+  .mh-image-viewer__edit {
+    background-image: url("../images/edit.svg"); }
+  .mh-image-viewer__props {
+    background-image: url("../images/props.svg"); }
+  .mh-image-viewer__remove {
+    background-image: url("../images/remove.svg"); }
 
 * {
   box-sizing: border-box; }
@@ -212,6 +250,7 @@
   margin-bottom: 20px;
   margin-top: 10px;
   max-width: 480px;
+  overflow: hidden;
   position: relative;
   user-select: none; }
   .mh-file-field--file {
