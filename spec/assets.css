@@ -12,6 +12,9 @@
   .mh-uploader__cancel:hover, .mh-file-viewer__download:hover, .mh-file-viewer__props:hover, .mh-file-viewer__remove:hover, .mh-image-viewer__download:hover, .mh-image-viewer__edit:hover, .mh-image-viewer__props:hover, .mh-image-viewer__remove:hover {
     background-color: rgba(0, 0, 0, 0.5); }
 
+* {
+  box-sizing: border-box; }
+
 .mh-acceptor {
   bottom: 0;
   left: 0;
@@ -65,11 +68,11 @@
       margin-right: 8px;
       width: 16px; }
   .mh-file-field--file .mh-acceptor__drop-zone::before {
-    animation-name: file-bounce;
+    animation-name: mh-file-bounce;
     animation-duration: 0.5s;
     animation-iteration-count: infinite; }
 
-@keyframes file-bounce {
+@keyframes mh-file-bounce {
   0% {
     background-position: center 0px; }
   50% {
@@ -102,6 +105,45 @@
     background-position: center 8px; }
   100% {
     background-position: center 0px; } }
+
+.mh-file-error {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 3; }
+  .mh-file-error:hover .mh-file-error__message {
+    opacity: 1; }
+  .mh-file-error:hover::before {
+    box-shadow: 0 0 0 1px #fff; }
+  .mh-file-error::before {
+    background: #eb4d4b url("../images/cancel.svg") center center no-repeat;
+    background-size: 16px;
+    border-radius: 50%;
+    content: '';
+    cursor: help;
+    display: block;
+    height: 24px;
+    right: 12px;
+    position: absolute;
+    top: 12px;
+    width: 24px;
+    z-index: 1; }
+  .mh-file-error__message {
+    background: #eb4d4b;
+    left: 0;
+    top: 0;
+    height: 48px;
+    line-height: 48px;
+    opacity: 0;
+    overflow: hidden;
+    padding: 0 40px 0 8px;
+    pointer-events: none;
+    position: absolute;
+    right: 0px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: opacity 0.2s linear; }
 
 .mh-uploader {
   bottom: 0;
@@ -239,9 +281,6 @@
   .mh-image-viewer__remove {
     background-image: url("../images/remove.svg"); }
 
-* {
-  box-sizing: border-box; }
-
 .mh-file-field {
   background: #2d3436;
   border-radius: 3px;
@@ -260,3 +299,34 @@
     display: block;
     padding-top: 56.25%;
     width: 100%; }
+  .mh-file-field--has-error {
+    animation-name: mh-file-error-shake;
+    animation-duration: 0.5s;
+    animation-iteration-count: 1; }
+
+@keyframes mh-file-error-shake {
+  0% {
+    background-color: #2d3436;
+    margin-left: -16px; }
+  10% {
+    margin-left: 16px; }
+  20% {
+    margin-left: -8px; }
+  30% {
+    margin-left: 8px; }
+  40% {
+    margin-left: -4px; }
+  50% {
+    background-color: #eb4d4b;
+    margin-left: 4px; }
+  60% {
+    margin-left: -2px; }
+  70% {
+    margin-left: 2px; }
+  80% {
+    margin-left: -1px; }
+  90% {
+    margin-left: 1px; }
+  100% {
+    background-color: #2d3436;
+    margin-left: 0; } }

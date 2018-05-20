@@ -1,0 +1,55 @@
+
+.mh-file-error {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    z-index: 3;
+
+    &:hover {
+        .mh-file-error__message {
+            opacity: 1;
+        }
+
+        &::before {
+            box-shadow: 0 0 0 1px #fff;
+        }
+    }
+
+    &::before {
+        background:
+            #eb4d4b
+            url('#{$mh_assets_image_path}cancel.svg')
+            center center
+            no-repeat;
+        background-size: 16px;
+        border-radius: 50%;
+        content: '';
+        cursor: help;
+        display: block;
+        height: 24px;
+        right: 12px;
+        position: absolute;
+        top: 12px;
+        width: 24px;
+        z-index: 1;
+    }
+
+    &__message {
+        background: #eb4d4b;
+        left: 0;
+        top: 0;
+        height: 48px;
+        line-height: 48px;
+        opacity: 0;
+        overflow: hidden;
+        padding: 0 40px 0 8px;
+        pointer-events: none;
+        position: absolute;
+        right: 0px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        transition: opacity 0.2s linear;
+    }
+}

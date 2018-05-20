@@ -19,7 +19,7 @@
         font-weight: bold;
         line-height: 48px;
         max-width: calc(100% - 240px);
-        overflow: hidden; 
+        overflow: hidden;
         padding-left: 8px;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -59,7 +59,7 @@
 }
 
 .mh-image-viewer {
-    background: 
+    background:
         transparent
         url('#{$mh_assets_image_path}checkers.svg')
         top left
@@ -97,7 +97,7 @@
 
         background-image: url('#{$mh_assets_image_path}drop.svg');
     }
-    
+
     &__edit {
         @extend %icon-btn;
 

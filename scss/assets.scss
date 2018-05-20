@@ -22,37 +22,15 @@ $mh_assets_image_path: '../images/' !default;
 }
 
 
-@import "acceptor";
-@import "uploader";
-@import "viewer";
-
-
 * {
     box-sizing: border-box;
 }
 
-.mh-file-field {
-    background: #2d3436;
-    border-radius: 3px;
-    color: #fff;
-    font-family: sans-serif;
-    margin-bottom: 20px;
-    margin-top: 10px;
-    max-width: 480px;
-    overflow: hidden;
-    position: relative;
-    user-select: none; 
 
-    &--file {
-        height: 48px;
-    }
+@import "ui/acceptor";
+@import "ui/error";
+@import "ui/uploader";
+@import "ui/viewer";
 
-    &--image {
-        &::before {
-            content: '';
-            display: block;
-            padding-top: 56.25%;
-            width: 100%;
-        }
-    }
-}
+@import "field";
+@import "gallery";

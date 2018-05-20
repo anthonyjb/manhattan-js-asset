@@ -75,11 +75,11 @@
         }
 
         &__drop-zone::before {
-            animation-name: file-bounce;
+            animation-name: mh-file-bounce;
             animation-duration: 0.5s;
             animation-iteration-count: infinite;
 
-            @keyframes file-bounce {
+            @keyframes mh-file-bounce {
                 0% {
                     background-position: center 0px;
                 }

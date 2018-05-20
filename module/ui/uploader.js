@@ -14,14 +14,14 @@ function defaultStatusTemplate(progress) {
 // -- Class definition --
 
 /**
- * File uploader UI component for form fields. 
+ * File uploader UI component for form fields.
  */
 export class Uploader {
 
     constructor(
-        container, 
+        container,
         url,
-        formData, 
+        formData,
         orientation='horizontal',
         statusTemplate=defaultStatusTemplate,
         semaphore=null
@@ -35,13 +35,13 @@ export class Uploader {
         this._formData = formData
 
         // The orientation of the progress meter, if 'horizontal' the progress
-        // bar's width is updated to match the progress, if 'vertical' then 
+        // bar's width is updated to match the progress, if 'vertical' then
         // it's height is.
         this._orientation = orientation
 
         // A template function that returns the HTML contents of the status
         // element based on the current upload progress.
-        this._statusTemplate = statusTemplate  
+        this._statusTemplate = statusTemplate
 
         // A semaphore used to limit the number of concurrent uploads, this
         // restriction is optional.
@@ -63,7 +63,7 @@ export class Uploader {
 
         // Set up event handlers
         this._handlers = {
-            
+
             'cancel': (event) => {
                 // Abort the upload
                 event.preventDefault()
@@ -98,7 +98,7 @@ export class Uploader {
             },
 
             'reqLoad': (event) => {
-                const {response} = this._xhr
+                const response = this._xhr.response
 
                 // Clear the handle to the request
                 this._xhr = null
@@ -125,7 +125,7 @@ export class Uploader {
         if (this._xhr) {
             $.ignore(
                 this._xhr,
-                { 
+                {
                     'abort': this._handlers.reqAbort,
                     'error': this._handlers.reqError,
                     'progress': this._handlers.reqProgress,
@@ -139,7 +139,7 @@ export class Uploader {
         if (this.uploader !== null) {
             this.uploader.parentNode.removeChild(this.uploader)
         }
-        
+
         // Clear DOM element references
         this._dom.bar = null
         this._dom.container = null
@@ -155,10 +155,10 @@ export class Uploader {
 
         // Create the uploader element
         this._dom.uploader = $.create(
-            'div', 
+            'div',
             {'class': `${cls.css['uploader']} ${cls.css['pending']}`}
         )
-        
+
         // Create the progress meter and bar elements
         const meterElm = $.create('div', {'class': cls.css['meter']})
         this.uploader.appendChild(meterElm)
@@ -210,12 +210,12 @@ export class Uploader {
     }
 
     /**
-     * Start uploading the file, if a semaphore has been provided for the 
-     * uploader then the upload request will ignored if there the maximum 
+     * Start uploading the file, if a semaphore has been provided for the
+     * uploader then the upload request will ignored if there the maximum
      * number of uploads has already been reached.
      */
     _upload() {
-        const cls = this.constructor 
+        const cls = this.constructor
 
         // If there's a semaphore attempt to aquire a resource (e.g check we
         // haven't reached the maximum number of uploads).
@@ -226,16 +226,16 @@ export class Uploader {
         // Prevent any future upload requests
         clearInterval(this.__uploadInterval)
 
-        // Remove the pending CSS class from the uploader and add the 
+        // Remove the pending CSS class from the uploader and add the
         // uploading class.
         this.uploader.classList.remove(cls.css['pending'])
         this.uploader.classList.add(cls.css['uploading'])
 
         // Send the file
         //
-        // REVIEW: Since `fetch` currently doesn't provide a mechanism for 
+        // REVIEW: Since `fetch` currently doesn't provide a mechanism for
         // querying the progress of an upload we are forced to use
-        // `XMLHttpRequest`. Once progress can be queries for `fetch` this 
+        // `XMLHttpRequest`. Once progress can be queries for `fetch` this
         // code should be updated to use the more modern approach.
         //
         // ~ Anthony Blackshaw <ant@getme.co.uk>, 23rd April 2018
@@ -244,7 +244,7 @@ export class Uploader {
         // Add event listeners to the request
         $.listen(
             this._xhr,
-            { 
+            {
                 'abort': this._handlers.reqAbort,
                 'error': this._handlers.reqError,
                 'progress': this._handlers.reqProgress,
