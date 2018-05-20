@@ -9,7 +9,7 @@ import * as $ from 'manhattan-essentials'
 function createButton(viewerElm, css, eventType) {
     const buttonElm = $.create('div', {'class': css})
     $.listen(
-        buttonElm, 
+        buttonElm,
         {
             'click': (event) => {
                 event.preventDefault()
@@ -22,7 +22,7 @@ function createButton(viewerElm, css, eventType) {
 
 /**
  * Format the size of a file in bytes to use common units.
- */ 
+ */
 export function formatBytes(bytes) {
     if (bytes === 0) {
         return '0 bytes'
@@ -37,17 +37,17 @@ export function formatBytes(bytes) {
 // -- Class definition --
 
 /**
- * File viewer UI component for form fields. 
+ * File viewer UI component for form fields.
  */
 export class FileViewer {
 
     constructor(
-        container, 
-        filename, 
+        container,
+        filename,
         fileSize,
         buttons={
-            'download': true, 
-            'props': true, 
+            'download': true,
+            'props': true,
             'remove': true
         }
     ) {
@@ -55,7 +55,7 @@ export class FileViewer {
         // The file's filename
         this._filename = filename
 
-        // The size of the file (in bytes) 
+        // The size of the file (in bytes)
         this._fileSize = fileSize
 
         // A set of flags which indicate which buttons should be displayed in
@@ -115,14 +115,14 @@ export class FileViewer {
         const fileSizeElm = $.create('div', {'class': cls.css['fileSize']})
         fileSizeElm.textContent = formatBytes(this._fileSize)
         infoElm.appendChild(fileSizeElm)
-    
+
         // Create the buttons
         const buttonsElm = $.create('div', {'class': cls.css['buttons']})
         for (let button of ['download', 'props', 'remove']) {
             if (this._buttons[button]) {
                 let buttonElm = createButton(
-                    this.viewer, 
-                    cls.css[button], 
+                    this.viewer,
+                    cls.css[button],
                     button
                 )
                 buttonsElm.appendChild(buttonElm)
@@ -155,13 +155,13 @@ FileViewer.css = {
     'download': 'mh-file-viewer__download',
 
     /**
-     * Applied to the element that displays the file's filename within the 
+     * Applied to the element that displays the file's filename within the
      * information component.
      */
     'filename': 'mh-file-viewer__filename',
 
     /**
-     * Applied to the element that displays the file's size within the 
+     * Applied to the element that displays the file's size within the
      * information component.
      */
     'fileSize': 'mh-file-viewer__file-size',
@@ -190,17 +190,17 @@ FileViewer.css = {
 
 
 /**
- * Image viewer UI component for form fields. 
+ * Image viewer UI component for form fields.
  */
 export class ImageViewer {
 
     constructor(
-        container, 
+        container,
         imageURL,
         buttons={
-            'download': true, 
-            'edit': true, 
-            'props': true, 
+            'download': true,
+            'edit': true,
+            'props': true,
             'remove': true
         }
     ) {
@@ -264,8 +264,8 @@ export class ImageViewer {
         for (let button of ['download', 'edit', 'props', 'remove']) {
             if (this._buttons[button]) {
                 let buttonElm = createButton(
-                    this.viewer, 
-                    cls.css[button], 
+                    this.viewer,
+                    cls.css[button],
                     button
                 )
                 buttonsElm.appendChild(buttonElm)

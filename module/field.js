@@ -272,7 +272,21 @@ export class FileField {
         $.listen(
             this._viewer.viewer,
             {
+                'download': () => {
+                    // Build a link to trigger a file download
+                    const a = $.create(
+                        'a',
+                        {
+                            'download': '',
+                            'href': this.getAssetProp('downloadURL'),
+                            'target': '_blank'
+                        }
+                    )
+                    a.click()
+                },
+
                 'remove': () => {
+                    // Clear the asset from the file
                     this.clear()
                 }
             }
@@ -476,10 +490,11 @@ FileField.behaviours = {
      *
      * As a minimum the following list of properties must be supported:
      *
+     * - downloadURL (get)
      * - filename (get)
      * - fileLength (get)
      * - meta (get, set)
-     * - preview (get)
+     * - previewURL (get)
      *
      */
     'assetProp': {
@@ -491,6 +506,12 @@ FileField.behaviours = {
         'default': (inst, action, name, value) => {
 
             switch (name) {
+
+            case 'downloadURL':
+                if (action === 'get') {
+                    return inst._asset['url']
+                }
+                break
 
             case 'filename':
                 if (action === 'get') {
@@ -512,7 +533,7 @@ FileField.behaviours = {
                 }
                 break
 
-            case 'preview':
+            case 'previewURL':
                 if (action === 'get') {
                     const previewProp = inst._options.preview
                     return inst._asset['variations'][previewProp].url
@@ -583,7 +604,7 @@ FileField.behaviours = {
             case 'image':
                 viewer = new ImageViewer(
                     inst.field,
-                    inst.getAssetProp('preview')
+                    inst.getAssetProp('previewURL')
                 )
                 break
 
