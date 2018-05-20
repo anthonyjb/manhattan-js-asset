@@ -13,7 +13,6 @@ class ResponseError extends Error {
 }
 
 
-
 // -- Class definition --
 
 /**
@@ -362,8 +361,7 @@ export class FileField {
 
                         // Populate the field
                         this.populate(asset)
-                    }
-                    catch (error) {
+                    } catch (error) {
                         if (error instanceof ResponseError) {
                             // Clear the field
                             this.clear()
@@ -465,7 +463,7 @@ FileField.behaviours = {
          *
          */
         'default': (inst, response) => {
-            const payload = JSON.parse(response).payload
+            const {payload} = JSON.parse(response)
 
             // Attempt to extract the asset
             if (payload.asset) {
@@ -528,7 +526,7 @@ FileField.behaviours = {
             case 'meta':
                 if (action === 'get') {
                     return Object.assign(inst._asset['user_meta'], {})
-                } else if (action == 'set') {
+                } else if (action === 'set') {
                     inst._asset['user_meta'] = value
                 }
                 break
@@ -540,9 +538,10 @@ FileField.behaviours = {
                 }
                 break
 
-            default:
-                return ''
+            // no default
             }
+
+            return ''
         }
 
     },
@@ -597,7 +596,7 @@ FileField.behaviours = {
                 viewer = new FileViewer(
                     inst.field,
                     inst.getAssetProp('filename'),
-                    inst.getAssetProp('fileLength'),
+                    inst.getAssetProp('fileLength')
                 )
                 break
 

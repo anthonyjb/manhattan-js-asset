@@ -98,7 +98,7 @@ export class Uploader {
             },
 
             'reqLoad': (event) => {
-                const response = this._xhr.response
+                const {response} = this._xhr
 
                 // Clear the handle to the request
                 this._xhr = null
