@@ -103,6 +103,7 @@ export class FileField {
             {
                 'acceptor': 'default',
                 'asset': 'default',
+                'assetProp': 'default',
                 'formData': 'minimal',
                 'uploader': 'default',
                 'viewer': 'default'
@@ -111,6 +112,9 @@ export class FileField {
             input,
             prefix
         )
+
+        // The current asset
+        this._asset = null
 
         // The state of the field (initializing, accepting, uploading,
         // viewing).
@@ -138,6 +142,10 @@ export class FileField {
     }
 
     // -- Getters & Setters --
+
+    get asset() {
+        return Object.assign(this._asset, {})
+    }
 
     get field() {
         return this._dom.field
@@ -174,7 +182,8 @@ export class FileField {
         // Clear the current state component
         this._destroyStateComponent()
 
-        // Clear the input value
+        // Clear the asset input value
+        this._asset = null
         this.input.value = ''
 
         // Set up the acceptor
@@ -201,6 +210,15 @@ export class FileField {
      */
     destroy() {
         return this.todo
+    }
+
+    /**
+     * Return the value of the named property from the asset.
+     */
+    getAssetProp(name) {
+        const behaviours = this.constructor.behaviours.assetProp
+        const behaviour = this._behaviours.assetProp
+        return behaviours[behaviour](this, 'get', name)
     }
 
     /**
@@ -241,7 +259,8 @@ export class FileField {
         // Clear the current state component
         this._destroyStateComponent()
 
-        // Update the input value
+        // Update the asset and input value
+        this._asset = asset
         this.input.value = JSON.stringify(asset)
 
         // Set up the viewer
@@ -276,6 +295,15 @@ export class FileField {
 
         // Add the error CSS modifier to the field
         this.field.classList.add(this.constructor.css['hasError'])
+    }
+
+    /**
+     * Set the value of the named property from the asset.
+     */
+    setAssetProp(name, value) {
+        const behaviours = this.constructor.behaviours.assetProp
+        const behaviour = this._behaviours.assetProp
+        return behaviours[behaviour](this, 'set', name, value)
     }
 
     /**
@@ -322,11 +350,18 @@ export class FileField {
                         this.populate(asset)
                     }
                     catch (error) {
-                        // Clear the field
-                        this.clear()
+                        if (error instanceof ResponseError) {
+                            // Clear the field
+                            this.clear()
 
-                        // Display the upload error
-                        this.postError(error.message)
+                            // Display the upload error
+                            this.postError(error.message)
+
+                        } else {
+
+                            // Re-through any JS error
+                            throw error
+                        }
                     }
                 }
             }
@@ -436,6 +471,62 @@ FileField.behaviours = {
     },
 
     /**
+     * The `assetProp` behaviour is used to provide an interface/mapping for
+     * property names and their values against the asset.
+     *
+     * As a minimum the following list of properties must be supported:
+     *
+     * - filename (get)
+     * - fileLength (get)
+     * - meta (get, set)
+     * - preview (get)
+     *
+     */
+    'assetProp': {
+
+        /**
+         * Provide the default behaviour for properties against the asset
+         * (based on manhattan assets).
+         */
+        'default': (inst, action, name, value) => {
+
+            switch (name) {
+
+            case 'filename':
+                if (action === 'get') {
+                    return inst._asset['filename']
+                }
+                break
+
+            case 'fileLength':
+                if (action === 'get') {
+                    return inst._asset['core_meta']['length']
+                }
+                break
+
+            case 'meta':
+                if (action === 'get') {
+                    return Object.assign(inst._asset['user_meta'], {})
+                } else if (action == 'set') {
+                    inst._asset['user_meta'] = value
+                }
+                break
+
+            case 'preview':
+                if (action === 'get') {
+                    const previewProp = inst._options.preview
+                    return inst._asset['variations'][previewProp].url
+                }
+                break
+
+            default:
+                return ''
+            }
+        }
+
+    },
+
+    /**
      * The `formData` behaviour is used to create a `FormData` instance that
      * contains the file to be uploaded and any other parameters required, for
      * example a CSRF token.
@@ -484,15 +575,15 @@ FileField.behaviours = {
             case 'file':
                 viewer = new FileViewer(
                     inst.field,
-                    asset['filename'],
-                    asset['core_meta']['length']
+                    inst.getAssetProp('filename'),
+                    inst.getAssetProp('fileLength'),
                 )
                 break
 
             case 'image':
                 viewer = new ImageViewer(
                     inst.field,
-                    asset['variations'][inst._options.preview].url
+                    inst.getAssetProp('preview')
                 )
                 break
 
