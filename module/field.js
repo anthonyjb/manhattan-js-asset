@@ -5,6 +5,8 @@ import {ErrorMessage} from './ui/error-message.js'
 import {Uploader} from './ui/uploader.js'
 import {FileViewer, ImageViewer} from './ui/viewers.js'
 
+import {Overlay} from './ui/overlay'
+
 
 // -- Errors --
 
@@ -246,6 +248,12 @@ export class FileField {
 
         } else {
             this.clear()
+        }
+
+        // @@
+        if (this._options.fileType === 'image') {
+            const overlay = new Overlay()
+            overlay.init()
         }
     }
 
@@ -539,6 +547,7 @@ FileField.behaviours = {
                 break
 
             // no default
+
             }
 
             return ''

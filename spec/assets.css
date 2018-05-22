@@ -145,6 +145,45 @@
     white-space: nowrap;
     transition: opacity 0.2s linear; }
 
+.mh-overlay {
+  background: rgba(30, 39, 46, 0.99);
+  background-image: radial-gradient(ellipse at center, rgba(199, 236, 238, 0.15) 0, rgba(199, 236, 238, 0) 80%);
+  bottom: 0;
+  left: 0;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 1; }
+  .mh-overlay__close {
+    background: transparent url("../images/cancel.svg") center center no-repeat;
+    background-size: 32px;
+    cursor: pointer;
+    height: 32px;
+    opacity: 0.1;
+    position: absolute;
+    right: 32px;
+    top: 32px;
+    width: 32px;
+    transition: background-size 0.1s linear, opacity 0.1s linear; }
+    .mh-overlay__close:active {
+      background-size: 28px; }
+    .mh-overlay__close:hover {
+      opacity: 1; }
+  .mh-overlay__content {
+    bottom: 128px;
+    left: 96px;
+    position: absolute;
+    right: 96px;
+    top: 32px;
+    border: 1px solid red; }
+  .mh-overlay__buttons {
+    bottom: 32px;
+    height: 64px;
+    left: 96px;
+    position: absolute;
+    right: 96px;
+    border: 1px solid red; }
+
 .mh-uploader {
   bottom: 0;
   left: 0;
@@ -317,11 +356,11 @@
   40% {
     margin-left: -4px; }
   50% {
-    background-color: #eb4d4b;
     margin-left: 4px; }
   60% {
     margin-left: -2px; }
   70% {
+    background-color: #eb4d4b;
     margin-left: 2px; }
   80% {
     margin-left: -1px; }
