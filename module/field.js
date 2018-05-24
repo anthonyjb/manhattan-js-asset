@@ -2,10 +2,9 @@ import * as $ from 'manhattan-essentials'
 
 import {Acceptor} from './ui/acceptor.js'
 import {ErrorMessage} from './ui/error-message.js'
+import {Metadata} from './ui/metadata.js'
 import {Uploader} from './ui/uploader.js'
 import {FileViewer, ImageViewer} from './ui/viewers.js'
-
-import {Overlay} from './ui/overlay'
 
 
 // -- Errors --
@@ -250,10 +249,9 @@ export class FileField {
             this.clear()
         }
 
-        // @@
-        if (this._options.fileType === 'image') {
-            const overlay = new Overlay()
-            overlay.init()
+        if (this._options.fileType === 'file') {
+            const metadata = new Metadata()
+            metadata.init()
         }
     }
 
@@ -290,6 +288,11 @@ export class FileField {
                         }
                     )
                     a.click()
+                },
+
+                'metadata': () => {
+                    const metadata = new Metadata()
+                    metadata.init()
                 },
 
                 'remove': () => {

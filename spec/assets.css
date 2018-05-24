@@ -1,4 +1,4 @@
-.mh-uploader__cancel, .mh-file-viewer__download, .mh-file-viewer__props, .mh-file-viewer__remove, .mh-image-viewer__download, .mh-image-viewer__edit, .mh-image-viewer__props, .mh-image-viewer__remove {
+.mh-uploader__cancel, .mh-file-viewer__download, .mh-file-viewer__metadata, .mh-file-viewer__remove, .mh-image-viewer__download, .mh-image-viewer__edit, .mh-image-viewer__metadata, .mh-image-viewer__remove {
   background-color: rgba(0, 0, 0, 0.25);
   background-position: center center;
   background-repeat: no-repeat;
@@ -7,9 +7,9 @@
   height: 32px;
   width: 32px;
   z-index: 2; }
-  .mh-uploader__cancel:active, .mh-file-viewer__download:active, .mh-file-viewer__props:active, .mh-file-viewer__remove:active, .mh-image-viewer__download:active, .mh-image-viewer__edit:active, .mh-image-viewer__props:active, .mh-image-viewer__remove:active {
+  .mh-uploader__cancel:active, .mh-file-viewer__download:active, .mh-file-viewer__metadata:active, .mh-file-viewer__remove:active, .mh-image-viewer__download:active, .mh-image-viewer__edit:active, .mh-image-viewer__metadata:active, .mh-image-viewer__remove:active {
     background-size: 14px; }
-  .mh-uploader__cancel:hover, .mh-file-viewer__download:hover, .mh-file-viewer__props:hover, .mh-file-viewer__remove:hover, .mh-image-viewer__download:hover, .mh-image-viewer__edit:hover, .mh-image-viewer__props:hover, .mh-image-viewer__remove:hover {
+  .mh-uploader__cancel:hover, .mh-file-viewer__download:hover, .mh-file-viewer__metadata:hover, .mh-file-viewer__remove:hover, .mh-image-viewer__download:hover, .mh-image-viewer__edit:hover, .mh-image-viewer__metadata:hover, .mh-image-viewer__remove:hover {
     background-color: rgba(0, 0, 0, 0.5); }
 
 * {
@@ -145,15 +145,53 @@
     white-space: nowrap;
     transition: opacity 0.2s linear; }
 
+.mh-overlay__rotate, .mh-overlay__okay, .mh-overlay__cancel {
+  border-radius: 3px;
+  box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.5), inset 0 3px 5px -2px rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  height: 48px;
+  line-height: 46px;
+  margin-left: 16px;
+  min-width: 96px;
+  padding: 0 16px;
+  text-align: center;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  transition: background-color 0.1s linear, box-shadow 0.1s linear; }
+  .mh-overlay__rotate:first-child, .mh-overlay__okay:first-child, .mh-overlay__cancel:first-child {
+    margin-left: 0; }
+  .mh-overlay__rotate:hover, .mh-overlay__okay:hover, .mh-overlay__cancel:hover {
+    box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.75), inset 0 3px 5px -2px rgba(255, 255, 255, 0.5); }
+    .mh-overlay__rotate:hover::after, .mh-overlay__okay:hover::after, .mh-overlay__cancel:hover::after {
+      opacity: 1.0; }
+  .mh-overlay__rotate:active, .mh-overlay__okay:active, .mh-overlay__cancel:active {
+    background-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.05), inset 0 1px 5px 1px rgba(0, 0, 0, 0.35); }
+    .mh-overlay__rotate:active::after, .mh-overlay__okay:active::after, .mh-overlay__cancel:active::after {
+      margin-top: 1px; }
+  .mh-overlay__rotate::after, .mh-overlay__okay::after, .mh-overlay__cancel::after {
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: 32px 24px;
+    content: '';
+    display: block;
+    height: inherit;
+    opacity: 0.9;
+    width: inherit;
+    transition: margin-top 0.1s linear, opacity 0.1s linear; }
+
 .mh-overlay {
   background: rgba(30, 39, 46, 0.99);
   background-image: radial-gradient(ellipse at center, rgba(199, 236, 238, 0.15) 0, rgba(199, 236, 238, 0) 80%);
   bottom: 0;
+  color: #fff;
+  font-family: sans-serif;
+  font-size: 16px;
   left: 0;
   position: fixed;
   right: 0;
   top: 0;
-  z-index: 1; }
+  z-index: 9; }
   .mh-overlay__close {
     background: transparent url("../images/cancel.svg") center center no-repeat;
     background-size: 32px;
@@ -175,14 +213,24 @@
     position: absolute;
     right: 96px;
     top: 32px;
-    border: 1px solid red; }
+    border: 1px dashed rgba(255, 255, 255, 0.1); }
   .mh-overlay__buttons {
-    bottom: 32px;
-    height: 64px;
+    bottom: 48px;
+    display: flex;
+    flex-wrap: nowrap;
+    height: 48px;
+    justify-content: center;
     left: 96px;
     position: absolute;
-    right: 96px;
-    border: 1px solid red; }
+    right: 96px; }
+  .mh-overlay__rotate {
+    margin-right: 48px; }
+    .mh-overlay__rotate::after {
+      background-image: url("../images/rotate.svg"); }
+  .mh-overlay__okay::after {
+    background-image: url("../images/okay.svg"); }
+  .mh-overlay__cancel::after {
+    background-image: url("../images/cancel.svg"); }
 
 .mh-uploader {
   bottom: 0;
@@ -281,8 +329,8 @@
     width: 112px; }
   .mh-file-viewer__download {
     background-image: url("../images/drop.svg"); }
-  .mh-file-viewer__props {
-    background-image: url("../images/props.svg"); }
+  .mh-file-viewer__metadata {
+    background-image: url("../images/metadata.svg"); }
   .mh-file-viewer__remove {
     background-image: url("../images/remove.svg"); }
 
@@ -315,8 +363,8 @@
     background-image: url("../images/drop.svg"); }
   .mh-image-viewer__edit {
     background-image: url("../images/edit.svg"); }
-  .mh-image-viewer__props {
-    background-image: url("../images/props.svg"); }
+  .mh-image-viewer__metadata {
+    background-image: url("../images/metadata.svg"); }
   .mh-image-viewer__remove {
     background-image: url("../images/remove.svg"); }
 
@@ -325,6 +373,7 @@
   border-radius: 3px;
   color: #fff;
   font-family: sans-serif;
+  font-size: 16px;
   margin-bottom: 20px;
   margin-top: 10px;
   max-width: 480px;

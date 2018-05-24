@@ -45,10 +45,10 @@
         background-image: url('#{$mh_assets_image_path}drop.svg');
     }
 
-    &__props {
+    &__metadata {
         @extend %icon-btn;
 
-        background-image: url('#{$mh_assets_image_path}props.svg');
+        background-image: url('#{$mh_assets_image_path}metadata.svg');
     }
 
     &__remove {
@@ -104,10 +104,10 @@
         background-image: url('#{$mh_assets_image_path}edit.svg');
     }
 
-    &__props {
+    &__metadata {
         @extend %icon-btn;
 
-        background-image: url('#{$mh_assets_image_path}props.svg');
+        background-image: url('#{$mh_assets_image_path}metadata.svg');
     }
 
     &__remove {

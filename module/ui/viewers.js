@@ -6,7 +6,7 @@ import * as $ from 'manhattan-essentials'
 /**
  * Shortcut for creating an icon button within a viewer.
  */
-function createButton(viewerElm, css, eventType) {
+function createIconButton(viewerElm, css, eventType) {
     const buttonElm = $.create('div', {'class': css})
     $.listen(
         buttonElm,
@@ -47,7 +47,7 @@ export class FileViewer {
         fileSize,
         buttons={
             'download': true,
-            'props': true,
+            'metadata': true,
             'remove': true
         }
     ) {
@@ -118,9 +118,9 @@ export class FileViewer {
 
         // Create the buttons
         const buttonsElm = $.create('div', {'class': cls.css['buttons']})
-        for (let button of ['download', 'props', 'remove']) {
+        for (let button of ['download', 'metadata', 'remove']) {
             if (this._buttons[button]) {
-                let buttonElm = createButton(
+                let buttonElm = createIconButton(
                     this.viewer,
                     cls.css[button],
                     button
@@ -172,9 +172,9 @@ FileViewer.css = {
     'info': 'mh-file-viewer__info',
 
     /**
-     * Applied to the properties button within the buttons component.
+     * Applied to the metadata button within the buttons component.
      */
-    'props': 'mh-file-viewer__props',
+    'metadata': 'mh-file-viewer__metadata',
 
     /**
      * Applied to the remove button within the buttons component.
@@ -200,7 +200,7 @@ export class ImageViewer {
         buttons={
             'download': true,
             'edit': true,
-            'props': true,
+            'metadata': true,
             'remove': true
         }
     ) {
@@ -261,9 +261,9 @@ export class ImageViewer {
 
         // Create the buttons
         const buttonsElm = $.create('div', {'class': cls.css['buttons']})
-        for (let button of ['download', 'edit', 'props', 'remove']) {
+        for (let button of ['download', 'edit', 'metadata', 'remove']) {
             if (this._buttons[button]) {
-                let buttonElm = createButton(
+                let buttonElm = createIconButton(
                     this.viewer,
                     cls.css[button],
                     button
@@ -315,7 +315,7 @@ ImageViewer.css = {
     /**
      * Applied to the properties button within the viewer.
      */
-    'props': 'mh-image-viewer__props',
+    'metadata': 'mh-image-viewer__metadata',
 
     /**
      * Applied to the remove button within the viewer.
