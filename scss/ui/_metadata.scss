@@ -1,0 +1,46 @@
+
+.mh-metadata {
+
+    &__props {
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 3px;
+        margin: auto;
+        max-width: 480px;
+        width: 100%;
+    }
+
+    .mh-overlay__content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+}
+
+.mh-meta-prop {
+    border-top: 1px solid rgba(255, 255, 255, 0.25);
+    display: flex;
+    height: 48px;
+    line-height: 48px;
+    overflow: hidden;
+
+    &:first-child {
+        border-top: none;
+    }
+
+    &__key {
+        background:rgba(255, 255, 255, 0.1);
+        padding: 0 16px;
+        width: 128px;
+    }
+
+    &__value {
+        background: rgba(0, 0, 0, 0);
+        border: none;
+        color: #fff;
+        font-family: sans-serif;
+        font-size: 16px;
+        outline: none;
+        padding: 0 16px;
+        width: calc(100% - 128px);
+    }
+}

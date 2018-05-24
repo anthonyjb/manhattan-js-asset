@@ -44,6 +44,14 @@ export class Metadata extends Overlay {
         )
 
         // TODO: Add the metadata properties
+        const prop1 = new MetaProp(this._dom.props, 'size', '[320, 240]')
+        prop1.init()
+
+        const prop2 = new MetaProp(this._dom.props, 'alt', 'A test image')
+        prop2.init()
+
+        // - Add some example ones so we can get the styles in place before
+        //   we add real meta data.
 
         this.content.appendChild(this._dom.props)
 
@@ -61,7 +69,7 @@ Metadata.css = {
     /**
      * Applied to the metadata overlay.
      */
-    'props': 'mh-metadata',
+    'metadata': 'mh-metadata',
 
     /**
      * Applied to the metadata properties container.
@@ -135,13 +143,13 @@ class MetaProp {
         this._dom.prop = $.create('div', {'class': css['prop']})
 
         // Key
-        this._dom.key = $.create('div', {'class': css['prop']})
-        this._dom.value.textContent = this.key
+        this._dom.key = $.create('div', {'class': css['key']})
+        this._dom.key.textContent = this.key
         this.prop.appendChild(this._dom.key)
 
         // Value
-        this._dom.value = $.create('div', {'class': css['prop']})
-        this._dom.value.textContent = this.value
+        this._dom.value = $.create('input', {'class': css['value']})
+        this._dom.value.value = this.value
         this.prop.appendChild(this._dom.value)
 
         // Add the property to the container
@@ -163,10 +171,10 @@ MetaProp.css = {
     /**
      * Applied to the meta property.
      */
-    'prop': 'mh-meta-prop-value',
+    'prop': 'mh-meta-prop',
 
     /**
      * Applied to the value.
      */
-    'value': 'mh-meta-prop-value__value',
+    'value': 'mh-meta-prop__value',
 }

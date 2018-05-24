@@ -103,7 +103,7 @@ export class Overlay {
         // Create the overlay element
         this._dom.overlay = $.create(
             'div',
-            {'class': Overlay.css['overlay']}
+            {'class': [Overlay.css['overlay'], css].join(' ')}
         )
 
         // Create the close element
