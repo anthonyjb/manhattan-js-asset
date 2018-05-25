@@ -14,6 +14,22 @@ class ResponseError extends Error {
 }
 
 
+// Utils
+
+/**
+ * Format the size of a file in bytes to use common units.
+ */
+export function formatBytes(bytes) {
+    if (bytes === 0) {
+        return '0 bytes'
+    }
+    const units = ['bytes', 'kb', 'mb', 'gb', 'tb', 'pb']
+    const unit = Math.floor(Math.log(bytes) / Math.log(1024))
+    const size = parseFloat((bytes / Math.pow(1024, unit)).toFixed(1))
+    return `${size} ${units[unit]}`
+}
+
+
 // -- Class definition --
 
 /**
@@ -105,6 +121,7 @@ export class FileField {
                 'asset': 'default',
                 'assetProp': 'default',
                 'formData': 'minimal',
+                'metadata': 'default',
                 'uploader': 'default',
                 'viewer': 'default'
             },
@@ -248,11 +265,6 @@ export class FileField {
         } else {
             this.clear()
         }
-
-        if (this._options.fileType === 'file') {
-            const metadata = new Metadata()
-            metadata.init()
-        }
     }
 
     /**
@@ -270,7 +282,7 @@ export class FileField {
 
         // Set up the viewer
         let behaviour = this._behaviours.viewer
-        this._viewer = cls.behaviours.viewer[behaviour](this, asset)
+        this._viewer = cls.behaviours.viewer[behaviour](this)
         this._viewer.init()
 
         // Set up event handlers for the viewer
@@ -291,7 +303,8 @@ export class FileField {
                 },
 
                 'metadata': () => {
-                    const metadata = new Metadata()
+                    let behaviour = this._behaviours.metadata
+                    const metadata = cls.behaviours.metadata[behaviour](this)
                     metadata.init()
                 },
 
@@ -499,11 +512,15 @@ FileField.behaviours = {
      *
      * As a minimum the following list of properties must be supported:
      *
+     * - alt (get, set)
+     * - contentType (get)
      * - downloadURL (get)
      * - filename (get)
      * - fileLength (get)
-     * - meta (get, set)
+     * - imageMode (get)
+     * - imageSize (get)
      * - previewURL (get)
+     * - type (get)
      *
      */
     'assetProp': {
@@ -516,37 +533,40 @@ FileField.behaviours = {
 
             switch (name) {
 
-            case 'downloadURL':
-                if (action === 'get') {
-                    return inst._asset['url']
+            case 'alt':
+                if (action === 'set') {
+                    inst._asset['user_meta']['alt'] = value
+                    return value
                 }
+                return inst._asset['user_meta']['alt'] || ''
+                break
+
+            case 'contentType':
+                return inst._asset['content_type']
+                break
+
+            case 'downloadURL':
+                return inst._asset['url']
                 break
 
             case 'filename':
-                if (action === 'get') {
-                    return inst._asset['filename']
-                }
+                return inst._asset['filename']
                 break
 
             case 'fileLength':
-                if (action === 'get') {
-                    return inst._asset['core_meta']['length']
-                }
+                return formatBytes(inst._asset['core_meta']['length'])
                 break
 
-            case 'meta':
-                if (action === 'get') {
-                    return Object.assign(inst._asset['user_meta'], {})
-                } else if (action === 'set') {
-                    inst._asset['user_meta'] = value
-                }
+            case 'imageMode':
+                return inst._asset['core_meta']['image']['mode']
+                break
+
+            case 'imageSize':
+                return inst._asset['core_meta']['image']['size'].join(' x ')
                 break
 
             case 'previewURL':
-                if (action === 'get') {
-                    const previewProp = inst._options.preview
-                    return inst._asset['variations'][previewProp].url
-                }
+                return inst._asset['variations'][inst._options.preview].url
                 break
 
             // no default
@@ -577,6 +597,38 @@ FileField.behaviours = {
     },
 
     /**
+     * The `metadata` behaviour is used to create a metadata UI overlay which
+     * allows users to view and modify metadata for the file.
+     */
+    'metadata': {
+
+        /**
+         * Return the default metadata configuration.
+         */
+        'default': (inst) => {
+
+            const getProp = (prop) => {
+                return inst.getAssetProp(prop)
+            }
+
+            // Build the props for the metadata
+            const props = [
+                ['Filename', 'filename', getProp('filename'), true],
+                ['Content type', 'contentType', getProp('contentType'), true],
+                ['File size', 'fileLength', getProp('fileLength'), true]
+            ]
+
+            if (inst._options.fileType) {
+                props.push(['Mode', 'imageMode', getProp('imageMode'), true])
+                props.push(['Size', 'imageSize', getProp('imageSize'), true])
+                props.push(['Alt', 'alt', inst.getAssetProp('alt'), false])
+            }
+
+            return new Metadata(props)
+        }
+    },
+
+    /**
      * The `uploader` behaviour is used to create a file uploader UI component
      * for the field.
      */
@@ -599,7 +651,7 @@ FileField.behaviours = {
         /**
          * Return the default uploader configuration.
          */
-        'default': (inst, asset) => {
+        'default': (inst) => {
             let viewer = null
 
             switch (inst._options.fileType) {

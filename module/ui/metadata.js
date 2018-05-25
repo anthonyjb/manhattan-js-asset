@@ -12,8 +12,17 @@ import {Overlay} from './overlay'
  */
 export class Metadata extends Overlay {
 
-    constructor() {
+    constructor(props) {
         super()
+
+        // A list meta properties to present, the format of the list should be
+        // as follows:
+        //
+        //    [
+        //        ['label', 'name', 'value', readonly (true or false)],
+        //        ...
+        //    ]
+        this._props = props
 
         // Domain for related DOM elements
         this._dom = {
@@ -31,7 +40,7 @@ export class Metadata extends Overlay {
     /**
      * Initialize the metadata interface.
      */
-    init (metadata) {
+    init (props) {
         const cls = this.constructor
 
         // Initialize the overlay
@@ -43,16 +52,11 @@ export class Metadata extends Overlay {
             {'class': cls.css['props']}
         )
 
-        // TODO: Add the metadata properties
-        const prop1 = new MetaProp(this._dom.props, 'size', '[320, 240]')
-        prop1.init()
-
-        const prop2 = new MetaProp(this._dom.props, 'alt', 'A test image')
-        prop2.init()
-
-        // - Add some example ones so we can get the styles in place before
-        //   we add real meta data.
-
+        // Add the metadata properties
+        for (let prop of this._props) {
+            const prop2 = new MetaProp(this._dom.props, ...prop)
+            prop2.init()
+        }
         this.content.appendChild(this._dom.props)
 
         // Create the buttons
@@ -84,7 +88,10 @@ Metadata.css = {
  */
 class MetaProp {
 
-    constructor (container, key, value, readOnly=true) {
+    constructor (container, label, key, value, readOnly=true) {
+
+        // The meta properties label
+        this._label = label
 
         // The meta properties key
         this._key = key
@@ -105,9 +112,6 @@ class MetaProp {
 
         // Store a reference to the container element
         this._dom.container = container
-
-        // Set up event handlers
-        this._handlers = {}
     }
 
     // -- Getters & Setters --
@@ -137,19 +141,27 @@ class MetaProp {
      * Initialize the meta key value.
      */
     init () {
-        const css = this.constructor.css
+        const cls = this.constructor
 
         // Create the meta property
-        this._dom.prop = $.create('div', {'class': css['prop']})
+        this._dom.prop = $.create('div', {'class': cls.css['prop']})
 
         // Key
-        this._dom.key = $.create('div', {'class': css['key']})
-        this._dom.key.textContent = this.key
-        this.prop.appendChild(this._dom.key)
+        this._dom.label = $.create('div', {'class': cls.css['label']})
+        this._dom.label.textContent = this._label
+        this.prop.appendChild(this._dom.label)
 
         // Value
-        this._dom.value = $.create('input', {'class': css['value']})
+        this._dom.value = $.create('input', {'class': cls.css['value']})
         this._dom.value.value = this.value
+
+        if(this._readOnly) {
+
+            // Flag the field as read-only
+            this.prop.classList.add(cls.css['readOnly'])
+            this._dom.value.readOnly = true
+        }
+
         this.prop.appendChild(this._dom.value)
 
         // Add the property to the container
@@ -164,9 +176,9 @@ class MetaProp {
 MetaProp.css = {
 
     /**
-     * Applied to the key.
+     * Applied to the label.
      */
-    'key': 'mh-meta-prop__key',
+    'label': 'mh-meta-prop__label',
 
     /**
      * Applied to the meta property.
@@ -174,7 +186,12 @@ MetaProp.css = {
     'prop': 'mh-meta-prop',
 
     /**
+     * Applied to the meta property if its value is read-only.
+     */
+    'readOnly': 'mh-meta-prop--read-only',
+
+    /**
      * Applied to the value.
      */
-    'value': 'mh-meta-prop__value',
+    'value': 'mh-meta-prop__value'
 }

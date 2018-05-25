@@ -23,16 +23,12 @@ export class Overlay {
         this._handlers = {
 
             'cancel': (event) => {
-                // Make sure the event was triggered by clicking the close
-                // button or the escape key being pressed.
-                if (event.currentTarget != this._dom.close) {
-                    if (event.keyCode === 27) {
-                        return false
-                    }
+                // Make sure the event was triggered by pressing the escape
+                // key being pressed.
+                if (event.keyCode === 27) {
+                    event.preventDefault()
+                    $.dispatch(this.overlay, 'cancel')
                 }
-
-                event.preventDefault()
-                $.dispatch(this.overlay, 'cancel')
             }
 
         }
@@ -105,11 +101,6 @@ export class Overlay {
             'div',
             {'class': [Overlay.css['overlay'], css].join(' ')}
         )
-
-        // Create the close element
-        this._dom.close = $.create('div', {'class': Overlay.css['close']})
-        this.overlay.appendChild(this._dom.close)
-
         // Create a component for mounting content in
         this._dom.content = $.create('div', {'class': Overlay.css['content']})
         this.overlay.appendChild(this._dom.content)
@@ -121,9 +112,11 @@ export class Overlay {
         // Add the overlay to the page
         document.body.appendChild(this.overlay)
 
+        // Prevent the page from scrolling whilst the overlay is open
+        document.body.style.overflow = 'hidden'
+
         // Set-up event handlers
         $.listen(document, {'keydown': this._handlers.cancel})
-        $.listen(this._dom.close, {'click': this._handlers.cancel})
     }
 
     /**
