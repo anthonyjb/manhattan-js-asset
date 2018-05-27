@@ -4,7 +4,7 @@ import * as $ from 'manhattan-essentials'
 // -- Class definition --
 
 /**
- * File acceptor UI component for form fields. 
+ * File acceptor UI component for form fields.
  *
  * Acceptors allow users to select a file from the file system or (optionally)
  * to drag a file on to the acceptor.
@@ -13,20 +13,20 @@ import * as $ from 'manhattan-essentials'
 export class Acceptor {
 
     constructor(
-        container, 
+        container,
         name,
-        label='Select a file...', 
-        dropLabel='Drop file here', 
+        label='Select a file...',
+        dropLabel='Drop file here',
         allowDrop=false,
         accept='',
         multiple=false
     ) {
 
-        // The acceptor will create an input field used to capture/accept 
-        // a file the user wants to upload. The input field requires a name, 
-        // typically this will be a combination of the associated hidden asset 
+        // The acceptor will create an input field used to capture/accept
+        // a file the user wants to upload. The input field requires a name,
+        // typically this will be a combination of the associated hidden asset
         // input field and a string such as `__acceptor`.
-        this._name = name  
+        this._name = name
 
         // The label displayed in the acceptor in its default state
         this._label = label
@@ -61,6 +61,9 @@ export class Acceptor {
         this._handlers = {
 
             'acceptDrop': (event) => {
+                event.preventDefault()
+                event.stopPropagation()
+
                 let {files} = event.dataTransfer
 
                 // If the acceptor doesn't support accepting multiple files
@@ -99,12 +102,14 @@ export class Acceptor {
             },
 
             'dragEnd': (event) => {
-            
-                // Delay removing the file inbound CSS class for a short 
-                // period to allow the dragover event to counter act it if 
+                event.preventDefault()
+                event.stopPropagation()
+
+                // Delay removing the file inbound CSS class for a short
+                // period to allow the dragover event to counter act it if
                 // applicable.
                 this.__dragEndTimout = setTimeout(
-                    () => { 
+                    () => {
                         this.acceptor
                             .classList
                             .remove(this.constructor.css['fileInbound'])
@@ -114,19 +119,16 @@ export class Acceptor {
             },
 
             'dragStart': (event) => {
+                event.preventDefault()
+                event.stopPropagation()
+
                 // Clear any timeout set to remove the file inbound CSS class
                 clearTimeout(this.__dragEndTimout)
 
                 this.acceptor
                     .classList
                     .add(this.constructor.css['fileInbound'])
-            },
-
-            'preventDefault': (event) => {
-                event.preventDefault()
-                event.stopPropagation()
             }
-
         }
     }
 
@@ -146,8 +148,6 @@ export class Acceptor {
         $.ignore(
             document,
             {
-                'dragenter dragover dragleave drop':
-                    this._handlers.preventDefault,
                 'dragenter dragover': this._handlers.dragStart,
                 'dragleave drop': this._handlers.dragEnd
             }
@@ -173,7 +173,7 @@ export class Acceptor {
 
         // Create the acceptor element
         this._dom.acceptor = $.create('div', {'class': cls.css['acceptor']})
-        
+
         // Create the file input element for the acceptor
         this._dom.input = $.create(
             'input',
@@ -201,10 +201,10 @@ export class Acceptor {
         this.acceptor.appendChild(this._dom.faceplate)
 
         if (this._allowDrop) {
-            
+
             // Create the drop zone for the acceptor
             this._dom.dropZone = $.create(
-                'div', 
+                'div',
                 {'class': cls.css['dropZone']}
             )
             this._dom.dropZone.innerHTML = this._dropLabel
