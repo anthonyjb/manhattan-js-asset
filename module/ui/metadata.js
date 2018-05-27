@@ -7,8 +7,8 @@ import {Overlay} from './overlay'
 
 
 /**
- * The metadata UI component provides an interface for users to view and
- * manage a files meta data.
+ * The metadata UI component provides an overlay for users to view and edit
+ * an assets metadata.
  */
 export class Metadata extends Overlay {
 
@@ -24,21 +24,41 @@ export class Metadata extends Overlay {
         //    ]
         this._props = props
 
+        // A list of the meta prop components
+        this._propComponents = []
+
         // Domain for related DOM elements
         this._dom = {
             'props': null
         }
     }
 
-    /**
-     * Remove the metadata interface.
-     */
-    destroy() {
-
+    get props() {
+        // Build an object of editable property values
+        const props = {}
+        for (let propComponent of this._propComponents) {
+            if (!propComponent.readOnly) {
+                props[propComponent.key] = propComponent.value
+            }
+        }
+        return props
     }
 
     /**
-     * Initialize the metadata interface.
+     * Remove the metadata overlay.
+     */
+    destroy() {
+        // Remove the props element
+        if (this.props != null) {
+            this.content.removeChild(this._dom.props)
+            this._dom.props = null
+        }
+
+        super.destroy()
+    }
+
+    /**
+     * Initialize the metadata overlay.
      */
     init (props) {
         const cls = this.constructor
@@ -53,9 +73,11 @@ export class Metadata extends Overlay {
         )
 
         // Add the metadata properties
+        this._propComponents = []
         for (let prop of this._props) {
-            const prop2 = new MetaProp(this._dom.props, ...prop)
-            prop2.init()
+            const propComponent = new MetaProp(this._dom.props, ...prop)
+            this._propComponents.push(propComponent)
+            propComponent.init()
         }
         this.content.appendChild(this._dom.props)
 
@@ -96,8 +118,8 @@ class MetaProp {
         // The meta properties key
         this._key = key
 
-        // The meta properties value
-        this._value = value
+        // The meta properties initial value
+        this._initialValue = value
 
         // A flag indicating if the value is read-only or can be modified.
         this._readOnly = readOnly
@@ -121,20 +143,28 @@ class MetaProp {
     }
 
     get value() {
-        return this._value
+        return this._dom.value.value
     }
 
     get prop() {
         return this._dom.prop
     }
 
+    get readOnly() {
+        return this._readOnly
+    }
+
     // -- Public methods --
 
     /**
-     * TODO: Remove the meta key value.
+     * Remove the meta prop.
      */
     destroy() {
-
+        // Remove the prop element
+        if (this.prop != null) {
+            this._dom.container.removeChild(this.prop)
+            this._dom.prop = null
+        }
     }
 
     /**
@@ -153,7 +183,7 @@ class MetaProp {
 
         // Value
         this._dom.value = $.create('input', {'class': cls.css['value']})
-        this._dom.value.value = this.value
+        this._dom.value.value = this._initialValue
 
         if(this._readOnly) {
 

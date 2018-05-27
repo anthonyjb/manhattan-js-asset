@@ -204,7 +204,7 @@ export class FileField {
         this.input.value = ''
 
         // Set up the acceptor
-        let behaviour = this._behaviours.acceptor
+        const behaviour = this._behaviours.acceptor
         this._acceptor = cls.behaviours.acceptor[behaviour](this)
         this._acceptor.init()
 
@@ -281,7 +281,7 @@ export class FileField {
         this.input.value = JSON.stringify(asset)
 
         // Set up the viewer
-        let behaviour = this._behaviours.viewer
+        const behaviour = this._behaviours.viewer
         this._viewer = cls.behaviours.viewer[behaviour](this)
         this._viewer.init()
 
@@ -303,9 +303,37 @@ export class FileField {
                 },
 
                 'metadata': () => {
-                    let behaviour = this._behaviours.metadata
+                    const behaviour = this._behaviours.metadata
                     const metadata = cls.behaviours.metadata[behaviour](this)
                     metadata.init()
+                    metadata.show()
+
+                    $.listen(
+                        metadata.overlay,
+                        {
+                            'okay': () => {
+                                // Apply any metadata changes
+                                const behaviour = this._behaviours.assetProp
+                                const assetProp = cls.behaviours
+                                    .assetProp[behaviour]
+
+                                const props = metadata.props
+
+                                for (let key in props) {
+                                    assetProp(this, 'set',key, props[key])
+                                }
+
+                                // Hide the medata overlay
+                                metadata.hide()
+                            },
+                            'cancel': () => {
+                                metadata.hide()
+                            },
+                            'hidden': () => {
+                                metadata.destroy()
+                            }
+                        }
+                    )
                 },
 
                 'remove': () => {

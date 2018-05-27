@@ -62,7 +62,6 @@ export class Acceptor {
 
             'acceptDrop': (event) => {
                 event.preventDefault()
-                event.stopPropagation()
 
                 let {files} = event.dataTransfer
 
@@ -103,7 +102,6 @@ export class Acceptor {
 
             'dragEnd': (event) => {
                 event.preventDefault()
-                event.stopPropagation()
 
                 // Delay removing the file inbound CSS class for a short
                 // period to allow the dragover event to counter act it if
@@ -120,7 +118,6 @@ export class Acceptor {
 
             'dragStart': (event) => {
                 event.preventDefault()
-                event.stopPropagation()
 
                 // Clear any timeout set to remove the file inbound CSS class
                 clearTimeout(this.__dragEndTimout)

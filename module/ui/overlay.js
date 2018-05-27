@@ -9,7 +9,18 @@ import * as $ from 'manhattan-essentials'
 
 export class Overlay {
 
-    constructor() {
+    constructor(transitionDuration=250) {
+
+        // The duration between transitioning the overlay from a hidden to
+        // visible state.
+        this._transitionDuration = transitionDuration
+
+        // Flag indicating if the overlay is transitioning between hidden and
+        // visible state.
+        this._transitioning = false
+
+        // Flag indicating if the overlay is visible
+        this._visible = false
 
         // Domain for related DOM elements
         this._dom = {
@@ -48,6 +59,10 @@ export class Overlay {
         return this._dom.overlay
     }
 
+    get visible() {
+        return this._visible
+    }
+
     // -- Public methods --
 
     /**
@@ -79,10 +94,27 @@ export class Overlay {
     }
 
     /**
-     * @@ Remove the overlay.
+     * Remove the overlay.
      */
     destroy () {
+        // Remove event listeners
+        $.ignore(document, {'keydown': this._handlers.cancel})
 
+        // Allow the body to scroll again
+        document.body.style.overflow = null
+
+        // Remove the overlay
+        if (this.overlay) {
+            document.body.removeChild(this.overlay)
+        }
+
+        // Clear DOM references
+        this._dom = {
+            'buttons': null,
+            'close': null,
+            'content': null,
+            'overlay': null
+        }
     }
 
     /**
@@ -90,12 +122,41 @@ export class Overlay {
      */
     hide() {
 
+        // Ignore the request if the overlay is transitioning or is already
+        // hidden.
+        if (this._transitioning || !this.visible) {
+            return
+        }
+
+        // Remove the visible modifier
+        this.overlay.classList.remove(Overlay.css['visible'])
+
+        // Flag that the overlay is transitioning to the new state
+        this._transitioning = true
+
+        setTimeout(
+            () => {
+                // Once the transition is complete flag that the overlay is no
+                // longer transitioning and that the overlay is now hidden.
+                this._transitioning = false
+                this._visible = true
+
+                // Dispatch a hidden event against the overlay
+                $.dispatch(this.overlay, 'hidden')
+            },
+            this._transitionDuration
+        )
+
     }
 
     /**
      * Initialize the overlay.
      */
     init(css) {
+        // Reset the transitioning and visible states
+        this._transitioning = false
+        this._visible = false
+
         // Create the overlay element
         this._dom.overlay = $.create(
             'div',
@@ -117,6 +178,13 @@ export class Overlay {
 
         // Set-up event handlers
         $.listen(document, {'keydown': this._handlers.cancel})
+
+        // HACK: Force the browser to recognize the overlay element (allows
+        // transitions to run against the overlay element if shown straight
+        // after init).
+        //
+        // ~ Anthony Blackshaw, <ant@getme.co.uk>, 27 May 2018
+        window.getComputedStyle(this.overlay).opacity
     }
 
     /**
@@ -124,6 +192,31 @@ export class Overlay {
      */
     show() {
 
+        // Ignore the request if the overlay is transitioning or is already
+        // visible.
+        if (this._transitioning || this.visible) {
+            return
+        }
+
+        // Apply the visible modifier
+        this.overlay.classList.add(Overlay.css['visible'])
+
+        // Flag that the overlay is transitioning to the new state
+        this._transitioning = true
+
+        setTimeout(
+            () => {
+                // Once the transition is complete flag that the overlay is no
+                // longer transitioning and that the overlay is now visible.
+                this._transitioning = false
+                this._visible = true
+
+                // Dispatch a visible event against the overlay
+                $.dispatch(this.overlay, 'visible')
+
+            },
+            this._transitionDuration
+        )
     }
 
 }
@@ -166,6 +259,10 @@ Overlay.css = {
     /**
      * Applied to the rotate button.
      */
-    'rotate': 'mh-overlay__rotate'
+    'rotate': 'mh-overlay__rotate',
 
+    /**
+     * Applied to the overlay when visible.
+     */
+    'visible': 'mh-overlay--visible'
 }
