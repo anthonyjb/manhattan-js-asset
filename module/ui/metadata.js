@@ -28,9 +28,7 @@ export class Metadata extends Overlay {
         this._propComponents = []
 
         // Domain for related DOM elements
-        this._dom = {
-            'props': null
-        }
+        this._dom['props'] = null
     }
 
     get props() {
@@ -60,17 +58,14 @@ export class Metadata extends Overlay {
     /**
      * Initialize the metadata overlay.
      */
-    init (props) {
+    init () {
         const cls = this.constructor
 
         // Initialize the overlay
         super.init(cls.css['metadata'])
 
         // Create a meta properties table to display the metadata
-        this._dom.props = $.create(
-            'div',
-            {'class': cls.css['props']}
-        )
+        this._dom.props = $.create('div', {'class': cls.css['props']})
 
         // Add the metadata properties
         this._propComponents = []

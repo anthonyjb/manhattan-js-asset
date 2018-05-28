@@ -145,6 +145,32 @@
     white-space: nowrap;
     transition: opacity 0.2s linear; }
 
+.mh-image-editor__table {
+  bottom: 0;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0; }
+
+.mh-image-editor__image {
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  border-radius: 3px;
+  filter: saturate(0.5);
+  position: absolute;
+  transition: all 0.33s ease-in-out; }
+  .mh-image-editor__image::after {
+    background: rgba(30, 39, 46, 0.75);
+    border-radius: 3px;
+    bottom: 0;
+    content: '';
+    display: block;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0; }
+
 .mh-metadata__props {
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 3px;

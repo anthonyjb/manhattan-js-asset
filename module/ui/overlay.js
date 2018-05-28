@@ -32,7 +32,6 @@ export class Overlay {
 
         // Set up event handlers
         this._handlers = {
-
             'cancel': (event) => {
                 // Make sure the event was triggered by pressing the escape
                 // key being pressed.
@@ -41,7 +40,6 @@ export class Overlay {
                     $.dispatch(this.overlay, 'cancel')
                 }
             }
-
         }
     }
 
@@ -109,12 +107,10 @@ export class Overlay {
         }
 
         // Clear DOM references
-        this._dom = {
-            'buttons': null,
-            'close': null,
-            'content': null,
-            'overlay': null
-        }
+        this._dom.buttons = null
+        this._dom.close = null
+        this._dom.content = null
+        this._dom.overlay = null
     }
 
     /**

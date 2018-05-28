@@ -2,6 +2,7 @@ import * as $ from 'manhattan-essentials'
 
 import {Acceptor} from './ui/acceptor.js'
 import {ErrorMessage} from './ui/error-message.js'
+import {ImageEditor} from './ui/image-editor.js'
 import {Metadata} from './ui/metadata.js'
 import {Uploader} from './ui/uploader.js'
 import {FileViewer, ImageViewer} from './ui/viewers.js'
@@ -265,6 +266,12 @@ export class FileField {
         } else {
             this.clear()
         }
+
+        if (this._options.fileType === 'image') {
+            const imageEditor = new ImageEditor('../images/example.jpg')
+            imageEditor.init()
+            imageEditor.show()
+        }
     }
 
     /**
@@ -300,6 +307,24 @@ export class FileField {
                         }
                     )
                     a.click()
+                },
+
+                'edit': () => {
+                    const imageEditor = new ImageEditor()
+                    imageEditor.init()
+                    imageEditor.show()
+
+                    $.listen(
+                        imageEditor.overlay,
+                        {
+                            'cancel': () => {
+                                imageEditor.hide()
+                            },
+                            'hidden': () => {
+                                imageEditor.destroy()
+                            }
+                        }
+                    )
                 },
 
                 'metadata': () => {
