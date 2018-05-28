@@ -93,7 +93,21 @@ export class ImageEditor extends Overlay {
 
         // Update the orientation
         this._orientation -= 90
+
+        // Wrap around if the orientation is less than 0
         if (this._orientation < 0) {
+
+            // HACK: Force the image to be orientated to 360 degrees without
+            // transitioning to keep the transition from 0 to 270 from
+            // spinning the image in the long direction.
+            //
+            // ~ Anthony Blackshaw, <ant@getme.co.uk>, 27 May 2018
+
+            this._dom.image.style.transition = 'none'
+            this._dom.image.style.transform = 'rotate(360deg)'
+            this._dom.image.getBoundingClientRect()
+            this._dom.image.style.transition = null
+
             this._orientation = 270
         }
 

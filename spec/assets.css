@@ -159,7 +159,7 @@
   border-radius: 3px;
   filter: saturate(0.5);
   position: absolute;
-  transition: all 0.33s ease-in-out; }
+  transition: all 0.5s cubic-bezier(0.87, -0.41, 0.19, 1.44); }
   .mh-image-editor__image::after {
     background: rgba(30, 39, 46, 0.75);
     border-radius: 3px;

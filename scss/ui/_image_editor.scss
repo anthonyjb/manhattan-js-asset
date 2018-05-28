@@ -16,7 +16,7 @@
         filter: saturate(0.5);
         position: absolute;
 
-        transition: all 0.33s ease-in-out;
+        transition: all 0.5s cubic-bezier(.87,-.41,.19,1.44);
 
         &::after {
             background: rgba(30, 39, 46, 0.75);
