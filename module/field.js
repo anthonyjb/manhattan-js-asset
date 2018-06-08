@@ -268,7 +268,7 @@ export class FileField {
         }
 
         if (this._options.fileType === 'image') {
-            const imageEditor = new ImageEditor('../images/example.jpg')
+            const imageEditor = new ImageEditor('../images/barnburner.png')
             imageEditor.init()
             imageEditor.show()
         }

@@ -35,7 +35,7 @@ export class Overlay {
             'cancel': (event) => {
                 // Make sure the event was triggered by pressing the escape
                 // key being pressed.
-                if (event.keyCode === 27) {
+                if (event.key === 'Escape') {
                     event.preventDefault()
                     $.dispatch(this.overlay, 'cancel')
                 }
