@@ -268,7 +268,7 @@ export class FileField {
         }
 
         if (this._options.fileType === 'image') {
-            const imageEditor = new ImageEditor('../images/barnburner.png')
+            const imageEditor = new ImageEditor('../images/example.jpg')
             imageEditor.init()
             imageEditor.show()
         }
@@ -328,8 +328,9 @@ export class FileField {
                 },
 
                 'metadata': () => {
-                    const behaviour = this._behaviours.metadata
-                    const metadata = cls.behaviours.metadata[behaviour](this)
+                    const metaBehaviour = this._behaviours.metadata
+                    const metadata = cls.behaviours
+                        .metadata[metaBehaviour](this)
                     metadata.init()
                     metadata.show()
 
@@ -338,14 +339,15 @@ export class FileField {
                         {
                             'okay': () => {
                                 // Apply any metadata changes
-                                const behaviour = this._behaviours.assetProp
+                                const assetBehaviour
+                                    = this._behaviours.assetProp
                                 const assetProp = cls.behaviours
-                                    .assetProp[behaviour]
+                                    .assetProp[assetBehaviour]
 
-                                const props = metadata.props
+                                const {props} = metadata
 
                                 for (let key in props) {
-                                    assetProp(this, 'set',key, props[key])
+                                    assetProp(this, 'set', key, props[key])
                                 }
 
                                 // Hide the medata overlay
@@ -592,35 +594,27 @@ FileField.behaviours = {
                     return value
                 }
                 return inst._asset['user_meta']['alt'] || ''
-                break
 
             case 'contentType':
                 return inst._asset['content_type']
-                break
 
             case 'downloadURL':
                 return inst._asset['url']
-                break
 
             case 'filename':
                 return inst._asset['filename']
-                break
 
             case 'fileLength':
                 return formatBytes(inst._asset['core_meta']['length'])
-                break
 
             case 'imageMode':
                 return inst._asset['core_meta']['image']['mode']
-                break
 
             case 'imageSize':
                 return inst._asset['core_meta']['image']['size'].join(' x ')
-                break
 
             case 'previewURL':
                 return inst._asset['variations'][inst._options.preview].url
-                break
 
             // no default
 

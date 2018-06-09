@@ -5,100 +5,6 @@ import {Overlay} from './overlay'
 
 // -- Class definition --
 
-
-/**
- * The metadata UI component provides an overlay for users to view and edit
- * an assets metadata.
- */
-export class Metadata extends Overlay {
-
-    constructor(props) {
-        super()
-
-        // A list meta properties to present, the format of the list should be
-        // as follows:
-        //
-        //    [
-        //        ['label', 'name', 'value', readonly (true or false)],
-        //        ...
-        //    ]
-        this._props = props
-
-        // A list of the meta prop components
-        this._propComponents = []
-
-        // Domain for related DOM elements
-        this._dom['props'] = null
-    }
-
-    get props() {
-        // Build an object of editable property values
-        const props = {}
-        for (let propComponent of this._propComponents) {
-            if (!propComponent.readOnly) {
-                props[propComponent.key] = propComponent.value
-            }
-        }
-        return props
-    }
-
-    /**
-     * Remove the metadata overlay.
-     */
-    destroy() {
-        // Remove the props element
-        if (this.props != null) {
-            this.content.removeChild(this._dom.props)
-            this._dom.props = null
-        }
-
-        super.destroy()
-    }
-
-    /**
-     * Initialize the metadata overlay.
-     */
-    init () {
-        const cls = this.constructor
-
-        // Initialize the overlay
-        super.init(cls.css['metadata'])
-
-        // Create a meta properties table to display the metadata
-        this._dom.props = $.create('div', {'class': cls.css['props']})
-
-        // Add the metadata properties
-        this._propComponents = []
-        for (let prop of this._props) {
-            const propComponent = new MetaProp(this._dom.props, ...prop)
-            this._propComponents.push(propComponent)
-            propComponent.init()
-        }
-        this.content.appendChild(this._dom.props)
-
-        // Create the buttons
-        this.addButton('okay', 'okay')
-        this.addButton('cancel', 'cancel')
-    }
-}
-
-
-// -- CSS classes --
-
-Metadata.css = {
-
-    /**
-     * Applied to the metadata overlay.
-     */
-    'metadata': 'mh-metadata',
-
-    /**
-     * Applied to the metadata properties container.
-     */
-    'props': 'mh-metadata__props',
-}
-
-
 /**
  * The meta property component display a key/value pair of metadata and
  * optionally allows the value to be modified.
@@ -156,7 +62,7 @@ class MetaProp {
      */
     destroy() {
         // Remove the prop element
-        if (this.prop != null) {
+        if (this.prop !== null) {
             this._dom.container.removeChild(this.prop)
             this._dom.prop = null
         }
@@ -219,4 +125,97 @@ MetaProp.css = {
      * Applied to the value.
      */
     'value': 'mh-meta-prop__value'
+}
+
+
+/**
+ * The metadata UI component provides an overlay for users to view and edit
+ * an assets metadata.
+ */
+export class Metadata extends Overlay {
+
+    constructor(props) {
+        super()
+
+        // A list meta properties to present, the format of the list should be
+        // as follows:
+        //
+        //    [
+        //        ['label', 'name', 'value', readonly (true or false)],
+        //        ...
+        //    ]
+        this._props = props
+
+        // A list of the meta prop components
+        this._propComponents = []
+
+        // Domain for related DOM elements
+        this._dom['props'] = null
+    }
+
+    get props() {
+        // Build an object of editable property values
+        const props = {}
+        for (let propComponent of this._propComponents) {
+            if (!propComponent.readOnly) {
+                props[propComponent.key] = propComponent.value
+            }
+        }
+        return props
+    }
+
+    /**
+     * Remove the metadata overlay.
+     */
+    destroy() {
+        // Remove the props element
+        if (this.props !== null) {
+            this.content.removeChild(this._dom.props)
+            this._dom.props = null
+        }
+
+        super.destroy()
+    }
+
+    /**
+     * Initialize the metadata overlay.
+     */
+    init () {
+        const cls = this.constructor
+
+        // Initialize the overlay
+        super.init(cls.css['metadata'])
+
+        // Create a meta properties table to display the metadata
+        this._dom.props = $.create('div', {'class': cls.css['props']})
+
+        // Add the metadata properties
+        this._propComponents = []
+        for (let prop of this._props) {
+            const propComponent = new MetaProp(this._dom.props, ...prop)
+            this._propComponents.push(propComponent)
+            propComponent.init()
+        }
+        this.content.appendChild(this._dom.props)
+
+        // Create the buttons
+        this.addButton('okay', 'okay')
+        this.addButton('cancel', 'cancel')
+    }
+}
+
+
+// -- CSS classes --
+
+Metadata.css = {
+
+    /**
+     * Applied to the metadata overlay.
+     */
+    'metadata': 'mh-metadata',
+
+    /**
+     * Applied to the metadata properties container.
+     */
+    'props': 'mh-metadata__props'
 }

@@ -106,80 +106,6 @@
   100% {
     background-position: center 0px; } }
 
-.mh-file-error {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  z-index: 3; }
-  .mh-file-error:hover .mh-file-error__message {
-    opacity: 1; }
-  .mh-file-error:hover::before {
-    box-shadow: 0 0 0 1px #fff; }
-  .mh-file-error::before {
-    background: #eb4d4b url("../images/cancel.svg") center center no-repeat;
-    background-size: 16px;
-    border-radius: 50%;
-    content: '';
-    cursor: help;
-    display: block;
-    height: 24px;
-    right: 12px;
-    position: absolute;
-    top: 12px;
-    width: 24px;
-    z-index: 1; }
-  .mh-file-error__message {
-    background: #eb4d4b;
-    left: 0;
-    top: 0;
-    height: 48px;
-    line-height: 48px;
-    opacity: 0;
-    overflow: hidden;
-    padding: 0 40px 0 8px;
-    pointer-events: none;
-    position: absolute;
-    right: 0px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    transition: opacity 0.2s linear; }
-
-.mh-image-editor__table {
-  bottom: 0;
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: 0; }
-
-.mh-image-editor__image {
-  border-radius: 4px;
-  overflow: hidden;
-  position: absolute;
-  transition: all 0.5s cubic-bezier(0.87, -0.41, 0.19, 1.44); }
-
-.mh-image-editor__image-mask {
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-size: contain;
-  bottom: -3px;
-  content: '';
-  display: block;
-  filter: blur(2px) contrast(75%) saturate(75%);
-  left: -3px;
-  position: absolute;
-  right: -3px;
-  top: -3px; }
-  .mh-image-editor__image-mask::after {
-    background: rgba(244, 250, 255, 0.5);
-    bottom: 0;
-    content: '';
-    display: block;
-    left: 0;
-    position: absolute;
-    right: 0;
-    top: 0; }
-
 .mh-crop-region {
   height: 500px;
   left: 0;
@@ -281,6 +207,82 @@
     background-position: 0px 0px;
     background-repeat: no-repeat;
     position: absolute; }
+
+.mh-file-error {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 3; }
+  .mh-file-error:hover .mh-file-error__message {
+    opacity: 1; }
+  .mh-file-error:hover::before {
+    box-shadow: 0 0 0 1px #fff; }
+  .mh-file-error::before {
+    background: #eb4d4b url("../images/cancel.svg") center center no-repeat;
+    background-size: 16px;
+    border-radius: 50%;
+    content: '';
+    cursor: help;
+    display: block;
+    height: 24px;
+    right: 12px;
+    position: absolute;
+    top: 12px;
+    width: 24px;
+    z-index: 1; }
+  .mh-file-error__message {
+    background: #eb4d4b;
+    left: 0;
+    top: 0;
+    height: 48px;
+    line-height: 48px;
+    opacity: 0;
+    overflow: hidden;
+    padding: 0 40px 0 8px;
+    pointer-events: none;
+    position: absolute;
+    right: 0px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: opacity 0.2s linear; }
+
+.mh-image-editor__table {
+  bottom: 0;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0; }
+  .mh-image-editor__table--no-transitions * {
+    transition: none !important; }
+
+.mh-image-editor__image {
+  border-radius: 4px;
+  overflow: hidden;
+  position: absolute;
+  transition: all 0.5s cubic-bezier(0.87, -0.41, 0.19, 1.44); }
+
+.mh-image-editor__image-mask {
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  bottom: -3px;
+  content: '';
+  display: block;
+  filter: blur(2px) contrast(75%) saturate(75%);
+  left: -3px;
+  position: absolute;
+  right: -3px;
+  top: -3px; }
+  .mh-image-editor__image-mask::after {
+    background: rgba(244, 250, 255, 0.5);
+    bottom: 0;
+    content: '';
+    display: block;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0; }
 
 .mh-metadata__props {
   border: 1px solid rgba(255, 255, 255, 0.25);

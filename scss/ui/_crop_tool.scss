@@ -1,0 +1,157 @@
+
+.mh-crop-tool {
+    height: 500px;
+    left: 0;
+    opacity: 1;
+    position: absolute;
+    top: 0;
+    width: 500px;
+    z-index: 10;
+
+    transition: opacity 0.5s ease-out;
+
+    &--hidden {
+        opacity: 0;
+    }
+
+    &::after,
+    &::before {
+        content: '';
+        opacity: 0;
+        pointer-events: none;
+        position: absolute;
+        z-index: 2;
+
+        transition: opacity 0.5s linear;
+    }
+
+    &::after {
+        box-shadow:
+            inset 0 -1px 0 0 rgba(255, 255, 255, 0.35),
+            inset 0 1px 0 0 rgba(255, 255, 255, 0.35);
+        top: 33.333%;
+        height: 33.333%;
+        left: 1px;
+        right: 1px;
+    }
+
+    &::before {
+        bottom: 1px;
+        box-shadow:
+            inset -1px 0 0 0 rgba(255, 255, 255, 0.35),
+            inset 1px 0 0 0 rgba(255, 255, 255, 0.35);
+        left: 33.333%;
+        top: 1px;
+        width: 33.333%;
+    }
+
+    &:hover,
+    &__dragging,
+    &__resizing {
+        &::after,
+        &::before {
+            opacity: 1;
+        }
+    }
+
+    &__control {
+        position: absolute;
+        z-index: 2;
+
+        &--c {
+            bottom: 8px;
+            cursor: move;
+            left: 8px;
+            right: 8px;
+            top: 8px;
+        }
+
+        &:not(&--c) {
+            background: #f8f8f8;
+            border-radius: 8px;
+            box-shadow:
+                inset 0 1px 0 0 #fff,
+                0 1px 1px rgba(0,0,0,.15);
+        }
+
+        &--n,
+        &--s {
+            cursor: ns-resize;
+            height: 16px;
+            margin: -8px 0 0 -16px;
+            width: 32px;
+        }
+
+        &--e,
+        &--w {
+            cursor: ew-resize;
+            height: 32px;
+            margin: -16px 0 0 -8px;
+            width: 16px;
+        }
+
+        &--ne,
+        &--se,
+        &--sw,
+        &--nw {
+            height: 16px;
+            margin: -8px 0 0 -8px;
+            width: 16px;
+        }
+
+        &--n {
+            top: 0;
+            left: 50%;
+        }
+        &--ne {
+            cursor: nesw-resize;
+            left: 100%;
+            top: 0;
+        }
+        &--e {
+            left: 100%;
+            top: 50%;
+        }
+        &--se {
+            cursor: nwse-resize;
+            left: 100%;
+            top: 100%;
+        }
+        &--s {
+            left: 50%;
+            top: 100%;
+        }
+        &--sw {
+            left: 0;
+            cursor: nesw-resize;
+            top: 100%;
+        }
+        &--w {
+            left: 0;
+            top: 50%;
+        }
+        &--nw {
+            cursor: nwse-resize;
+            left: 0;
+            top: 0;
+        }
+    }
+
+    &__frame {
+        border: 1px solid rgba(255, 255, 255, 0.66);
+        bottom: 0;
+        left: 0;
+        overflow: hidden;
+        position: absolute;
+        right: 0;
+        top: 0;
+        z-index: 1;
+    }
+
+    &__image {
+        background: red;
+        background-position: 0px 0px;
+        background-repeat: no-repeat;
+        position: absolute;
+    }
+}
