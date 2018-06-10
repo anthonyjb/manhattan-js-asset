@@ -1,6 +1,6 @@
 import * as $ from 'manhattan-essentials'
 
-import {CropTool} from './crop-tool'
+import {CropTool, orient} from './crop-tool'
 import {Overlay} from './overlay'
 
 
@@ -26,8 +26,8 @@ export class ImageEditor extends Overlay {
         // The size of the image
         this._imageSize = null
 
-        // The crop region component
-        this._cropRegion = null
+        // The crop tool component
+        this._cropTool = null
 
         // The orientation of the image (0, 90, 180, 270)
         this._orientation = 0
@@ -103,12 +103,24 @@ export class ImageEditor extends Overlay {
                     // Calculate the aspect ratio
                     this._imageSize = [img.naturalWidth, img.naturalHeight]
 
+                    // Create the crop tool for the editor
+                    this._cropTool = new CropTool(
+                        this._dom.table,
+                        this._imageURL,
+                        this._aspectRatio
+                    )
+                    this._cropTool.init()
+
                     // Fit the image within the table
                     this._fit(true)
 
                     // Set the image's background image
                     this._dom.mask.style
                         .backgroundImage = `url(${this._imageURL})`
+
+                    // Reset the crop tool
+                    this._cropTool.reset()
+                    this._cropTool.visible = true
                 }
             }
         )
@@ -123,6 +135,8 @@ export class ImageEditor extends Overlay {
      * Rotate the image one turn anti-clockwise.
      */
     rotate() {
+        // Hide the crop tool while we rotate
+        this._cropTool.visible = false
 
         // Update the orientation
         this._orientation -= 90
@@ -146,6 +160,10 @@ export class ImageEditor extends Overlay {
 
         // Fit the image at it's new orientation
         this._fit()
+
+        // Reset the crop tool to match the new orientation
+        this._cropTool.reset()
+        this._cropTool.visible = true
     }
 
     // -- Private methods --
@@ -174,23 +192,32 @@ export class ImageEditor extends Overlay {
         const widthScale = tableSize[0] / this._imageSize[0]
         const heightScale = tableSize[1] / this._imageSize[1]
         const ratio = Math.min(widthScale, heightScale)
-
-        const width = parseInt(ratio * this._imageSize[0], 10)
-        const height = parseInt(ratio * this._imageSize[1], 10)
-
-        // Calculate the position of the image to be centered within the
-        // table.
-        const left = parseInt((tableRect.width - width) / 2.0, 10)
-        const top = parseInt((tableRect.height - height) / 2.0, 10)
+        const width = ratio * this._imageSize[0]
+        const height = ratio * this._imageSize[1]
 
         // Update the image to fit
-        this._dom.image.style.width = `${width}px`
-        this._dom.image.style.height = `${height}px`
-        this._dom.image.style.left = `${left}px`
-        this._dom.image.style.top = `${top}px`
+        this._dom.image.style.width = `${Math.ceil(width)}px`
+        this._dom.image.style.height = `${Math.ceil(height)}px`
+        this._dom.image.style.marginLeft = `-${Math.ceil(width / 2)}px`
+        this._dom.image.style.marginTop = `-${Math.ceil(height / 2)}px`
+        this._dom.image.style.left = `${Math.ceil(tableRect.width / 2)}px`
+        this._dom.image.style.top = `${Math.ceil(tableRect.height / 2)}px`
 
         // Rotate the image
         this._dom.image.style.transform = `rotate(${this._orientation}deg)`
+
+        // Update the bounds and orientation of the crop tool
+        const left = (tableRect.width - width) / 2
+        const right = (tableRect.height - height) / 2
+
+        this._cropTool.bounds = orient(
+            [
+                [left, right],
+                [left + width, right + height]
+            ],
+            this._orientation
+        )
+        this._cropTool.orientation = this._orientation
 
         if (disableTransitions) {
 

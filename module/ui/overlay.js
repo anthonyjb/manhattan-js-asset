@@ -9,11 +9,7 @@ import * as $ from 'manhattan-essentials'
 
 export class Overlay {
 
-    constructor(transitionDuration=250) {
-
-        // The duration between transitioning the overlay from a hidden to
-        // visible state.
-        this._transitionDuration = transitionDuration
+    constructor() {
 
         // Flag indicating if the overlay is transitioning between hidden and
         // visible state.
@@ -140,7 +136,7 @@ export class Overlay {
                 // Dispatch a hidden event against the overlay
                 $.dispatch(this.overlay, 'hidden')
             },
-            this._transitionDuration
+            250
         )
 
     }
@@ -211,7 +207,7 @@ export class Overlay {
                 $.dispatch(this.overlay, 'visible')
 
             },
-            this._transitionDuration
+            250
         )
     }
 

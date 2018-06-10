@@ -106,94 +106,92 @@
   100% {
     background-position: center 0px; } }
 
-.mh-crop-region {
-  height: 500px;
-  left: 0;
-  opacity: 1;
+.mh-crop-tool {
+  opacity: 0;
   position: absolute;
-  top: 0;
-  width: 500px;
-  z-index: 10;
-  transition: opacity 0.5s ease-out; }
-  .mh-crop-region--hidden {
-    opacity: 0; }
-  .mh-crop-region::after, .mh-crop-region::before {
-    content: '';
-    opacity: 0;
-    pointer-events: none;
-    position: absolute;
-    z-index: 2;
-    transition: opacity 0.5s linear; }
-  .mh-crop-region::after {
-    box-shadow: inset 0 -1px 0 0 rgba(255, 255, 255, 0.35), inset 0 1px 0 0 rgba(255, 255, 255, 0.35);
-    top: 33.333%;
-    height: 33.333%;
-    left: 1px;
-    right: 1px; }
-  .mh-crop-region::before {
-    bottom: 1px;
-    box-shadow: inset -1px 0 0 0 rgba(255, 255, 255, 0.35), inset 1px 0 0 0 rgba(255, 255, 255, 0.35);
-    left: 33.333%;
-    top: 1px;
-    width: 33.333%; }
-  .mh-crop-region:hover::after, .mh-crop-region:hover::before, .mh-crop-region__dragging::after, .mh-crop-region__dragging::before, .mh-crop-region__resizing::after, .mh-crop-region__resizing::before {
+  z-index: 10; }
+  .mh-crop-tool--visible {
+    opacity: 1;
+    transition: opacity 1s cubic-bezier(1, -0.01, 0.65, 0.99); }
+  .mh-crop-tool__region {
+    position: absolute; }
+    .mh-crop-tool__region::after, .mh-crop-tool__region::before {
+      content: '';
+      opacity: 0;
+      pointer-events: none;
+      position: absolute;
+      z-index: 2;
+      transition: opacity 0.5s linear; }
+    .mh-crop-tool__region::after {
+      box-shadow: inset 0 -1px 0 0 rgba(255, 255, 255, 0.35), inset 0 1px 0 0 rgba(255, 255, 255, 0.35);
+      top: 33.333%;
+      height: 33.333%;
+      left: 1px;
+      right: 1px; }
+    .mh-crop-tool__region::before {
+      bottom: 1px;
+      box-shadow: inset -1px 0 0 0 rgba(255, 255, 255, 0.35), inset 1px 0 0 0 rgba(255, 255, 255, 0.35);
+      left: 33.333%;
+      top: 1px;
+      width: 33.333%; }
+  .mh-crop-tool--dragging::after, .mh-crop-tool--dragging::before, .mh-crop-tool--resizing::after, .mh-crop-tool--resizing::before, .mh-crop-tool__region:hover::after, .mh-crop-tool__region:hover::before {
     opacity: 1; }
-  .mh-crop-region__control {
+  .mh-crop-tool__control {
     position: absolute;
     z-index: 2; }
-    .mh-crop-region__control--c {
+    .mh-crop-tool__control--c {
       bottom: 8px;
       cursor: move;
       left: 8px;
       right: 8px;
       top: 8px; }
-    .mh-crop-region__control:not(.mh-crop-region__control--c) {
+    .mh-crop-tool__control:not(.mh-crop-tool__control--c) {
       background: #f8f8f8;
       border-radius: 8px;
       box-shadow: inset 0 1px 0 0 #fff, 0 1px 1px rgba(0, 0, 0, 0.15); }
-    .mh-crop-region__control--n, .mh-crop-region__control--s {
+    .mh-crop-tool__control--n, .mh-crop-tool__control--s {
       cursor: ns-resize;
       height: 16px;
       margin: -8px 0 0 -16px;
       width: 32px; }
-    .mh-crop-region__control--e, .mh-crop-region__control--w {
+    .mh-crop-tool__control--e, .mh-crop-tool__control--w {
       cursor: ew-resize;
       height: 32px;
       margin: -16px 0 0 -8px;
       width: 16px; }
-    .mh-crop-region__control--ne, .mh-crop-region__control--se, .mh-crop-region__control--sw, .mh-crop-region__control--nw {
+    .mh-crop-tool__control--ne, .mh-crop-tool__control--se, .mh-crop-tool__control--sw, .mh-crop-tool__control--nw {
       height: 16px;
       margin: -8px 0 0 -8px;
       width: 16px; }
-    .mh-crop-region__control--n {
+    .mh-crop-tool__control--n {
       top: 0;
       left: 50%; }
-    .mh-crop-region__control--ne {
+    .mh-crop-tool__control--ne {
       cursor: nesw-resize;
       left: 100%;
       top: 0; }
-    .mh-crop-region__control--e {
+    .mh-crop-tool__control--e {
       left: 100%;
       top: 50%; }
-    .mh-crop-region__control--se {
+    .mh-crop-tool__control--se {
       cursor: nwse-resize;
       left: 100%;
       top: 100%; }
-    .mh-crop-region__control--s {
+    .mh-crop-tool__control--s {
       left: 50%;
       top: 100%; }
-    .mh-crop-region__control--sw {
+    .mh-crop-tool__control--sw {
       left: 0;
       cursor: nesw-resize;
       top: 100%; }
-    .mh-crop-region__control--w {
+    .mh-crop-tool__control--w {
       left: 0;
       top: 50%; }
-    .mh-crop-region__control--nw {
+    .mh-crop-tool__control--nw {
       cursor: nwse-resize;
       left: 0;
       top: 0; }
-  .mh-crop-region__frame {
+  .mh-crop-tool__outline {
     border: 1px solid rgba(255, 255, 255, 0.66);
     bottom: 0;
     left: 0;
@@ -202,8 +200,7 @@
     right: 0;
     top: 0;
     z-index: 1; }
-  .mh-crop-region__image {
-    background: red;
+  .mh-crop-tool__image {
     background-position: 0px 0px;
     background-repeat: no-repeat;
     position: absolute; }
