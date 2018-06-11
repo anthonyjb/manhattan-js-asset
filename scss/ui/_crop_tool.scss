@@ -47,11 +47,12 @@
     }
 
     &--dragging,
-    &--resizing,
-    &__region:hover {
-        &::after,
-        &::before {
-            opacity: 1;
+    &--resizing {
+        .mh-crop-tool__region {
+            &::after,
+            &::before {
+                opacity: 1;
+            }
         }
     }
 

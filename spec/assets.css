@@ -134,7 +134,7 @@
       left: 33.333%;
       top: 1px;
       width: 33.333%; }
-  .mh-crop-tool--dragging::after, .mh-crop-tool--dragging::before, .mh-crop-tool--resizing::after, .mh-crop-tool--resizing::before, .mh-crop-tool__region:hover::after, .mh-crop-tool__region:hover::before {
+  .mh-crop-tool--dragging .mh-crop-tool__region::after, .mh-crop-tool--dragging .mh-crop-tool__region::before, .mh-crop-tool--resizing .mh-crop-tool__region::after, .mh-crop-tool--resizing .mh-crop-tool__region::before {
     opacity: 1; }
   .mh-crop-tool__control {
     position: absolute;

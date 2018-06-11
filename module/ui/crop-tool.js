@@ -130,16 +130,19 @@ export class CropTool {
         this._dom.container = container
 
         // Set up event handlers
+
+        // The state at the point at which a dragging interaction began
         this._drag = {
-
-            // The point at which dragging began
             'extents': null,
-
-            // The region at the point at which dragging began
             'origin': null,
+            'region': null
+        }
 
-            // The extent of movement available at the point at which dragging
-            // began.
+        // The state at the point at which a resizing interaction began
+        this._resize = {
+            'anchor': null,
+            'extents': null,
+            'origin': null,
             'region': null
         }
 
@@ -183,7 +186,7 @@ export class CropTool {
             'endDrag': (event) => {
                 const cls = this.constructor
 
-                if (this._dragOrigin === null) {
+                if (this._drag.origin === null) {
                     return
                 }
 
@@ -239,6 +242,190 @@ export class CropTool {
 
                 // Flag the tool as being dragged in the CSS
                 this._dom.tool.classList.add(cls.css['dragging'])
+            },
+
+            'resize': (event) => {
+                if (this._resize.origin === null) {
+                    return
+                }
+
+                event.preventDefault()
+
+                // Update the size of the crop region
+                const {max, min} = Math
+                const {anchor, extents, origin, region} = this._resize
+                const pos = getEventPos(event)
+
+                // Calculate the movement vector (and clamp it to the extents)
+                const mv = [
+                    max(
+                        extents[0][0],
+                        min(extents[1][0], pos[0] - origin[0])
+                    ),
+                    max(
+                        extents[0][1],
+                        min(extents[1][1], pos[1] - origin[1])
+                    )
+                ]
+
+                // Generate a new region at the new size
+                const newRegion = this.region
+
+                switch(anchor) {
+
+                    case 'n':
+                        break
+
+                    case 'ne':
+                        newRegion[1][0] = region[1][0] + mv[0],
+                        newRegion[0][1] = region[0][1] + mv[1]
+                        break
+
+                    case 'e':
+                        break
+
+                    case 'se':
+                        newRegion[1][0] = region[1][0] + mv[0],
+                        newRegion[1][1] = region[1][1] + mv[1]
+                        break
+
+                    case 's':
+                        break
+
+                    case 'sw':
+                        newRegion[0][0] = region[0][0] + mv[0],
+                        newRegion[1][1] = region[1][1] + mv[1]
+                        break
+
+                    case 'w':
+                        break
+
+                    case 'nw':
+                        newRegion[0][0] = region[0][0] + mv[0],
+                        newRegion[0][1] = region[0][1] + mv[1]
+                        break
+
+                    // No default
+                }
+
+                this.region = newRegion
+            },
+
+            'endResize': (event) => {
+                const cls = this.constructor
+
+                if (this._resize.origin === null) {
+                    return
+                }
+
+                // Ignore mouseout events that don't signal the cursor has
+                // left the window.
+                if (event.type === 'mouseout') {
+                    if (event.relatedTarget || event.toElement !== null) {
+                        return
+                    }
+                }
+
+                event.preventDefault()
+
+                // Clear the resize origin
+                this._resize = {
+                    'anchor': null,
+                    'extents': null,
+                    'origin': null,
+                    'region': null
+                }
+
+                // Flag the tool as no longer being resized in the CSS
+                this._dom.tool.classList.remove(cls.css['resizing'])
+            },
+
+            'startResize': (event) => {
+                const cls = this.constructor
+
+                // Resize starts when user interacts with an outer control
+                const controls = ['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw']
+                if (controls.indexOf(event.target.dataset.control) === -1) {
+                    return
+                }
+
+                // Only the left mouse button triggers a resize (touch
+                // simulates left mouse button).
+                if (event.type === 'mousedown' && event.button !== 0) {
+                    return
+                }
+
+                event.preventDefault()
+
+                // Store state at point resizing begins
+                const anchor = event.target.dataset.control
+                const region = this.region
+                let bounds = null
+                let point = null
+
+                switch (anchor) {
+
+                    case 'n':
+                        break
+
+                    case 'ne':
+                        point = [region[1][0], region[0][1]]
+                        bounds = [
+                            [region[0][0], 0],
+                            [getWidth(this.bounds), region[1][1]]
+                        ]
+                        break
+
+                    case 'e':
+                        break
+
+                    case 'se':
+                        point = region[1]
+                        bounds = [
+                            region[0],
+                            [getWidth(this.bounds), getHeight(this.bounds)]
+                        ]
+                        break
+
+                    case 's':
+                        break
+
+                    case 'sw':
+                        point = [region[0][0], region[1][1]]
+                        bounds = [
+                            [0, region[0][1]],
+                            [region[1][0], getHeight(this.bounds)]
+                        ]
+                        break
+
+                    case 'w':
+                        break
+
+                    case 'nw':
+                        point = region[0]
+                        bounds = [[0, 0], region[1]]
+                        break
+
+                    // No default
+                }
+
+                // TODO: Figure out how to apply the aspect ratio when
+                // resizing first.
+
+                // TODO: Apply the aspect ratio to the bounds by finding the
+                // largest rect of the given aspect ratio within those bounds.
+                // This doens't cater for point - perhaps get the extent then
+                // reset it to the given largest rect???
+
+                this._resize = {
+                    'anchor': anchor,
+                    'extents': extents([point, point], bounds),
+                    'origin': getEventPos(event),
+                    'region': region
+                }
+
+                // Flag the tool as being resized in the CSS
+                this._dom.tool.classList.add(cls.css['resizing'])
             }
         }
     }
@@ -407,10 +594,23 @@ export class CropTool {
         )
 
         $.listen(
+            this._dom.region,
+            {'mousedown touchstart': this._handlers.startResize}
+        )
+
+        $.listen(
             document,
             {
                 'mousemove touchmove': this._handlers.drag,
                 'mouseout mouseup touchend': this._handlers.endDrag
+            }
+        )
+
+        $.listen(
+            document,
+            {
+                'mousemove touchmove': this._handlers.resize,
+                'mouseout mouseup touchend': this._handlers.endResize
             }
         )
     }
