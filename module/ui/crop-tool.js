@@ -4,6 +4,32 @@ import * as $ from 'manhattan-essentials'
 // -- Utils --
 
 /**
+ * Return a rect which represents the extent of movement of a one rect within
+ * another.
+ */
+function extents(rectA, rectB) {
+    return [
+        [
+            rectB[0][0] - rectA[0][0],
+            rectB[0][1] - rectA[0][1]
+        ], [
+            rectB[1][0] - rectA[1][0],
+            rectB[1][1] - rectA[1][1]
+        ]
+    ]
+}
+
+/**
+ * Return the x/y position of a touch or mouse event.
+ */
+function getEventPos(event) {
+    if (typeof event.pageX === 'undefined') {
+        return [event.touches[0].pageX, event.touches[0].pageX]
+    }
+    return [event.pageX, event.pageY]
+}
+
+/**
  * Return the height of the given rect ([[x1, y1], [x2, y2]]).
  */
 function getHeight(rect) {
@@ -104,7 +130,117 @@ export class CropTool {
         this._dom.container = container
 
         // Set up event handlers
-        this._handlers = {}
+        this._drag = {
+
+            // The point at which dragging began
+            'extents': null,
+
+            // The region at the point at which dragging began
+            'origin': null,
+
+            // The extent of movement available at the point at which dragging
+            // began.
+            'region': null
+        }
+
+        this._handlers = {
+
+            'drag': (event) => {
+                if (this._drag.origin === null) {
+                    return
+                }
+
+                event.preventDefault()
+
+                // Update the position of the crop region
+                const {max, min} = Math
+                const {extents, origin, region} = this._drag
+                const pos = getEventPos(event)
+
+                // Calculate the movement vector (and clamp it to the extents)
+                const mv = [
+                    max(
+                        extents[0][0],
+                        min(extents[1][0], pos[0] - origin[0])
+                    ),
+                    max(
+                        extents[0][1],
+                        min(extents[1][1], pos[1] - origin[1])
+                    )
+                ]
+
+                this.region = [
+                    [
+                        region[0][0] + mv[0],
+                        region[0][1] + mv[1]
+                    ], [
+                        region[1][0] + mv[0],
+                        region[1][1] + mv[1]
+                    ]
+                ]
+            },
+
+            'endDrag': (event) => {
+                const cls = this.constructor
+
+                if (this._dragOrigin === null) {
+                    return
+                }
+
+                // Ignore mouseout events that don't signal the cursor has
+                // left the window.
+                if (event.type === 'mouseout') {
+                    if (event.relatedTarget || event.toElement !== null) {
+                        return
+                    }
+                }
+
+                event.preventDefault()
+
+                // Clear the drag origin
+                this._drag = {
+                    'extents': null,
+                    'origin': null,
+                    'region': null
+                }
+
+                // Flag the tool as no longer being dragged in the CSS
+                this._dom.tool.classList.remove(cls.css['dragging'])
+            },
+
+            'startDrag': (event) => {
+                const cls = this.constructor
+
+                // Drag starts when user interacts with the center control
+                if (event.target.dataset.control !== 'c') {
+                    return
+                }
+
+                // Only the left mouse button triggers a drag (touch simulates
+                // left mouse button).
+                if (event.type === 'mousedown' && event.button !== 0) {
+                    return
+                }
+
+                event.preventDefault()
+
+                // Store state at point dragging begins
+                this._drag = {
+                    'extents': extents(
+                        this.region,
+                        [
+                            [0, 0],
+                            [getWidth(this._bounds), getHeight(this._bounds)]
+                        ]
+                    ),
+                    'origin': getEventPos(event),
+                    'region': this.region
+                }
+
+                // Flag the tool as being dragged in the CSS
+                this._dom.tool.classList.add(cls.css['dragging'])
+            }
+        }
     }
 
     // -- Getters & Setters --
@@ -197,8 +333,7 @@ export class CropTool {
         // Set the visible state
         this._visible = visible
 
-        // Flag whether the crop tool is visible against the DOM element that
-        // represents it.
+        // Flag the crop tool as visible/hidden in the CSS
         if (this._visible) {
             this._dom.tool.classList.add(cls.css['visible'])
         } else {
@@ -256,7 +391,7 @@ export class CropTool {
                 {
                     'class':
                         `${cls.css['control']} ${cls.css['controls'][ctrl]}`,
-                    'data-mh-crop-region-control': ctrl
+                    'data-control': ctrl
                 }
             )
             this._dom.region.appendChild(ctrlElm)
@@ -264,6 +399,20 @@ export class CropTool {
 
         // Add the crop tool to the container
         this._dom.container.appendChild(this._dom.tool)
+
+        // Set up event listeners
+        $.listen(
+            this._dom.region,
+            {'mousedown touchstart': this._handlers.startDrag}
+        )
+
+        $.listen(
+            document,
+            {
+                'mousemove touchmove': this._handlers.drag,
+                'mouseout mouseup touchend': this._handlers.endDrag
+            }
+        )
     }
 
     /**
