@@ -7,7 +7,7 @@ import * as $ from 'manhattan-essentials'
  * Return a rect which represents the extent of movement of a one rect within
  * another.
  */
-function extents(rectA, rectB) {
+function getExtents(rectA, rectB) {
     return [
         [
             rectB[0][0] - rectA[0][0],
@@ -229,7 +229,7 @@ export class CropTool {
 
                 // Store state at point dragging begins
                 this._drag = {
-                    'extents': extents(
+                    'extents': getExtents(
                         this.region,
                         [
                             [0, 0],
@@ -253,62 +253,29 @@ export class CropTool {
 
                 // Update the size of the crop region
                 const {max, min} = Math
-                const {anchor, extents, origin, region} = this._resize
+                const {extents, matrix, origin, region} = this._resize
                 const pos = getEventPos(event)
 
-                // Calculate the movement vector (and clamp it to the extents)
+                // Calculate the change of the mouse cursor for both axes
+                const x = pos[0] - origin[0]
+                const y = pos[1] - origin[1]
                 const mv = [
-                    max(
-                        extents[0][0],
-                        min(extents[1][0], pos[0] - origin[0])
-                    ),
-                    max(
-                        extents[0][1],
-                        min(extents[1][1], pos[1] - origin[1])
-                    )
+                    max(extents[0][0], min(extents[1][0], x)),
+                    max(extents[0][1], min(extents[1][1], y))
                 ]
 
-                // Generate a new region at the new size
-                const newRegion = this.region
-
-                switch(anchor) {
-
-                    case 'n':
-                        break
-
-                    case 'ne':
-                        newRegion[1][0] = region[1][0] + mv[0],
-                        newRegion[0][1] = region[0][1] + mv[1]
-                        break
-
-                    case 'e':
-                        break
-
-                    case 'se':
-                        newRegion[1][0] = region[1][0] + mv[0],
-                        newRegion[1][1] = region[1][1] + mv[1]
-                        break
-
-                    case 's':
-                        break
-
-                    case 'sw':
-                        newRegion[0][0] = region[0][0] + mv[0],
-                        newRegion[1][1] = region[1][1] + mv[1]
-                        break
-
-                    case 'w':
-                        break
-
-                    case 'nw':
-                        newRegion[0][0] = region[0][0] + mv[0],
-                        newRegion[0][1] = region[0][1] + mv[1]
-                        break
-
-                    // No default
-                }
-
-                this.region = newRegion
+                // Build a new region based on the movement and movement
+                // matrix.
+                const m = matrix
+                this.region = [
+                    [
+                        region[0][0] + (m[0][3] * mv[0]) + (m[1][3] * mv[1]),
+                        region[0][1] + (m[0][0] * mv[0]) + (m[1][0] * mv[1])
+                    ], [
+                        region[1][0] + (m[0][1] * mv[0]) + (m[1][1] * mv[1]),
+                        region[1][1] + (m[0][2] * mv[0]) + (m[1][2] * mv[1])
+                    ]
+                ]
             },
 
             'endResize': (event) => {
@@ -330,8 +297,8 @@ export class CropTool {
 
                 // Clear the resize origin
                 this._resize = {
-                    'anchor': null,
                     'extents': null,
+                    'matrix': null,
                     'origin': null,
                     'region': null
                 }
@@ -359,69 +326,251 @@ export class CropTool {
 
                 // Store state at point resizing begins
                 const anchor = event.target.dataset.control
-                const region = this.region
-                let bounds = null
-                let point = null
+                const {region} = this
 
+                // Determine the ratio that the crop region must retain (if
+                // there is one, if not the ratio is set to 0).
+                let ratio = this._aspectRatio || 0.0
+
+                // Define the maximum extent to which the crop region can grow
+                // using a rect.
+                let point = null
+                const maxRect = [
+                    [0, 0],
+                    [getWidth(this.bounds), getHeight(this.bounds)]
+                ]
+
+                // The matrix defines how movement on the X/Y axes should be
+                // applied to the regions top, right, bottom and left sides.
+                //
+                //     [
+                //         [top, right, bottom, left], (x)
+                //         [top, right, bottom, left]  (y)
+                //     ]
+                //
+                const matrix = [
+                    [0, 0, 0, 0],
+                    [0, 0, 0, 0]
+                ]
+
+                // Using the anchor determine the change matrix and min/max
+                // extent of any change.
+                let distanceToEdge = 0
                 switch (anchor) {
 
+                case 'n':
+                    matrix[1][0] = 1
+                    matrix[1][1] = -ratio / 2.0
+                    matrix[1][3] = ratio / 2.0
+
+                    point = [
+                        region[0][0] + (getWidth(region) / 2),
+                        region[0][1]
+                    ]
+                    maxRect[1][1] = region[1][1] // eslint-disable-line
+
+                    if (ratio !== 0.0) {
+                        distanceToEdge = Math.min(
+                            point[0],
+                            maxRect[1][0] - point[0]
+                        )
+                        maxRect[0][0] = point[0] - distanceToEdge
+                        maxRect[1][0] = point[0] + distanceToEdge
+                    }
+                    break
+
+                case 'ne':
+                    matrix[0][1] = 1.0
+                    matrix[1][0] = 1.0
+                    if (ratio !== 0.0) {
+                        matrix[1][0] = 0.0
+                        matrix[0][0] = -ratio
+                    }
+
+                    point = [region[1][0], region[0][1]]
+                    maxRect[0][0] = region[0][0] // eslint-disable-line
+                    maxRect[1][1] = region[1][1] // eslint-disable-line
+                    break
+
+                case 'e':
+                    matrix[0][1] = 1.0
+                    matrix[0][0] = -ratio / 2.0
+                    matrix[0][2] = ratio / 2.0
+
+                    point = [
+                        region[1][0],
+                        region[0][1] + (getHeight(region) / 2)
+                    ]
+                    maxRect[0][0] = region[0][0] // eslint-disable-line
+
+                    if (ratio !== 0.0) {
+                        distanceToEdge = Math.min(
+                            point[1],
+                            maxRect[1][1] - point[1]
+                        )
+                        maxRect[0][1] = point[1] - distanceToEdge
+                        maxRect[1][1] = point[1] + distanceToEdge
+                    }
+                    break
+
+                case 'se':
+                    matrix[0][1] = 1.0
+                    matrix[1][2] = 1.0
+                    if (ratio !== 0.0) {
+                        matrix[1][2] = 0.0
+                        matrix[0][2] = ratio
+                    }
+
+                    point = [region[1][0], region[1][1]]
+                    maxRect[0][0] = region[0][0] // eslint-disable-line
+                    maxRect[0][1] = region[0][1] // eslint-disable-line
+                    break
+
+                case 's':
+                    matrix[1][2] = 1.0
+                    matrix[1][1] = ratio / 2.0
+                    matrix[1][3] = -ratio / 2.0
+
+                    point = [
+                        region[0][0] + (getWidth(region) / 2),
+                        region[1][1]
+                    ]
+                    maxRect[0][1] = region[0][1] // eslint-disable-line
+
+                    if (ratio !== 0.0) {
+                        distanceToEdge = Math.min(
+                            point[0],
+                            maxRect[1][0] - point[0]
+                        )
+                        maxRect[0][0] = point[0] - distanceToEdge
+                        maxRect[1][0] = point[0] + distanceToEdge
+                    }
+                    break
+
+                case 'sw':
+                    matrix[0][3] = 1.0
+                    matrix[1][2] = 1.0
+                    if (ratio !== 0.0) {
+                        matrix[1][2] = 0.0
+                        matrix[0][2] = -ratio
+                    }
+
+                    point = [region[0][0], region[1][1]]
+                    maxRect[1][0] = region[1][0] // eslint-disable-line
+                    maxRect[0][1] = region[0][1] // eslint-disable-line
+                    break
+
+                case 'w':
+                    matrix[0][3] = 1.0
+                    matrix[0][0] = ratio / 2.0
+                    matrix[0][2] = -ratio / 2.0
+
+                    point = [
+                        region[0][0],
+                        region[0][1] + (getHeight(region) / 2)
+                    ]
+                    maxRect[1][0] = region[1][0] // eslint-disable-line
+
+                    if (ratio !== 0.0) {
+                        distanceToEdge = Math.min(
+                            point[1],
+                            maxRect[1][1] - point[1]
+                        )
+                        maxRect[0][1] = point[1] - distanceToEdge
+                        maxRect[1][1] = point[1] + distanceToEdge
+                    }
+                    break
+
+                case 'nw':
+                    matrix[0][3] = 1.0
+                    matrix[1][0] = 1.0
+                    if (ratio !== 0.0) {
+                        matrix[1][0] = 0.0
+                        matrix[0][0] = ratio
+                    }
+
+                    point = [region[0][0], region[0][1]]
+                    maxRect[1][0] = region[1][0] // eslint-disable-line
+                    maxRect[1][1] = region[1][1] // eslint-disable-line
+                    break
+
+                // No default
+                }
+
+                if (ratio !== 0.0) {
+                    // If an aspect ratio is specified then we need to adjust
+                    // the max rectangle to match the maximum rectangle of the
+                    // given aspect ratio.
+
+                    let width = getWidth(maxRect)
+                    let height = getWidth(maxRect) / ratio
+
+                    if (ratio < width / getHeight(maxRect)) {
+                        width = getHeight(maxRect) * ratio
+                        height = getHeight(maxRect)
+                    }
+
+                    const center = [
+                        region[0][0] + (getWidth(region) / 2.0),
+                        region[0][1] + (getHeight(region) / 2.0)
+                    ]
+
+                    switch (anchor) {
+
                     case 'n':
+                        maxRect[0][0] = center[0] - (width / 2)
+                        maxRect[1][0] = center[0] + (width / 2)
+                        maxRect[0][1] = maxRect[1][1] - height
                         break
 
                     case 'ne':
-                        point = [region[1][0], region[0][1]]
-                        bounds = [
-                            [region[0][0], 0],
-                            [getWidth(this.bounds), region[1][1]]
-                        ]
+                        maxRect[1][0] = maxRect[0][0] + width
+                        maxRect[0][1] = maxRect[1][1] - height
                         break
 
                     case 'e':
+                        maxRect[0][1] = center[1] - (height / 2)
+                        maxRect[1][1] = center[1] + (height / 2)
+                        maxRect[1][0] = maxRect[0][0] + width
                         break
 
                     case 'se':
-                        point = region[1]
-                        bounds = [
-                            region[0],
-                            [getWidth(this.bounds), getHeight(this.bounds)]
-                        ]
+                        maxRect[1][0] = maxRect[0][0] + width
+                        maxRect[1][1] = maxRect[0][1] - height
                         break
 
                     case 's':
+                        maxRect[0][0] = center[0] - (width / 2)
+                        maxRect[1][0] = center[0] + (width / 2)
+                        maxRect[1][1] = maxRect[0][1] + height
                         break
 
                     case 'sw':
-                        point = [region[0][0], region[1][1]]
-                        bounds = [
-                            [0, region[0][1]],
-                            [region[1][0], getHeight(this.bounds)]
-                        ]
+                        maxRect[0][0] = maxRect[1][0] - width
+                        maxRect[1][1] = maxRect[0][1] + height
                         break
 
                     case 'w':
+                        maxRect[0][1] = center[1] - (height / 2)
+                        maxRect[1][1] = center[1] + (height / 2)
+                        maxRect[0][0] = maxRect[1][0] - width
                         break
 
                     case 'nw':
-                        point = region[0]
-                        bounds = [[0, 0], region[1]]
+                        maxRect[0][0] = maxRect[1][0] - width
+                        maxRect[0][1] = maxRect[1][1] - height
                         break
 
                     // No default
+
+                    }
                 }
 
-                // TODO: Figure out how to apply the aspect ratio when
-                // resizing first.
-
-                // TODO: Apply the aspect ratio to the bounds by finding the
-                // largest rect of the given aspect ratio within those bounds.
-                // This doens't cater for point - perhaps get the extent then
-                // reset it to the given largest rect???
-
                 this._resize = {
-                    'anchor': anchor,
-                    'extents': extents([point, point], bounds),
+                    'extents': getExtents([point, point], maxRect),
+                    matrix,
                     'origin': getEventPos(event),
-                    'region': region
+                    region
                 }
 
                 // Flag the tool as being resized in the CSS
@@ -622,7 +771,7 @@ export class CropTool {
 
         // Set the initial crop to match any given fixed aspect ratio (or
         // default to a square crop 1:1).
-        let aspectRatio = 1
+        let aspectRatio = 1.0
         if (this._aspectRatio) {
             aspectRatio = this._aspectRatio
         }
@@ -702,6 +851,11 @@ export class CropTool {
         // No default
 
         }
+
+        // Ceil the values to prevent fractions causing jerking when dragging
+        // or resizing.
+        bkgX = Math.ceil(bkgX)
+        bkgY = Math.ceil(bkgY)
 
         this._dom.image.style.backgroundPosition = `-${bkgX}px -${bkgY}px`
     }
