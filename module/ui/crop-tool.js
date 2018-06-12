@@ -610,6 +610,18 @@ export class CropTool {
         this._updateImage()
     }
 
+    get crop() {
+        return [
+            [
+                this.region[0][0] / getWidth(this.bounds),
+                this.region[0][1] / getHeight(this.bounds)
+            ], [
+                this.region[1][0] / getWidth(this.bounds),
+                this.region[1][1] / getHeight(this.bounds)
+            ]
+        ]
+    }
+
     get orientation() {
         return this._orientation
     }
