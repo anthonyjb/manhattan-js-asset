@@ -96,10 +96,16 @@ export function orient(rect, orientation) {
  */
 export class CropTool {
 
-    constructor(container, imageURL, aspectRatio=null) {
+    constructor(container, imageURL, aspectRatio=1.0, fixAspectRatio=false) {
 
-        // The aspect ratio to apply when cropping (optional)
-        this._aspectRatio = aspectRatio
+        // The initial aspect ratio to select
+        this._initialAspectRatio = aspectRatio
+
+        // A fixed aspect ratio used when cropping (optional)
+        this._fixedAspectRatio = null
+        if (fixAspectRatio) {
+            this._fixedAspectRatio = aspectRatio
+        }
 
         // The bounds of the cropping region [[x1, y1], [x2, y2]]
         this._bounds = [[0, 0], [0, 0]]
@@ -330,7 +336,7 @@ export class CropTool {
 
                 // Determine the ratio that the crop region must retain (if
                 // there is one, if not the ratio is set to 0).
-                let ratio = this._aspectRatio || 0.0
+                let ratio = this._fixedAspectRatio || 0.0
 
                 // Define the maximum extent to which the crop region can grow
                 // using a rect.
@@ -783,10 +789,7 @@ export class CropTool {
 
         // Set the initial crop to match any given fixed aspect ratio (or
         // default to a square crop 1:1).
-        let aspectRatio = 1.0
-        if (this._aspectRatio) {
-            aspectRatio = this._aspectRatio
-        }
+        let aspectRatio = this._initialAspectRatio
 
         // Calculate the initial crop size such that it fits within the bounds
         let width = getWidth(this.bounds)
