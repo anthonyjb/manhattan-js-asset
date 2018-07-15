@@ -13,7 +13,7 @@ import {Overlay} from './overlay'
  */
 export class ImageEditor extends Overlay {
 
-    constructor(imageURL, cropAspectRatio) {
+    constructor(imageURL, cropAspectRatio, maxPreviewSize=[600, 600]) {
         super()
 
         // The URL of the image being edited (typically a working draft
@@ -22,6 +22,10 @@ export class ImageEditor extends Overlay {
 
         // An optional fixed aspect ratio for the cropping region
         this._cropAspectRatio = cropAspectRatio
+
+        // The maximum size of the preview image generated when accessing the
+        // previewDataURI property.
+        this._maxPreviewSize = maxPreviewSize
 
         // The size of the image
         this._imageSize = null
@@ -78,18 +82,17 @@ export class ImageEditor extends Overlay {
 
     get previewDataURI() {
         return new Promise((resolve, reject) => {
-
             // Create a canvas to hold the base image
             const baseCanvas = document.createElement('canvas')
-            baseCanvas.setAttribute('width', 304)
-            baseCanvas.setAttribute('height', 304)
             const baseContext = baseCanvas.getContext('2d')
 
-            // Build a canvas to hold the transformed image
-            const outCanvas = document.createElement('canvas')
-            outCanvas.setAttribute('width', 152)
-            outCanvas.setAttribute('height', 152)
-            const outContext = outCanvas.getContext('2d')
+            // Build a canvas to crop the image with
+            const cropCanvas = document.createElement('canvas')
+            const cropContext = cropCanvas.getContext('2d')
+
+            // Build a canvas to resize the image with
+            const resizeCanvas = document.createElement('canvas')
+            const resizeContext = resizeCanvas.getContext('2d')
 
             // Create the base image to paste into the canvas
             const baseImage = new Image()
@@ -97,6 +100,15 @@ export class ImageEditor extends Overlay {
             baseImage.src = this._imageURL
 
             baseImage.onload = () => {
+                const cls = this.constructor
+
+                // Set the size of the base canvas to match the image
+                baseCanvas.width = baseImage.width
+                baseCanvas.height = baseImage.height
+                if (this._orientation === 90 || this._orientation === 270) {
+                    baseCanvas.width = baseImage.height
+                    baseCanvas.height = baseImage.width
+                }
 
                 // Draw the base image into the base canvas at the current
                 // orientation.
@@ -105,7 +117,7 @@ export class ImageEditor extends Overlay {
                     baseCanvas.width / 2,
                     baseCanvas.height / 2
                 )
-                baseContext.rotate(90 * Math.PI / 180)
+                baseContext.rotate(this._orientation * Math.PI / 180)
                 baseContext.drawImage(
                     baseImage,
                     -baseCanvas.width / 2,
@@ -113,11 +125,59 @@ export class ImageEditor extends Overlay {
                 )
                 baseContext.restore()
 
-                // @@ Apply any crop by drawing the base canvas into the out
+                // Apply any crop by drawing the base canvas into the out
                 // canvas.
-                outContext.drawImage(baseCanvas, 0, 0)
+                const crop = this._cropTool.crop
+                const cropX = parseInt(baseCanvas.width * crop[0][0], 10)
+                const cropY = parseInt(baseCanvas.height * crop[0][1], 10)
+                cropCanvas.width = parseInt(
+                    baseCanvas.width * (crop[1][0] - crop[0][0]),
+                    10
+                )
+                cropCanvas.height = parseInt(
+                    baseCanvas.height * (crop[1][1] - crop[0][1]),
+                    10
+                )
 
-                resolve(outCanvas.toDataURL())
+                cropContext.drawImage(
+                    baseCanvas,
+                    cropX,
+                    cropY,
+                    cropCanvas.width,
+                    cropCanvas.height,
+                    0,
+                    0,
+                    cropCanvas.width,
+                    cropCanvas.height
+                )
+
+                // Ensure (by resizing) the preview image is sensible size
+                const previewSize = [
+                    Math.min(this._maxPreviewSize[0], cropCanvas.width),
+                    Math.min(this._maxPreviewSize[1], cropCanvas.height)
+                ]
+                const aspectRatio = cropCanvas.width / cropCanvas.height
+                resizeCanvas.width = previewSize[0]
+                resizeCanvas.height = previewSize[0] / aspectRatio
+
+                if (aspectRatio < resizeCanvas.width / previewSize[1]) {
+                    resizeCanvas.width = previewSize[1] * aspectRatio
+                    resizeCanvas.height = previewSize[1]
+                }
+
+                resizeContext.drawImage(
+                    cropCanvas,
+                    0,
+                    0,
+                    cropCanvas.width,
+                    cropCanvas.height,
+                    0,
+                    0,
+                    resizeCanvas.width,
+                    resizeCanvas.height
+                )
+
+                resolve(resizeCanvas.toDataURL())
             }
         })
     }
