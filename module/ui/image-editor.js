@@ -72,7 +72,8 @@ export class ImageEditor extends Overlay {
         }
 
         // Crop
-        const crop = this._cropTool.crop
+        const {crop} = this._cropTool
+
         if (crop[0][0] + crop[0][1] !== 0 || crop[1][0] + crop[1][1] !== 2) {
             transforms.push(['crop', crop])
         }
@@ -127,7 +128,7 @@ export class ImageEditor extends Overlay {
 
                 // Apply any crop by drawing the base canvas into the out
                 // canvas.
-                const crop = this._cropTool.crop
+                const {crop} = this._cropTool
                 const cropX = parseInt(baseCanvas.width * crop[0][0], 10)
                 const cropY = parseInt(baseCanvas.height * crop[0][1], 10)
                 cropCanvas.width = parseInt(
@@ -157,12 +158,12 @@ export class ImageEditor extends Overlay {
                     Math.min(this._maxPreviewSize[1], cropCanvas.height)
                 ]
                 const aspectRatio = cropCanvas.width / cropCanvas.height
-                resizeCanvas.width = previewSize[0]
+                resizeCanvas.width = previewSize[0] // eslint-disable-line
                 resizeCanvas.height = previewSize[0] / aspectRatio
 
                 if (aspectRatio < resizeCanvas.width / previewSize[1]) {
                     resizeCanvas.width = previewSize[1] * aspectRatio
-                    resizeCanvas.height = previewSize[1]
+                    resizeCanvas.height = previewSize[1] // eslint-disable-line
                 }
 
                 resizeContext.drawImage(

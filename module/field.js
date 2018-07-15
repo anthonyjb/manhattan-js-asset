@@ -160,9 +160,6 @@ export class FileField {
 
         // Store a reference to the input element
         this._dom.input = input
-
-        // Set up event handlers
-        this._handlers = {}
     }
 
     // -- Getters & Setters --
@@ -230,10 +227,12 @@ export class FileField {
     }
 
     /**
-     * @@ Remove the file field.
+     * Remove the file field.
      */
     destroy() {
-        return this.todo
+        if (this._dom.field) {
+            this._dom.field.parentNode.removeChild(this._dom.field)
+        }
     }
 
     /**
@@ -310,9 +309,8 @@ export class FileField {
                 },
 
                 'edit': () => {
-                    const imageEditor = new ImageEditor(
-                        this.getAssetProp('editingURL')
-                    )
+                    const editingURL = this.getAssetProp('editingURL')
+                    const imageEditor = new ImageEditor(editingURL)
                     imageEditor.init()
                     imageEditor.show()
 
@@ -335,7 +333,7 @@ export class FileField {
                                     )
 
                                     imageEditor.hide()
-                               })
+                                })
                             },
                             'cancel': () => {
                                 imageEditor.hide()
@@ -358,7 +356,7 @@ export class FileField {
                         metadata.overlay,
                         {
                             'okay': () => {
-                                // Apply any metadata changes
+                                // Apply any  metadata changes
                                 const {props} = metadata
                                 for (let key in props) {
                                     this.setAssetProp(key, props[key])
@@ -608,6 +606,8 @@ FileField.behaviours = {
          */
         'default': (inst, action, name, value) => {
 
+            const transforms = []
+
             switch (name) {
 
             case 'alt':
@@ -642,7 +642,6 @@ FileField.behaviours = {
                 return inst._asset['variations'][inst._options.preview].url
 
             case 'transforms':
-                const transforms = []
 
                 // Set transforms
                 if (action === 'set') {
@@ -700,9 +699,13 @@ FileField.behaviours = {
                         ])
                         break
 
+                        // no default
+
                     }
                 }
                 return transforms
+
+            // no default
 
             }
 

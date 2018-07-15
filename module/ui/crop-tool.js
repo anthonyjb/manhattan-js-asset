@@ -501,6 +501,7 @@ export class CropTool {
                     break
 
                 // No default
+
                 }
 
                 if (ratio !== 0.0) {
