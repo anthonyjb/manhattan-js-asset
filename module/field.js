@@ -326,10 +326,13 @@ export class FileField {
                                 previewDataURI.then((dataURI) => {
 
                                     // Set the preview image
-                                    this.setAssetProp('previewURL', dataURI)
                                     this._viewer.imageURL = dataURI
 
-                                    // @@ Set base transforms against the image
+                                    // Set base transforms against the image
+                                    this.setAssetProp(
+                                        'transforms',
+                                        imageEditor.transforms
+                                    )
 
                                     imageEditor.hide()
                                })
@@ -356,15 +359,9 @@ export class FileField {
                         {
                             'okay': () => {
                                 // Apply any metadata changes
-                                const assetBehaviour
-                                    = this._behaviours.assetProp
-                                const assetProp = cls.behaviours
-                                    .assetProp[assetBehaviour]
-
                                 const {props} = metadata
-
                                 for (let key in props) {
-                                    assetProp(this, 'set', key, props[key])
+                                    this.setAssetProp(key, props[key])
                                 }
 
                                 // Hide the medata overlay
@@ -412,7 +409,15 @@ export class FileField {
     setAssetProp(name, value) {
         const behaviours = this.constructor.behaviours.assetProp
         const behaviour = this._behaviours.assetProp
-        return behaviours[behaviour](this, 'set', name, value)
+
+        // Set the asset property
+        behaviours[behaviour](this, 'set', name, value)
+
+        // Update the input value to reflect the change
+        this.input.value = JSON.stringify(this._asset)
+
+        // Trigger a change event against the input
+        $.dispatch(this.input, 'chanage')
     }
 
     /**
@@ -592,7 +597,7 @@ FileField.behaviours = {
      * - imageMode (get)
      * - imageSize (get)
      * - previewURL (get)
-     * - type (get)
+     * - transform (get, set)
      *
      */
     'assetProp': {
@@ -619,7 +624,6 @@ FileField.behaviours = {
                 return inst._asset['url']
 
             case 'editingURL':
-                console.log(inst._options.editing)
                 return inst._asset['variations'][inst._options.editing].url
 
             case 'filename':
@@ -635,13 +639,70 @@ FileField.behaviours = {
                 return inst._asset['core_meta']['image']['size'].join(' x ')
 
             case 'previewURL':
-                if (action === 'set') {
-                    inst._asset['variations'][inst._options.preview] = value
-                    return value
-                }
                 return inst._asset['variations'][inst._options.preview].url
 
-            // no default
+            case 'transforms':
+                const transforms = []
+
+                // Set transforms
+                if (action === 'set') {
+                    for (let transform of value) {
+                        switch (transform[0]) {
+
+                        case 'rotate':
+                            transforms.push({
+                                'id': 'image.rotate',
+                                'settings': {'angle': transform[1]}
+                            })
+                            break
+
+                        case 'crop':
+                            transforms.push({
+                                'id': 'image.crop',
+                                'settings': {
+                                    'top': transform[1][0][1],
+                                    'left': transform[1][0][0],
+                                    'bottom': transform[1][1][1],
+                                    'right': transform[1][1][0]
+                                }
+                            })
+                            break
+
+                        // no default
+
+                        }
+                    }
+                    inst._asset['base_transforms'] = transforms
+                    return value
+                }
+
+                // Get transforms
+                for (let transform of inst._asset['base_transforms']) {
+                    switch (transform.id) {
+
+                    case 'image.rotate':
+                        transforms.push(['rotate', transform.settings.angle])
+                        break
+
+                    case 'image.crop':
+                        transforms.push([
+                            'crop',
+                            [
+                                [
+                                    transform.settings.left,
+                                    transform.settings.top
+                                ],
+                                [
+                                    transform.settings.right,
+                                    transform.settings.bottom
+                                ]
+                            ]
+                        ])
+                        break
+
+                    }
+                }
+                return transforms
 
             }
 
