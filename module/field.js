@@ -71,6 +71,12 @@ export class FileField {
                 'allowEdit': false,
 
                 /**
+                 * The initial aspect ratio to apply to the crop region for
+                 * an image.
+                 */
+                'cropAspectRatio': 1.0,
+
+                /**
                  * The label displayed when the field is not populated and the
                  * user is dragging a file over the page.
                  */
@@ -92,6 +98,12 @@ export class FileField {
                 'fileType': 'file',
 
                 /**
+                 * Flag indicating if the aspect ratio of the crop region for
+                 * the image should be fixed.
+                 */
+                'fixCropAspectRatio': false,
+
+                /**
                  * The label displayed when the field is not populated.
                  */
                 'label': 'Select a file...',
@@ -109,6 +121,12 @@ export class FileField {
                 'preview': 'preview',
 
                 /**
+                 * The image variation to display as the preview in the
+                 * viewer (if applicable).
+                 */
+                'maxPreviewSize': [600, 600],
+
+                /**
                  * The URL that any file will be uploaded to.
                  */
                 'uploadUrl': '/upload'
@@ -117,6 +135,15 @@ export class FileField {
             input,
             prefix
         )
+
+        // Convert `maxPreviewSize` option given as an attribute to a list
+        if (typeof(this._options.maxPreviewSize) === 'string') {
+            const maxPreviewSize = this._options.maxPreviewSize.split(',')
+            this._options.maxPreviewSize = [
+                maxPreviewSize[0],
+                maxPreviewSize[1]
+            ]
+        }
 
         // Configure the behaviours
         this._behaviours = {}
@@ -310,7 +337,12 @@ export class FileField {
 
                 'edit': () => {
                     const editingURL = this.getAssetProp('editingURL')
-                    const imageEditor = new ImageEditor(editingURL)
+                    const imageEditor = new ImageEditor(
+                        editingURL,
+                        this._options.cropAspectRatio,
+                        this._options.fixCropAspectRatio,
+                        this._options.maxPreviewSize
+                    )
                     imageEditor.init()
                     imageEditor.show()
 

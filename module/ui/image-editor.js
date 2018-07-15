@@ -13,15 +13,24 @@ import {Overlay} from './overlay'
  */
 export class ImageEditor extends Overlay {
 
-    constructor(imageURL, cropAspectRatio, maxPreviewSize=[600, 600]) {
+    constructor(
+        imageURL,
+        cropAspectRatio=1.0,
+        fixCropAspectRatio=false,
+        maxPreviewSize=[600, 600]
+    ) {
         super()
 
         // The URL of the image being edited (typically a working draft
         // version of the image to keep load times optimal).
         this._imageURL = imageURL
 
-        // An optional fixed aspect ratio for the cropping region
+        // An optional initial aspect ratio for the cropping region
         this._cropAspectRatio = cropAspectRatio
+
+        // A flag indicating if the cropping region for the image should be
+        // fixed.
+        this._fixCropAspectRatio = fixCropAspectRatio
 
         // The maximum size of the preview image generated when accessing the
         // previewDataURI property.
@@ -242,7 +251,8 @@ export class ImageEditor extends Overlay {
                     this._cropTool = new CropTool(
                         this._dom.table,
                         this._imageURL,
-                        this._aspectRatio
+                        this._cropAspectRatio,
+                        this._fixCropAspectRatio
                     )
                     this._cropTool.init()
 
