@@ -77,6 +77,12 @@ export class FileField {
                 'dropLabel': 'Drop file here',
 
                 /**
+                 * The image variation to display as the preview in the
+                 * image editor (if applicable).
+                 */
+                'editing': 'editing',
+
+                /**
                  * The type of file that the field will accept, can be either
                  * 'file' or 'image'. The type does not validate the or
                  * enforce the types of files that can be accepted, instead it
@@ -266,12 +272,6 @@ export class FileField {
         } else {
             this.clear()
         }
-
-        if (this._options.fileType === 'image') {
-            const imageEditor = new ImageEditor('../images/example.jpg')
-            imageEditor.init()
-            imageEditor.show()
-        }
     }
 
     /**
@@ -310,13 +310,30 @@ export class FileField {
                 },
 
                 'edit': () => {
-                    const imageEditor = new ImageEditor()
+                    const imageEditor = new ImageEditor(
+                        this.getAssetProp('editingURL')
+                    )
                     imageEditor.init()
                     imageEditor.show()
 
                     $.listen(
                         imageEditor.overlay,
                         {
+                            'okay': () => {
+                                const {transforms} = imageEditor
+                                const {previewDataURI} = imageEditor
+
+                                previewDataURI.then((dataURI) => {
+
+                                    // Set the preview image
+                                    this.setAssetProp('previewURL', dataURI)
+                                    this._viewer.imageURL = dataURI
+
+                                    // @@ Set base transforms against the image
+
+                                    imageEditor.hide()
+                               })
+                            },
                             'cancel': () => {
                                 imageEditor.hide()
                             },
@@ -601,6 +618,10 @@ FileField.behaviours = {
             case 'downloadURL':
                 return inst._asset['url']
 
+            case 'editingURL':
+                console.log(inst._options.editing)
+                return inst._asset['variations'][inst._options.editing].url
+
             case 'filename':
                 return inst._asset['filename']
 
@@ -614,6 +635,10 @@ FileField.behaviours = {
                 return inst._asset['core_meta']['image']['size'].join(' x ')
 
             case 'previewURL':
+                if (action === 'set') {
+                    inst._asset['variations'][inst._options.preview] = value
+                    return value
+                }
                 return inst._asset['variations'][inst._options.preview].url
 
             // no default
@@ -665,7 +690,7 @@ FileField.behaviours = {
                 ['File size', 'fileLength', getProp('fileLength'), true]
             ]
 
-            if (inst._options.fileType) {
+            if (inst._options.fileType === 'image') {
                 props.push(['Mode', 'imageMode', getProp('imageMode'), true])
                 props.push(['Size', 'imageSize', getProp('imageSize'), true])
                 props.push(['Alt', 'alt', inst.getAssetProp('alt'), false])

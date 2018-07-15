@@ -701,16 +701,31 @@ export class CropTool {
      * Remove the crop tool.
      */
     destroy() {
-        // Remove the area, region, frame, image and controls
         if (this._dom.tool !== null) {
+
+            // Remove event listeners
+            $.ignore(
+                document,
+                {
+                    'mousemove touchmove': this._handlers.drag,
+                    'mouseout mouseup touchend': this._handlers.endDrag
+                }
+            )
+
+            $.ignore(
+                document,
+                {
+                    'mousemove touchmove': this._handlers.resize,
+                    'mouseout mouseup touchend': this._handlers.endResize
+                }
+            )
+
+            // Remove the area, region, frame, image and controls
             this._dom.container.removeChild(this._dom.tool)
             this._dom.controls = null
             this._dom.frame = null
             this._dom.image = null
         }
-
-        // Remove the resize handler from the window
-        $.ignore(window, 'resize', this._handlers['resize'])
     }
 
     /**

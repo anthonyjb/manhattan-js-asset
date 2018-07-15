@@ -35,6 +35,35 @@ export class Overlay {
                     event.preventDefault()
                     $.dispatch(this.overlay, 'cancel')
                 }
+            },
+
+            'visibility': (event) => {
+
+                if (event.target !== this.overlay) {
+                    return
+                }
+
+                const {opacity} = getComputedStyle(this.overlay)
+                if (opacity === '0') {
+                    // Once the transition is complete flag that the overlay
+                    // is no longer transitioning and that the overlay is now
+                    // hidden.
+                    this._transitioning = false
+                    this._visible = false
+
+                    // Dispatch a hidden event against the overlay
+                    $.dispatch(this.overlay, 'hidden')
+                } else {
+                    // Once the transition is complete flag that the overlay
+                    // is no longer transitioning and that the overlay is now
+                    // visible.
+                    this._transitioning = false
+                    this._visible = true
+
+                    // Dispatch a visible event against the overlay
+                    $.dispatch(this.overlay, 'visible')
+                }
+
             }
         }
     }
@@ -125,20 +154,6 @@ export class Overlay {
 
         // Flag that the overlay is transitioning to the new state
         this._transitioning = true
-
-        setTimeout(
-            () => {
-                // Once the transition is complete flag that the overlay is no
-                // longer transitioning and that the overlay is now hidden.
-                this._transitioning = false
-                this._visible = true
-
-                // Dispatch a hidden event against the overlay
-                $.dispatch(this.overlay, 'hidden')
-            },
-            250
-        )
-
     }
 
     /**
@@ -169,6 +184,7 @@ export class Overlay {
         document.body.style.overflow = 'hidden'
 
         // Set-up event handlers
+        $.listen(this.overlay, {'transitionend': this._handlers.visibility})
         $.listen(document, {'keydown': this._handlers.cancel})
 
         // HACK: Force the browser to recognize the overlay element (allows
@@ -195,20 +211,6 @@ export class Overlay {
 
         // Flag that the overlay is transitioning to the new state
         this._transitioning = true
-
-        setTimeout(
-            () => {
-                // Once the transition is complete flag that the overlay is no
-                // longer transitioning and that the overlay is now visible.
-                this._transitioning = false
-                this._visible = true
-
-                // Dispatch a visible event against the overlay
-                $.dispatch(this.overlay, 'visible')
-
-            },
-            250
-        )
     }
 
 }

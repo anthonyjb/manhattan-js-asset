@@ -153,6 +153,8 @@ export class Metadata extends Overlay {
         this._dom['props'] = null
     }
 
+    // -- Getters & Setters --
+
     get props() {
         // Build an object of editable property values
         const props = {}

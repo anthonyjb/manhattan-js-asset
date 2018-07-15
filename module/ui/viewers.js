@@ -202,6 +202,7 @@ export class ImageViewer {
         // Domain for related DOM elements
         this._dom = {
             'container': null,
+            'image': null,
             'viewer': null
         }
 
@@ -210,6 +211,17 @@ export class ImageViewer {
     }
 
     // -- Getters & Setters --
+
+    get imageURL() {
+        return this._imageURL
+    }
+
+    set imageURL(value) {
+        this._imageURL = value
+        if (this._dom.image) {
+            this._dom.image.style.backgroundImage = `url('${this._imageURL}')`
+        }
+    }
 
     get viewer() {
         return this._dom.viewer
@@ -242,9 +254,9 @@ export class ImageViewer {
         this._dom.viewer = $.create('div', {'class': cls.css['viewer']})
 
         // Create the image element
-        const imageElm = $.create('div', {'class': cls.css['image']})
-        imageElm.style.backgroundImage = `url('${this._imageURL}')`
-        this.viewer.appendChild(imageElm)
+        this._dom.image = $.create('div', {'class': cls.css['image']})
+        this._dom.image.style.backgroundImage = `url('${this._imageURL}')`
+        this.viewer.appendChild(this._dom.image)
 
         // Create the buttons
         const buttonsElm = $.create('div', {'class': cls.css['buttons']})

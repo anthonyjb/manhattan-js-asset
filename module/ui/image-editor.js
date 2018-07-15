@@ -32,6 +32,9 @@ export class ImageEditor extends Overlay {
         // The orientation of the image (0, 90, 180, 270)
         this._orientation = 0
 
+        // Flag indicating if the image is currently being rotated
+        this._rotating = false
+
         // Domain for related DOM elements
         this._dom['image'] = null
         this._dom['mask'] = null
@@ -46,6 +49,77 @@ export class ImageEditor extends Overlay {
         this._handlers['rotate'] = (event) => {
             this.rotate()
         }
+
+        this._handlers['rotated'] = (event) => {
+            if (event.target === this._dom.image) {
+                this._rotating = false
+            }
+        }
+    }
+
+    // -- Getters & Setters --
+
+    get transforms() {
+        const transforms = []
+
+        // Rotate
+        if (this._orientation !== 0) {
+            transforms.push(['rotate', this._orientation])
+        }
+
+        // Crop
+        const crop = this._cropTool.crop
+        if (crop[0][0] + crop[0][1] !== 0 || crop[1][0] + crop[1][1] !== 2) {
+            transforms.push(['crop', crop])
+        }
+
+        return transforms
+    }
+
+    get previewDataURI() {
+        return new Promise((resolve, reject) => {
+
+            // Create a canvas to hold the base image
+            const baseCanvas = document.createElement('canvas')
+            baseCanvas.setAttribute('width', 304)
+            baseCanvas.setAttribute('height', 304)
+            const baseContext = baseCanvas.getContext('2d')
+
+            // Build a canvas to hold the transformed image
+            const outCanvas = document.createElement('canvas')
+            outCanvas.setAttribute('width', 152)
+            outCanvas.setAttribute('height', 152)
+            const outContext = outCanvas.getContext('2d')
+
+            // Create the base image to paste into the canvas
+            const baseImage = new Image()
+            baseImage.setAttribute('crossOrigin', 'anonymous')
+            baseImage.src = this._imageURL
+
+            baseImage.onload = () => {
+
+                // Draw the base image into the base canvas at the current
+                // orientation.
+                baseContext.save()
+                baseContext.translate(
+                    baseCanvas.width / 2,
+                    baseCanvas.height / 2
+                )
+                baseContext.rotate(90 * Math.PI / 180)
+                baseContext.drawImage(
+                    baseImage,
+                    -baseCanvas.width / 2,
+                    -baseCanvas.height / 2
+                )
+                baseContext.restore()
+
+                // @@ Apply any crop by drawing the base canvas into the out
+                // canvas.
+                outContext.drawImage(baseCanvas, 0, 0)
+
+                resolve(outCanvas.toDataURL())
+            }
+        })
     }
 
     // -- Public methods --
@@ -63,7 +137,7 @@ export class ImageEditor extends Overlay {
         }
 
         // Remove the resize handler from the window
-        $.ignore(window, 'resize', this._handlers['resize'])
+        $.ignore(window, {'resize': this._handlers['resize']})
 
         super.destroy()
     }
@@ -127,6 +201,10 @@ export class ImageEditor extends Overlay {
         img.src = this._imageURL
 
         // Set up event listeners
+        $.listen(
+            this._dom.image,
+            {'transitionend': this._handlers['rotated']}
+        )
         $.listen(this.overlay, {'rotate': this._handlers.rotate})
         $.listen(window, {'resize': this._handlers.resize})
     }
@@ -135,6 +213,14 @@ export class ImageEditor extends Overlay {
      * Rotate the image one turn anti-clockwise.
      */
     rotate() {
+        // Check the image isn't currently being rotated
+        if (this._rotating) {
+            return
+        }
+
+        // Flag the image as rotating while we perform the rotation
+        this._rotating = true
+
         // Hide the crop tool while we rotate
         this._cropTool.visible = false
 
