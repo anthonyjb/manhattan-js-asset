@@ -2,48 +2,10 @@ import * as $ from 'manhattan-essentials'
 
 import {Acceptor} from './ui/acceptor'
 import {GalleryItem} from './ui/gallery-item'
+import {Semaphore} from './utils/semaphores'
 
 
-// -- Class definitions --
-
-/**
- * A basic semaphore used to limit the number of files uploaded
- * simultaneously.
- */
-class UploadSemaphore {
-
-    constructor(maxUploads) {
-
-        // The maximum number of uploads allowed
-        this._maxUploads = maxUploads
-
-        // The current number of uploads permissions aquired
-        this._uploads = 0
-    }
-
-    // -- Public methods --
-
-    /**
-     * Aquire permission to upload a file.
-     */
-    aquire() {
-        if (this._uploads >= this._maxUploads) {
-            return false
-        }
-
-        this._uploads += 1
-
-        return true
-    }
-
-    /**
-     * Free up a permission to upload a file.
-     */
-    free() {
-        this._uploads = Math.max(0, this._uploads - 1)
-    }
-}
-
+// -- Class definition --
 
 /**
  * An gallery UI component.
