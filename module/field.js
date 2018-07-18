@@ -1,34 +1,11 @@
 import * as $ from 'manhattan-essentials'
 
-import {Acceptor} from './ui/acceptor.js'
-import {ErrorMessage} from './ui/error-message.js'
-import {ImageEditor} from './ui/image-editor.js'
-import {Metadata} from './ui/metadata.js'
-import {Uploader} from './ui/uploader.js'
-import {FileViewer, ImageViewer} from './ui/viewers.js'
-
-
-// -- Errors --
-
-class ResponseError extends Error {
-
-}
-
-
-// Utils
-
-/**
- * Format the size of a file in bytes to use common units.
- */
-export function formatBytes(bytes) {
-    if (bytes === 0) {
-        return '0 bytes'
-    }
-    const units = ['bytes', 'kb', 'mb', 'gb', 'tb', 'pb']
-    const unit = Math.floor(Math.log(bytes) / Math.log(1024))
-    const size = parseFloat((bytes / Math.pow(1024, unit)).toFixed(1))
-    return `${size} ${units[unit]}`
-}
+import {ResponseError} from './errors'
+import {ErrorMessage} from './ui/error-message'
+import {ImageEditor} from './ui/image-editor'
+import * as defaultFactories from './utils/behaviours/defaults'
+import * as manhattanFactories from './utils/behaviours/manhattan'
+import {formatBytes} from './utils/formatting'
 
 
 // -- Class definition --
@@ -137,7 +114,7 @@ export class FileField {
         )
 
         // Convert `maxPreviewSize` option given as an attribute to a list
-        if (typeof(this._options.maxPreviewSize) === 'string') {
+        if (typeof this._options.maxPreviewSize === 'string') {
             const maxPreviewSize = this._options.maxPreviewSize.split(',')
             this._options.maxPreviewSize = [
                 maxPreviewSize[0],
@@ -152,10 +129,10 @@ export class FileField {
             this._behaviours,
             {
                 'acceptor': 'default',
-                'asset': 'default',
-                'assetProp': 'default',
-                'formData': 'minimal',
-                'metadata': 'default',
+                'asset': 'manhattan',
+                'assetProp': 'manhattan',
+                'formData': 'default',
+                'metadata': 'manhattan',
                 'uploader': 'default',
                 'viewer': 'default'
             },
@@ -555,63 +532,14 @@ FileField.behaviours = {
      * The `acceptor` behaviour is used to create a file acceptor UI component
      * for the field.
      */
-    'acceptor': {
-
-        /**
-         * Return an acceptor configured using the field options.
-         */
-        'default': (inst) => {
-            return new Acceptor(
-                inst.field,
-                `${inst.input.name}__acceptor`,
-                inst._options.label,
-                inst._options.dropLabel,
-                inst._options.allowDrop,
-                inst._options.accept,
-                false
-            )
-        }
-    },
+    'acceptor': {'default': defaultFactories.acceptor('field', false)},
 
     /**
      * The `asset` behaviour is used to extract/build asset information from a
      * response (e.g the payload returned when uploading/transforming a
      * file/asset).
      */
-    'asset': {
-
-        /**
-         * Return the asset value from the payload;
-         *
-         * - if payload contains 'asset' return that,
-         * - if payload contains 'assets' return `assets[0]`,
-         * - if payload does not contain either the 'asset' or 'assets' key ,
-         *   then raise an error;
-         *    - if the payload contains a 'reason' key the error is raised
-         *      with this as the message,
-         *    - if no reason is provided then we provide a default message for
-         *      the error.
-         *
-         */
-        'default': (inst, response) => {
-            const {payload} = JSON.parse(response)
-
-            // Attempt to extract the asset
-            if (payload.asset) {
-                return payload.asset
-            } else if (payload.assets) {
-                return payload.assets[0]
-            }
-
-            // Check for an reason there's no asset
-            if (payload.reason) {
-                throw new ResponseError(payload.reason)
-            }
-
-            throw new ResponseError('Unable to accept this file')
-        }
-
-    },
+    'asset': {'manhattan': manhattanFactories.asset()},
 
     /**
      * The `assetProp` behaviour is used to provide an interface/mapping for
@@ -631,119 +559,10 @@ FileField.behaviours = {
      *
      */
     'assetProp': {
-
-        /**
-         * Provide the default behaviour for properties against the asset
-         * (based on manhattan assets).
-         */
-        'default': (inst, action, name, value) => {
-
-            const transforms = []
-
-            switch (name) {
-
-            case 'alt':
-                if (action === 'set') {
-                    inst._asset['user_meta']['alt'] = value
-                    return value
-                }
-                return inst._asset['user_meta']['alt'] || ''
-
-            case 'contentType':
-                return inst._asset['content_type']
-
-            case 'downloadURL':
-                return inst._asset['url']
-
-            case 'editingURL':
-                return inst._asset['variations'][inst._options.editing].url
-
-            case 'filename':
-                return inst._asset['filename']
-
-            case 'fileLength':
-                return formatBytes(inst._asset['core_meta']['length'])
-
-            case 'imageMode':
-                return inst._asset['core_meta']['image']['mode']
-
-            case 'imageSize':
-                return inst._asset['core_meta']['image']['size'].join(' x ')
-
-            case 'previewURL':
-                return inst._asset['variations'][inst._options.preview].url
-
-            case 'transforms':
-
-                // Set transforms
-                if (action === 'set') {
-                    for (let transform of value) {
-                        switch (transform[0]) {
-
-                        case 'rotate':
-                            transforms.push({
-                                'id': 'image.rotate',
-                                'settings': {'angle': transform[1]}
-                            })
-                            break
-
-                        case 'crop':
-                            transforms.push({
-                                'id': 'image.crop',
-                                'settings': {
-                                    'top': transform[1][0][1],
-                                    'left': transform[1][0][0],
-                                    'bottom': transform[1][1][1],
-                                    'right': transform[1][1][0]
-                                }
-                            })
-                            break
-
-                        // no default
-
-                        }
-                    }
-                    inst._asset['base_transforms'] = transforms
-                    return value
-                }
-
-                // Get transforms
-                for (let transform of inst._asset['base_transforms']) {
-                    switch (transform.id) {
-
-                    case 'image.rotate':
-                        transforms.push(['rotate', transform.settings.angle])
-                        break
-
-                    case 'image.crop':
-                        transforms.push([
-                            'crop',
-                            [
-                                [
-                                    transform.settings.left,
-                                    transform.settings.top
-                                ],
-                                [
-                                    transform.settings.right,
-                                    transform.settings.bottom
-                                ]
-                            ]
-                        ])
-                        break
-
-                        // no default
-
-                    }
-                }
-                return transforms
-
-            // no default
-
-            }
-
-            return ''
-        }
-
+        'manhattan': manhattanFactories.assetProp(
+            '_asset',
+            '_options'
+        )
     },
 
     /**
@@ -751,101 +570,25 @@ FileField.behaviours = {
      * contains the file to be uploaded and any other parameters required, for
      * example a CSRF token.
      */
-    'formData': {
-
-        /**
-         * Return the minimal form data required to upload a file.
-         */
-        'minimal': (inst, file) => {
-            const formData = new FormData()
-            formData.append('file', file)
-            return formData
-        }
-
-    },
+    'formData': {'default': defaultFactories.formData()},
 
     /**
      * The `metadata` behaviour is used to create a metadata UI overlay which
      * allows users to view and modify metadata for the file.
      */
-    'metadata': {
-
-        /**
-         * Return the default metadata configuration.
-         */
-        'default': (inst) => {
-
-            const getProp = (prop) => {
-                return inst.getAssetProp(prop)
-            }
-
-            // Build the props for the metadata
-            const props = [
-                ['Filename', 'filename', getProp('filename'), true],
-                ['Content type', 'contentType', getProp('contentType'), true],
-                ['File size', 'fileLength', getProp('fileLength'), true]
-            ]
-
-            if (inst._options.fileType === 'image') {
-                props.push(['Mode', 'imageMode', getProp('imageMode'), true])
-                props.push(['Size', 'imageSize', getProp('imageSize'), true])
-                props.push(['Alt', 'alt', inst.getAssetProp('alt'), false])
-            }
-
-            return new Metadata(props)
-        }
-    },
+    'metadata': {'manhattan': manhattanFactories.metadata('_options')},
 
     /**
      * The `uploader` behaviour is used to create a file uploader UI component
      * for the field.
      */
-    'uploader': {
-
-        /**
-         * Return the default uploader configuration.
-         */
-        'default': (inst, endpoint, formData) => {
-            return new Uploader(inst.field, endpoint, formData)
-        }
-    },
+    'uploader': {'default': defaultFactories.uploader('field')},
 
     /**
      * The `viewer` behaviour is used to create a file viewer UI component for
      * the field.
      */
-    'viewer': {
-
-        /**
-         * Return the default uploader configuration.
-         */
-        'default': (inst) => {
-            let viewer = null
-
-            switch (inst._options.fileType) {
-
-            case 'file':
-                viewer = new FileViewer(
-                    inst.field,
-                    inst.getAssetProp('filename'),
-                    inst.getAssetProp('fileLength')
-                )
-                break
-
-            case 'image':
-                viewer = new ImageViewer(
-                    inst.field,
-                    inst.getAssetProp('previewURL')
-                )
-                break
-
-            // no default
-
-            }
-
-            return viewer
-        }
-    }
+    'viewer': {'default': defaultFactories.viewer('field', '_options')}
 }
 
 

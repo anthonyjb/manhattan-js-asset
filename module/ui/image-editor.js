@@ -1,7 +1,8 @@
 import * as $ from 'manhattan-essentials'
 
-import {CropTool, orient} from './crop-tool'
+import {CropTool} from './crop-tool'
 import {Overlay} from './overlay'
+import {orient} from './../utils/rects'
 
 
 // -- Class definition --

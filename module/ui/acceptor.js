@@ -177,7 +177,8 @@ export class Acceptor {
             {
                 'type': 'file',
                 'name': this._name,
-                'class': cls.css['input']
+                'class': cls.css['input'],
+                'title': ' '
             }
         )
 
@@ -222,10 +223,12 @@ export class Acceptor {
             }
         )
 
-        $.listen(
-            this._dom.dropZone,
-            {'drop': this._handlers.acceptDrop}
-        )
+        if (this._allowDrop) {
+            $.listen(
+                this._dom.dropZone,
+                {'drop': this._handlers.acceptDrop}
+            )
+        }
 
         $.listen(
             this._dom.input,

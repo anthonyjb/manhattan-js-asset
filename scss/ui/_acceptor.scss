@@ -41,6 +41,7 @@
     &__input {
         cursor: pointer;
         font-size: 999px;
+        opacity: 0;
         outline: none;
         position: absolute;
         right: 0;
@@ -128,6 +129,46 @@
 
                 50% {
                     background-position: center 8px;
+                }
+
+                100% {
+                    background-position: center 0px;
+                }
+            }
+        }
+    }
+
+    .mh-gallery__acceptor & {
+        &__drop-zone,
+        &__faceplate {
+            align-items: center;
+            display: flex;
+            justify-content: center;
+
+            &::before {
+                background-color: transparent;
+                background-position: center center;
+                background-repeat: no-repeat;
+                content: '';
+                display: block;
+                height: 24px;
+                margin-right: 8px;
+                width: 16px;
+            }
+        }
+
+        &__drop-zone::before {
+            animation-name: mh-file-bounce;
+            animation-duration: 0.5s;
+            animation-iteration-count: infinite;
+
+            @keyframes mh-file-bounce {
+                0% {
+                    background-position: center 0px;
+                }
+
+                50% {
+                    background-position: center 4px;
                 }
 
                 100% {
