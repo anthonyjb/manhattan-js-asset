@@ -572,14 +572,20 @@
       height: 16px;
       margin-right: 8px;
       width: 16px; }
+  .mh-gallery--file .mh-uploader__progress-meter,
+  .mh-gallery--image .mh-uploader__progress-meter,
   .mh-file-field--image .mh-uploader__progress-meter {
     background: #353b48;
     height: 16px; }
+  .mh-gallery--file .mh-uploader__status,
+  .mh-gallery--image .mh-uploader__status,
   .mh-file-field--image .mh-uploader__status {
     align-items: center;
     display: flex;
     flex-direction: column;
     justify-content: center; }
+    .mh-gallery--file .mh-uploader__status::before,
+    .mh-gallery--image .mh-uploader__status::before,
     .mh-file-field--image .mh-uploader__status::before {
       background-color: transparent;
       background-position: center center;
@@ -598,29 +604,56 @@
   position: absolute;
   right: 0;
   top: 0; }
-  .mh-file-viewer__info {
-    align-items: center;
-    display: flex;
-    justify-content: left; }
   .mh-file-viewer__filename {
     display: block;
     font-weight: bold;
-    line-height: 48px;
-    max-width: calc(100% - 240px);
     overflow: hidden;
-    padding-left: 8px;
     text-overflow: ellipsis;
     white-space: nowrap; }
   .mh-file-viewer__file-size {
-    display: block;
-    margin-left: 8px; }
+    display: block; }
   .mh-file-viewer__buttons {
     display: flex;
     justify-content: space-between;
     position: absolute;
-    right: 8px;
-    top: 8px;
     width: 112px; }
+  .mh-file-field--file .mh-file-viewer__info {
+    align-items: center;
+    display: flex;
+    justify-content: left; }
+  .mh-file-field--file .mh-file-viewer__filename {
+    line-height: 48px;
+    max-width: calc(100% - 240px);
+    padding-left: 8px; }
+  .mh-file-field--file .mh-file-viewer__file-size {
+    margin-left: 8px; }
+  .mh-file-field--file .mh-file-viewer__buttons {
+    right: 8px;
+    top: 8px; }
+  .mh-gallery--file .mh-file-viewer__info {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: center;
+    padding: 8px;
+    text-align: center; }
+    .mh-gallery--file .mh-file-viewer__info::before {
+      background: transparent url("../images/file.svg") center center no-repeat;
+      background-size: 32px;
+      content: '';
+      display: block;
+      height: 32px;
+      margin: 0 auto;
+      width: 32px; }
+  .mh-gallery--file .mh-file-viewer__filename {
+    line-height: 24px;
+    max-width: 100%;
+    margin-top: 8px; }
+  .mh-gallery--file .mh-file-viewer__file-size {
+    line-height: 24px; }
+  .mh-gallery--file .mh-file-viewer__buttons {
+    bottom: 8px;
+    left: calc(50% - 56px); }
   .mh-file-viewer__download {
     background-image: url("../images/drop.svg"); }
   .mh-file-viewer__metadata {
@@ -713,22 +746,45 @@
     background-color: #2d3436;
     margin-left: 0; } }
 
-.mh-gallery__acceptor {
+.mh-gallery {
+  margin: auto;
+  max-width: 304px; }
+  @media (min-width: 616px) {
+    .mh-gallery {
+      min-width: 616px; } }
+  @media (min-width: 928px) {
+    .mh-gallery {
+      min-width: 928px; } }
+  @media (min-width: 1240px) {
+    .mh-gallery {
+      min-width: 1240px; } }
+  .mh-gallery__acceptor {
+    background: #2d3436;
+    border-radius: 3px;
+    color: #fff;
+    font-family: sans-serif;
+    font-size: 16px;
+    height: 48px;
+    margin-bottom: 20px;
+    margin-top: 10px;
+    overflow: hidden;
+    position: relative;
+    user-select: none; }
+  .mh-gallery__items {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 304px);
+    grid-template-rows: repeat(auto-fill, 240px);
+    grid-row-gap: 8px;
+    grid-column-gap: 8px;
+    margin-top: 32px;
+    width: 100%; }
+
+.mh-gallery-item {
   background: #2d3436;
   border-radius: 3px;
   color: #fff;
   font-family: sans-serif;
   font-size: 16px;
-  height: 48px;
-  margin-bottom: 20px;
-  margin-top: 10px;
+  height: 240px;
   overflow: hidden;
-  position: relative;
-  user-select: none; }
-
-.mh-gallery__items {
-  border: 1px solid green;
-  margin-top: 32px; }
-
-.mh-gallery-item {
-  border: 1px solid red; }
+  position: relative; }

@@ -21,7 +21,6 @@ export class Acceptor {
         accept='',
         multiple=false
     ) {
-
         // The acceptor will create an input field used to capture/accept
         // a file the user wants to upload. The input field requires a name,
         // typically this will be a combination of the associated hidden asset
@@ -67,6 +66,7 @@ export class Acceptor {
 
                 // If the acceptor doesn't support accepting multiple files
                 // then select only the first file dropped.
+                files = [...files]
                 if (!this._multiple) {
                     files = [files[0]]
                 }
@@ -82,8 +82,9 @@ export class Acceptor {
             'change': (event) => {
                 let {files} = event.target
 
-                // If the acceptor doesn't support accepting multiple files
-                // then select only the first file dropped.
+                // Convert the list of files to an array of files (of the
+                // appropriate size).
+                files = [...files]
                 if (!this._multiple) {
                     files = [files[0]]
                 }
@@ -96,7 +97,7 @@ export class Acceptor {
                 $.dispatch(
                     this.acceptor,
                     'accepted',
-                    {files}
+                    {files, a: files}
                 )
             },
 

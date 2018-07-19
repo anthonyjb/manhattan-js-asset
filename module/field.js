@@ -36,12 +36,6 @@ export class FileField {
                 'allowDrop': false,
 
                 /**
-                 * If true then a download button will be displayed in the
-                 * viewer component.
-                 */
-                'allowDownload': false,
-
-                /**
                  * If true then an edit button will be displayed in the
                  * viewer component.
                  */
@@ -67,8 +61,8 @@ export class FileField {
 
                 /**
                  * The type of file that the field will accept, can be either
-                 * 'file' or 'image'. The type does not validate the or
-                 * enforce the types of files that can be accepted, instead it
+                 * 'file' or 'image'. The type does not validate or enforce
+                 * the types of files that can be accepted, instead it
                  * provides a hint to the class about how to configure itself
                  * best for the expected type of file.
                  */
@@ -86,12 +80,6 @@ export class FileField {
                 'label': 'Select a file...',
 
                 /**
-                 * If true then no remove button will be displayed in the
-                 * viewer component.
-                 */
-                'preventRemove': false,
-
-                /**
                  * The image variation to display as the preview in the
                  * viewer (if applicable).
                  */
@@ -101,7 +89,7 @@ export class FileField {
                  * The image variation to display as the preview in the
                  * viewer (if applicable).
                  */
-                'maxPreviewSize': [600, 600],
+                'maxPreviewSize': [480, 480],
 
                 /**
                  * The URL that any file will be uploaded to.

@@ -3,9 +3,11 @@ import * as $ from 'manhattan-essentials'
 
 // -- Defaults --
 
-function defaultStatusTemplate(progress) {
+export function defaultStatusTemplate(progress) {
     if (progress < 0) {
         return 'Waiting'
+    } else if (progress >= 100) {
+        return 'Processing'
     }
     return `Uploading ${progress}%`
 }
@@ -102,6 +104,14 @@ export class Uploader {
 
                 // Clear the handle to the request
                 this._xhr = null
+
+                // Set the progress to 100%
+                this._progress(100)
+
+                // Free the semaphore
+                if (this._semaphore) {
+                   this._semaphore.free()
+                }
 
                 // Dispatch an uploaded event
                 $.dispatch(this.uploader, 'uploaded', {response})
@@ -217,9 +227,9 @@ export class Uploader {
     _upload() {
         const cls = this.constructor
 
-        // If there's a semaphore attempt to aquire a resource (e.g check we
+        // If there's a semaphore attempt to acquire a resource (e.g check we
         // haven't reached the maximum number of uploads).
-        if (this._semaphore && !this._semaphore.aquire()) {
+        if (this._semaphore && !this._semaphore.acquire()) {
             return
         }
 

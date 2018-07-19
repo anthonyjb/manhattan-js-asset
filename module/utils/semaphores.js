@@ -23,7 +23,7 @@ export class Semaphore {
         if (this._acquiredSlots >= this._slots) {
             return false
         }
-        this._slots += 1
+        this._acquiredSlots += 1
         return true
     }
 
@@ -31,6 +31,13 @@ export class Semaphore {
      * Free up a slot.
      */
     free() {
-        this._slots = Math.max(0, this._slots - 1)
+        this._acquiredSlots = Math.max(0, this._acquiredSlots - 1)
+    }
+
+    /**
+     * Reset the semaphore.
+     */
+    reset() {
+        this._acquiredSlots = 0
     }
 }

@@ -6,7 +6,7 @@
 import * as $ from 'manhattan-essentials'
 
 import {Acceptor} from './../../ui/acceptor'
-import {Uploader} from './../../ui/uploader'
+import {Uploader, defaultStatusTemplate} from './../../ui/uploader'
 import {FileViewer, ImageViewer} from './../../ui/viewers'
 
 
@@ -46,13 +46,25 @@ export function formData() {
     return _formData
 }
 
-export function uploader(containerAttr) {
+export function uploader(containerAttr, semaphoreAttr=null) {
 
     /**
      * Return an Uploader instance.
      */
     function _uploader(inst, endpoint, data) {
-        return new Uploader(inst[containerAttr], endpoint, data)
+        let semaphore = null
+        if (semaphoreAttr) {
+            semaphore = inst[semaphoreAttr]
+        }
+
+        return new Uploader(
+            inst[containerAttr],
+            endpoint,
+            data,
+            'horizontal',
+            defaultStatusTemplate,
+            semaphore
+        )
     }
 
     return _uploader

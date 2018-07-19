@@ -69,6 +69,8 @@
         }
     }
 
+    .mh-gallery--file &,
+    .mh-gallery--image &,
     .mh-file-field--image & {
         &__progress-meter {
             background: #353b48;
