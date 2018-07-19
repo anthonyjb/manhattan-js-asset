@@ -1,10 +1,12 @@
 import * as $ from 'manhattan-essentials'
+import {Sortable} from 'manhattan-sortable'
 
 import {Acceptor} from './ui/acceptor'
 import {GalleryItem} from './ui/gallery-item'
 import * as defaultFactories from './utils/behaviours/defaults'
 import * as manhattanFactories from './utils/behaviours/manhattan'
 import {Semaphore} from './utils/semaphores'
+import {cloneGalleryItem} from './utils/sorting'
 
 
 // -- Class definition --
@@ -140,6 +142,9 @@ export class Gallery {
         // A semaphore used to control the number of simultaneous uploads
         this._semaphore = new Semaphore(this._options.maxUploads)
 
+        // Handle to the Sortable instance to support sorting gallery items
+        this._sortable = null
+
         // Domain for related DOM elements
         this._dom = {
             'acceptor': null,
@@ -162,13 +167,28 @@ export class Gallery {
                     this._items.splice(index, 1)
                 }
 
-                // Sync the item list with the input
+                this._syncInput()
+            },
+
+            'sortItems': (event) => {
+                // Change the order of the gallery items to match that of the
+                // DOM.
+                const items = []
+                const itemElms = $.many(
+                    `.${GalleryItem.css['item']}`,
+                    this._dom.items
+                )
+
+                for (let itemElm of itemElms) {
+                    items.push(itemElm._mhGalleryItem)
+                }
+
+                this._items = items
+
                 this._syncInput()
             },
 
             'updateItem': (event) => {
-
-                // Sync the item list with the input
                 this._syncInput()
             }
         }
@@ -195,6 +215,8 @@ export class Gallery {
      */
     destroy() {
         // @@ Reset the semaphore
+
+        // @@ Remove sort behaviour
 
         return this.todo
     }
@@ -244,7 +266,21 @@ export class Gallery {
         this._acceptor = cls.behaviours.acceptor[behaviour](this)
         this._acceptor.init()
 
-        // Set up event handlers for the acceptor
+        // Set up sort behaviour for items
+        this._sortable = new Sortable(
+            this._dom.items,
+            {
+                'axis': 'horizontal',
+                'childSelector': '.mh-gallery-item--populated',
+                'grabSelector': '.mh-file-viewer, .mh-image-viewer',
+                'grabber': 'selector',
+                'helper': 'cloneGalleryItem'
+            }
+        )
+        this._sortable.init()
+
+        // Set up event handlers
+
         $.listen(
             this._acceptor.acceptor,
             {
@@ -259,6 +295,11 @@ export class Gallery {
                     }
                 }
             }
+        )
+
+        $.listen(
+            this._dom.items,
+            {'sorted': this._handlers.sortItems}
         )
 
         // @@ Pre-populate the gallery using any existing input value

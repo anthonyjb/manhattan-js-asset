@@ -630,14 +630,14 @@
   .mh-file-field--file .mh-file-viewer__buttons {
     right: 8px;
     top: 8px; }
-  .mh-gallery--file .mh-file-viewer__info {
+  .mh-gallery-item .mh-file-viewer__info {
     display: flex;
     flex-direction: column;
     height: 100%;
     justify-content: center;
     padding: 8px;
     text-align: center; }
-    .mh-gallery--file .mh-file-viewer__info::before {
+    .mh-gallery-item .mh-file-viewer__info::before {
       background: transparent url("../images/file.svg") center center no-repeat;
       background-size: 32px;
       content: '';
@@ -645,13 +645,13 @@
       height: 32px;
       margin: 0 auto;
       width: 32px; }
-  .mh-gallery--file .mh-file-viewer__filename {
+  .mh-gallery-item .mh-file-viewer__filename {
     line-height: 24px;
     max-width: 100%;
     margin-top: 8px; }
-  .mh-gallery--file .mh-file-viewer__file-size {
+  .mh-gallery-item .mh-file-viewer__file-size {
     line-height: 24px; }
-  .mh-gallery--file .mh-file-viewer__buttons {
+  .mh-gallery-item .mh-file-viewer__buttons {
     bottom: 8px;
     left: calc(50% - 56px); }
   .mh-file-viewer__download {
@@ -788,3 +788,22 @@
   height: 240px;
   overflow: hidden;
   position: relative; }
+  .mh-gallery-item--sort-helper {
+    pointer-events: none;
+    position: absolute;
+    width: 304px; }
+    .mh-gallery-item--sort-helper .mh-file-viewer__buttons,
+    .mh-gallery-item--sort-helper .mh-image-viewer__buttons {
+      display: none; }
+
+.mh-sortable--sorting {
+  cursor: move; }
+  .mh-sortable--sorting .mh-file-viewer__buttons,
+  .mh-sortable--sorting .mh-image-viewer__buttons {
+    display: none; }
+
+.mh-sortable-ghost .mh-file-viewer__info {
+  opacity: 0.5; }
+
+.mh-sortable-ghost .mh-image-viewer__image {
+  filter: contrast(75%) saturate(25%); }

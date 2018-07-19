@@ -55,4 +55,55 @@
     height: 240px;
     overflow: hidden;
     position: relative;
+
+    &--sort-helper {
+        pointer-events: none;
+        position: absolute;
+        width: 304px;
+
+        .mh-file-viewer,
+        .mh-image-viewer {
+
+            &__buttons {
+                display: none;
+            }
+
+        }
+
+    }
+}
+
+
+// Sorting styles
+
+.mh-sortable--sorting {
+    cursor: move;
+
+    .mh-file-viewer,
+    .mh-image-viewer {
+
+        &__buttons {
+            display: none;
+        }
+
+    }
+
+}
+
+.mh-sortable-ghost {
+
+    .mh-file-viewer {
+        &__info {
+            opacity: 0.5;
+        }
+    }
+
+    .mh-image-viewer {
+
+        &__image {
+            filter: contrast(75%) saturate(25%);
+        }
+
+    }
+
 }

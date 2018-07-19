@@ -227,6 +227,9 @@ export class GalleryItem {
         // Set the new state
         this._state = 'viewing'
 
+        // Flag element as populated in the DOM
+        this.item.classList.add(cls.css['populated'])
+
         // Dispatch a populated event
         $.dispatch(this.item, 'populated', {'item': this})
     }
@@ -356,5 +359,11 @@ GalleryItem.css = {
     /**
      * Applied to the gallery item element.
      */
-    'item': 'mh-gallery-item'
+    'item': 'mh-gallery-item',
+
+    /**
+     * Applied to the gallery item when it is populated with an asset.
+     */
+    'populated': 'mh-gallery-item--populated'
+
 }
