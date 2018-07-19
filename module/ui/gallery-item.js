@@ -41,7 +41,10 @@ export class GalleryItem {
     // -- Getters & Setters --
 
     get asset() {
-        return Object.assign(this._asset, {})
+        if (this._asset) {
+            return Object.assign(this._asset, {})
+        }
+        return null
     }
 
     get parentBehaviours() {
@@ -215,7 +218,7 @@ export class GalleryItem {
                     // Remove the item
                     this.destroy()
 
-                    // Dispatch the remove event
+                    // Dispatch the removed event
                     $.dispatch(this.item, 'removed', {'item': this})
                 }
             }
@@ -275,8 +278,12 @@ export class GalleryItem {
         $.listen(
             this._uploader.uploader,
             {
-                'aborted error': () => {
-                    this.clear()
+                'cancelled aborted error': () => {
+                    // Remove the item
+                    this.destroy()
+
+                    // Dispatch the removed event
+                    $.dispatch(this.item, 'removed', {'item': this})
                 },
 
                 'uploaded': (event) => {

@@ -261,7 +261,7 @@ export class Gallery {
             }
         )
 
-        // @@ Populate the gallery from the input
+        // @@ Pre-populate the gallery using any existing input value
 
     }
 
@@ -290,7 +290,7 @@ export class Gallery {
     _syncInput() {
 
         const assets = []
-        for (let item of this._items) {
+        for (let item of this._items.slice()) {
 
             // Check if the item has an asset and if so add it to the assets
             // list.

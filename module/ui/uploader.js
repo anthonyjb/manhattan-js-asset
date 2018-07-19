@@ -72,13 +72,16 @@ export class Uploader {
                 if (this._xhr) {
                     this._xhr.abort()
                 }
+
+                // Dispatch a cancelled event against the uploader
+                $.dispatch(this.uploader, 'cancelled')
             },
 
             'reqAbort': (event) => {
                 // Clear the handle to the request
                 this._xhr = null
 
-                // Dispatch a cancelled event against the uploader
+                // Dispatch an abored event against the uploader
                 $.dispatch(this.uploader, 'aborted')
             },
 

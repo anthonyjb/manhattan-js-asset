@@ -445,7 +445,7 @@ export class FileField {
         $.listen(
             this._uploader.uploader,
             {
-                'aborted error': () => {
+                'aborted cancelled error': () => {
                     this.clear()
                 },
 
