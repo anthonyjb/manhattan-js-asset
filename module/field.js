@@ -242,6 +242,9 @@ export class FileField {
     init() {
         const cls = this.constructor
 
+        // Store a reference to the file field instance against the input
+        this.input._mhFileField = this
+
         // Create the field element
         this._dom.field = $.create(
             'div',
@@ -412,7 +415,7 @@ export class FileField {
         this.input.value = JSON.stringify(this._asset)
 
         // Trigger a change event against the input
-        $.dispatch(this.input, 'chanage')
+        $.dispatch(this.input, 'change')
     }
 
     /**

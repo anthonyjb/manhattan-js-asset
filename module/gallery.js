@@ -150,6 +150,28 @@ export class Gallery {
 
         // Store a reference to the input element
         this._dom.input = input
+
+        // Set up event handlers
+        this._handlers = {
+
+            'removeItem': (event) => {
+
+                // Remove the item from the gallery
+                var index = this._items.indexOf(event.item)
+                if (index > -1) {
+                    this._items.splice(index, 1)
+                }
+
+                // Sync the item list with the input
+                this._syncInput()
+            },
+
+            'updateItem': (event) => {
+
+                // Sync the item list with the input
+                this._syncInput()
+            }
+        }
     }
 
     // -- Getters & Setters --
@@ -182,6 +204,9 @@ export class Gallery {
      */
     init() {
         const cls = this.constructor
+
+        // Store a reference to the gallery instance against the input
+        this.input._mhGallery = this
 
         // Create the gallery element
         this._dom.gallery = $.create(
@@ -225,15 +250,60 @@ export class Gallery {
             {
                 'accepted': (event) => {
                     for (let file of event.files) {
-                        let item = new GalleryItem(this._dom.items, this)
-                        this._items.push(item)
 
-                        item.init()
+                        // Create a new gallery item
+                        let item = this._addItem()
+
+                        // Upload the file via the item
                         item.upload(file)
                     }
                 }
             }
         )
+
+        // @@ Populate the gallery from the input
+
+    }
+
+    // -- Private methods --
+
+    /**
+     * Add a item to the gallery.
+     */
+    _addItem() {
+
+        // Create the item
+        let item = new GalleryItem(this._dom.items, this)
+        this._items.push(item)
+        item.init()
+
+        // Add event handlers for the item
+        $.listen(item.item, {'removed': this._handlers.removeItem})
+        $.listen(item.item, {'populated updated': this._handlers.updateItem})
+
+        return item
+    }
+
+    /**
+     * Synchronize the associated input field with the items in the gallery.
+     */
+    _syncInput() {
+
+        const assets = []
+        for (let item of this._items) {
+
+            // Check if the item has an asset and if so add it to the assets
+            // list.
+            if (item.asset) {
+                assets.push(item.asset)
+            }
+        }
+
+        // Update the input value to reflect the current state of the gallery
+        this.input.value = JSON.stringify(assets)
+
+        // Trigger a change event against the input
+        $.dispatch(this.input, 'change')
     }
 }
 

@@ -38,8 +38,6 @@ export class GalleryItem {
         this._dom.container = container
     }
 
-    // galleryOptions
-
     // -- Getters & Setters --
 
     get asset() {
@@ -69,10 +67,12 @@ export class GalleryItem {
     // -- Public methods --
 
     /**
-     * @@ Remove the gallery item.
+     * Remove the gallery item.
      */
     destroy() {
-        return this.todo
+        if (this._dom.item) {
+            this._dom.item.parentNode.removeChild(this._dom.item)
+        }
     }
 
     /**
@@ -90,16 +90,19 @@ export class GalleryItem {
     init() {
         const cls = this.constructor
 
-         // Create the gallery element
+        // Create the gallery element
         this._dom.item = $.create(
             'div',
             {'class': cls.css['item']}
         )
 
+        // Store a reference to the gallery item against the item element so
+        // that the gallery can link the element to the item on sort.
+        this.item._mhGalleryItem = this
+
         // Add the item to the page
         this._dom.container.appendChild(this._dom.item)
     }
-
 
     /**
      * Populate the gallery item (transition to the viewing state).
@@ -112,7 +115,6 @@ export class GalleryItem {
 
         // Update the asset and input value
         this._asset = asset
-        // @@ Need to let the gallery know the item has been updated
 
         // Set up the viewer
         const behaviourMap = this._gallery.constructor.behaviours
@@ -210,14 +212,20 @@ export class GalleryItem {
                 },
 
                 'remove': () => {
-                    // @@ Remove the item from the gallery
+                    // Remove the item
+                    this.destroy()
 
+                    // Dispatch the remove event
+                    $.dispatch(this.item, 'removed', {'item': this})
                 }
             }
         )
 
         // Set the new state
         this._state = 'viewing'
+
+        // Dispatch a populated event
+        $.dispatch(this.item, 'populated', {'item': this})
     }
 
     postError(message) {
@@ -234,7 +242,8 @@ export class GalleryItem {
         // Set the asset property
         behaviourMap[behaviour](this, 'set', name, value)
 
-        // @@ Trigger a change event against ???
+        // Dispatch an updated event
+        $.dispatch(this.item, 'updated', {'item': this})
     }
 
     /**
@@ -303,7 +312,7 @@ export class GalleryItem {
         this._state = 'uploading'
     }
 
-    // -- Private  methods --
+    // -- Private methods --
 
     /**
      * Destroy the component for the current state (acceptor, uploader or
