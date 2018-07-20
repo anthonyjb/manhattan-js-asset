@@ -25,6 +25,7 @@
         justify-content: space-between;
         position: absolute;
         width: 112px;
+        z-index: 2;
     }
 
     .mh-file-field--file & {
@@ -86,6 +87,15 @@
             line-height: 24px;
         }
 
+        &__handle {
+            height: 100%;
+            left: 0;
+            position: absolute;
+            top: 0;
+            width: 100%;
+            z-index: 1;
+        }
+
         &__buttons {
             bottom: 8px;
             left: calc(50% - 56px);
@@ -131,6 +141,7 @@
         left: calc(50% - 76px);
         position: absolute;
         width: 152px;
+        z-index: 2;
     }
 
     &__image {
@@ -143,6 +154,15 @@
         position: absolute;
         right: 0;
         top: 0;
+    }
+
+    &__handle {
+        height: 100%;
+        left: 0;
+        position: absolute;
+        top: 0;
+        width: 100%;
+        z-index: 1;
     }
 
     &__download {

@@ -616,7 +616,8 @@
     display: flex;
     justify-content: space-between;
     position: absolute;
-    width: 112px; }
+    width: 112px;
+    z-index: 2; }
   .mh-file-field--file .mh-file-viewer__info {
     align-items: center;
     display: flex;
@@ -651,6 +652,13 @@
     margin-top: 8px; }
   .mh-gallery-item .mh-file-viewer__file-size {
     line-height: 24px; }
+  .mh-gallery-item .mh-file-viewer__handle {
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: 1; }
   .mh-gallery-item .mh-file-viewer__buttons {
     bottom: 8px;
     left: calc(50% - 56px); }
@@ -675,7 +683,8 @@
     justify-content: space-between;
     left: calc(50% - 76px);
     position: absolute;
-    width: 152px; }
+    width: 152px;
+    z-index: 2; }
   .mh-image-viewer__image {
     background-position: center center;
     background-repeat: no-repeat;
@@ -686,6 +695,13 @@
     position: absolute;
     right: 0;
     top: 0; }
+  .mh-image-viewer__handle {
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: 1; }
   .mh-image-viewer__download {
     background-image: url("../images/drop.svg"); }
   .mh-image-viewer__edit {

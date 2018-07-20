@@ -272,7 +272,8 @@ export class Gallery {
             {
                 'axis': 'horizontal',
                 'childSelector': '.mh-gallery-item--populated',
-                'grabSelector': '.mh-file-viewer, .mh-image-viewer',
+                'grabSelector':
+                    '.mh-file-viewer__handle, .mh-image-viewer__handle',
                 'grabber': 'selector',
                 'helper': 'cloneGalleryItem'
             }

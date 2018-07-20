@@ -52,6 +52,7 @@ export class FileViewer {
         // Domain for related DOM elements
         this._dom = {
             'container': null,
+            'handle': null,
             'viewer': null
         }
 
@@ -103,6 +104,10 @@ export class FileViewer {
         fileSizeElm.textContent = this._fileSize
         infoElm.appendChild(fileSizeElm)
 
+        // Create the handle
+        const handleElm = $.create('div', {'class': cls.css['handle']})
+        this.viewer.appendChild(handleElm)
+
         // Create the buttons
         const buttonsElm = $.create('div', {'class': cls.css['buttons']})
         for (let button of ['download', 'metadata', 'remove']) {
@@ -152,6 +157,12 @@ FileViewer.css = {
      * information component.
      */
     'fileSize': 'mh-file-viewer__file-size',
+
+    /**
+     * Applied to the handle element which is used to enable drag/sort when
+     * the viewer is displayed within a gallery item.
+     */
+    'handle': 'mh-file-viewer__handle',
 
     /**
      * Applied to the file information component within the viewer.
@@ -258,6 +269,10 @@ export class ImageViewer {
         this._dom.image.style.backgroundImage = `url('${this._imageURL}')`
         this.viewer.appendChild(this._dom.image)
 
+        // Create the handle
+        const handleElm = $.create('div', {'class': cls.css['handle']})
+        this.viewer.appendChild(handleElm)
+
         // Create the buttons
         const buttonsElm = $.create('div', {'class': cls.css['buttons']})
         for (let button of ['download', 'edit', 'metadata', 'remove']) {
@@ -302,9 +317,10 @@ ImageViewer.css = {
     'edit': 'mh-image-viewer__edit',
 
     /**
-     * Applied to the image viewer.
+     * Applied to the handle element which is used to enable drag/sort when
+     * the viewer is displayed within a gallery item.
      */
-    'viewer': 'mh-image-viewer',
+    'handle': 'mh-image-viewer__handle',
 
     /**
      * Applied to image component within the viewer.
@@ -319,6 +335,11 @@ ImageViewer.css = {
     /**
      * Applied to the remove button within the viewer.
      */
-    'remove': 'mh-image-viewer__remove'
+    'remove': 'mh-image-viewer__remove',
+
+    /**
+     * Applied to the image viewer.
+     */
+    'viewer': 'mh-image-viewer'
 
 }
