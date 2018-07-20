@@ -124,19 +124,28 @@ export class ImageEditor extends Overlay {
                 // Draw the base image into the base canvas at the current
                 // orientation.
                 baseContext.save()
-                baseContext.translate(
-                    baseCanvas.width / 2,
-                    baseCanvas.height / 2
-                )
+
+                if (this._orientation === 90 || this._orientation === 270) {
+                    baseContext.translate(
+                        baseImage.height / 2,
+                        baseImage.width / 2
+                    )
+                } else {
+                    baseContext.translate(
+                        baseImage.width / 2,
+                        baseImage.height / 2
+                    )
+                }
+
                 baseContext.rotate(this._orientation * Math.PI / 180)
                 baseContext.drawImage(
                     baseImage,
-                    -baseCanvas.width / 2,
-                    -baseCanvas.height / 2
+                    -baseImage.width / 2,
+                    -baseImage.height / 2
                 )
                 baseContext.restore()
 
-                // Apply any crop by drawing the base canvas into the out
+                // Apply any crop by drawing the base canvas into the crop
                 // canvas.
                 const {crop} = this._cropTool
                 const cropX = parseInt(baseCanvas.width * crop[0][0], 10)
