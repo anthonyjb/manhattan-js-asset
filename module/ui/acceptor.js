@@ -44,6 +44,9 @@ export class Acceptor {
         // Flag indicating if the acceptor can accept multiple files
         this._multiple = multiple
 
+        // Flag indicating if the acceptor is current disabled
+        this._disabled = false
+
         // Domain for related DOM elements
         this._dom = {
             'acceptor': null,
@@ -61,6 +64,11 @@ export class Acceptor {
 
             'acceptDrop': (event) => {
                 event.preventDefault()
+
+                // Ignore drop if acceptor is disabled
+                if (this.disabled) {
+                    return
+                }
 
                 let {files} = event.dataTransfer
 
@@ -81,6 +89,11 @@ export class Acceptor {
 
             'change': (event) => {
                 let {files} = event.target
+
+                // Ignore change if acceptor is disabled
+                if (this.disabled) {
+                    return
+                }
 
                 // Convert the list of files to an array of files (of the
                 // appropriate size).
@@ -136,6 +149,23 @@ export class Acceptor {
         return this._dom.acceptor
     }
 
+    get disabled() {
+        return this._disabled
+    }
+
+    set disabled(value) {
+        this._disabled = value
+
+        if (this.acceptor) {
+            if (value) {
+                this.acceptor.classList.add(this.constructor.css['disabled'])
+            } else {
+                this.acceptor.classList
+                    .remove(this.constructor.css['disabled'])
+            }
+        }
+    }
+
     // -- Public methods --
 
     /**
@@ -171,6 +201,10 @@ export class Acceptor {
 
         // Create the acceptor element
         this._dom.acceptor = $.create('div', {'class': cls.css['acceptor']})
+
+        if (this._disabled) {
+            this._dom.acceptor.classList.add(cls.css['disabled'])
+        }
 
         // Create the file input element for the acceptor
         this._dom.input = $.create(
@@ -247,6 +281,11 @@ Acceptor.css = {
      * Applied to the acceptor element.
      */
     'acceptor': 'mh-acceptor',
+
+    /**
+     * Applied to the acceptor to flag when it's disabled.
+     */
+    'disabled': 'mh-acceptor--disabled',
 
     /**
      * Applied to the drop zone element within the acceptor.

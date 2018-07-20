@@ -78,7 +78,7 @@ export class Gallery {
                  * The maximum number of assets that can be added to the
                  * gallery.
                  */
-                'maxAssets': 0,
+                'maxAssets': 2,
 
                 /**
                  * The maximum number of simultaneous uploads the gallery
@@ -165,6 +165,13 @@ export class Gallery {
                 var index = this._items.indexOf(event.item)
                 if (index > -1) {
                     this._items.splice(index, 1)
+                }
+
+                // Check if the acceptor should be enabled
+                if (this._options.maxAssets > 0) {
+                    if (this._items.length < this._options.maxAssets) {
+                        this._acceptor.disabled = false
+                    }
                 }
 
                 this._syncInput()
@@ -292,7 +299,11 @@ export class Gallery {
                         let item = this._addItem()
 
                         // Upload the file via the item
-                        item.upload(file)
+                        if (item) {
+                            item.upload(file)
+                        } else {
+                            break
+                        }
                     }
                 }
             }
@@ -308,9 +319,16 @@ export class Gallery {
             const assets = JSON.parse(this.input.value)
             for (let asset of assets) {
                 let item = this._addItem()
-                item.populate(asset)
+
+                if (item) {
+                    item.populate(asset)
+                } else {
+                    break
+                }
             }
         }
+
+        this._syncInput()
     }
 
     // -- Private methods --
@@ -320,6 +338,13 @@ export class Gallery {
      */
     _addItem() {
 
+        // Check there's capacity to add another gallery item
+        if (this._options.maxAssets > 0) {
+            if (this._items.length >= this._options.maxAssets) {
+                return
+            }
+        }
+
         // Create the item
         let item = new GalleryItem(this._dom.items, this)
         this._items.push(item)
@@ -328,6 +353,13 @@ export class Gallery {
         // Add event handlers for the item
         $.listen(item.item, {'removed': this._handlers.removeItem})
         $.listen(item.item, {'populated updated': this._handlers.updateItem})
+
+        // Check if the acceptor should be disabled to prevent further uploads
+        if (this._options.maxAssets > 0) {
+            if (this._items.length >= this._options.maxAssets) {
+                this._acceptor.disabled = true
+            }
+        }
 
         return item
     }
