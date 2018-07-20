@@ -303,7 +303,14 @@ export class Gallery {
             {'sorted': this._handlers.sortItems}
         )
 
-        // @@ Pre-populate the gallery using any existing input value
+        // Pre-populate the gallery using any existing input value
+        if (this.input.value) {
+            const assets = JSON.parse(this.input.value)
+            for (let asset of assets) {
+                let item = this._addItem()
+                item.populate(asset)
+            }
+        }
     }
 
     // -- Private methods --
