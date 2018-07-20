@@ -304,7 +304,6 @@ export class Gallery {
         )
 
         // @@ Pre-populate the gallery using any existing input value
-
     }
 
     // -- Private methods --

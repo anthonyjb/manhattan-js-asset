@@ -16,6 +16,7 @@ export class ErrorMessage {
 
         // Domain for related DOM elements
         this._dom = {
+            'clear': null,
             'container': null,
             'error': null,
             'message': null
@@ -23,6 +24,17 @@ export class ErrorMessage {
 
         // Store a reference to the container element
         this._dom.container = container
+
+        // Set up event handlers
+        this._handlers = {
+
+            'clear': (event) => {
+                event.preventDefault()
+                if (event.buttons === 0) {
+                    $.dispatch(this.error, 'clear')
+                }
+            }
+        }
     }
 
     // -- Getters & Setters --
@@ -43,6 +55,7 @@ export class ErrorMessage {
         }
 
         // Clear DOM element references
+        this._dom.clear = null
         this._dom.error = null
         this._dom.message = null
     }
@@ -56,13 +69,19 @@ export class ErrorMessage {
         // Create the error element
         this._dom.error = $.create('div', {'class': cls.css['error']})
 
+        // Create the clear element
+        this._dom.clear = $.create('div', {'class': cls.css['clear']})
+        this._dom.error.appendChild(this._dom.clear)
+
         // Create the message element
         this._dom.message = $.create('div', {'class': cls.css['message']})
         this._dom.message.textContent = message
         this._dom.error.appendChild(this._dom.message)
-        this.error.appendChild(this._dom.message)
 
         this._dom.container.appendChild(this.error)
+
+        // Add event handlers
+        $.listen(this._dom.clear, {'click': this._handlers.clear})
     }
 }
 
@@ -72,12 +91,17 @@ export class ErrorMessage {
 ErrorMessage.css = {
 
     /**
-     * Applied to the error message.
+     * Applied to the clear element within the error message.
+     */
+    'clear': 'mh-file-error__clear',
+
+    /**
+     * Applied to the error.
      */
     'error': 'mh-file-error',
 
     /**
-     * Applied to the drop zone element within the acceptor.
+     * Applied to the message element within the error.
      */
     'message': 'mh-file-error__message'
 }

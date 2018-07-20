@@ -1,5 +1,7 @@
 import * as $ from 'manhattan-essentials'
 
+import {ErrorMessage} from './error-message'
+import {ResponseError} from './../errors'
 import {ImageEditor} from './image-editor'
 
 
@@ -235,7 +237,32 @@ export class GalleryItem {
     }
 
     postError(message) {
+        this._destroyStateComponent()
 
+        // Post an error against the field
+        this._error = new ErrorMessage(this.item)
+        this._error.init(message)
+
+        // Add clear handler
+        $.listen(
+            this._error.error,
+            {
+                'clear': () => {
+
+                    // Remove the item
+                    this.destroy()
+
+                    // Dispatch the removed event
+                    $.dispatch(this.item, 'removed', {'item': this})
+
+                }
+            }
+        )
+
+        // Add the error CSS modifier to the field
+        this.item.classList.add(this.constructor.css['hasError'])
+
+        this._state = 'errored'
     }
 
     /**
@@ -302,8 +329,6 @@ export class GalleryItem {
 
                     } catch (error) {
                         if (error instanceof ResponseError) {
-                            // Clear the field
-                            this.clear()
 
                             // Display the upload error
                             this.postError(error.message)
@@ -355,6 +380,11 @@ export class GalleryItem {
 // -- CSS classes --
 
 GalleryItem.css = {
+
+    /**
+     * Applied to the gallery item when it contains an error.
+     */
+    'hasError': 'mh-gallery-item--has-error',
 
     /**
      * Applied to the gallery item element.

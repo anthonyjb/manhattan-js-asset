@@ -60,6 +60,7 @@
         pointer-events: none;
         position: absolute;
         width: 304px;
+        z-index: 99;
 
         .mh-file-viewer,
         .mh-image-viewer {

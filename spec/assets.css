@@ -237,11 +237,11 @@
   right: 0;
   top: 0;
   z-index: 3; }
-  .mh-file-error:hover .mh-file-error__message {
+  .mh-file-field .mh-file-error:hover .mh-file-error__message {
     opacity: 1; }
-  .mh-file-error:hover::before {
+  .mh-file-field .mh-file-error:hover::before {
     box-shadow: 0 0 0 1px #fff; }
-  .mh-file-error::before {
+  .mh-file-field .mh-file-error::before {
     background: #eb4d4b url("../images/cancel.svg") center center no-repeat;
     background-size: 16px;
     border-radius: 50%;
@@ -254,7 +254,9 @@
     top: 12px;
     width: 24px;
     z-index: 1; }
-  .mh-file-error__message {
+  .mh-file-field .mh-file-error__clear {
+    display: none; }
+  .mh-file-field .mh-file-error__message {
     background: #eb4d4b;
     left: 0;
     top: 0;
@@ -265,10 +267,42 @@
     padding: 0 40px 0 8px;
     pointer-events: none;
     position: absolute;
-    right: 0px;
+    right: 0;
     text-overflow: ellipsis;
     white-space: nowrap;
     transition: opacity 0.2s linear; }
+  .mh-gallery-item .mh-file-error {
+    background: #eb4d4b;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: center;
+    text-align: center; }
+    .mh-gallery-item .mh-file-error::before {
+      background: transparent url("../images/warning.svg") center center no-repeat;
+      background-size: 32px;
+      content: '';
+      display: block;
+      height: 32px;
+      margin: 0 auto;
+      width: 32px; }
+    .mh-gallery-item .mh-file-error__clear {
+      background-image: url("../images/cancel.svg");
+      background-position: right 8px top 8px;
+      background-repeat: no-repeat;
+      bottom: 0;
+      cursor: pointer;
+      left: 0;
+      position: absolute;
+      right: 0;
+      top: 0; }
+      .mh-gallery-item .mh-file-error__clear:active {
+        background-position: right 9px top 9px;
+        background-size: 14px; }
+    .mh-gallery-item .mh-file-error__message {
+      background: #eb4d4b;
+      padding: 8px; }
 
 .mh-image-editor__table {
   bottom: 0;
@@ -807,7 +841,8 @@
   .mh-gallery-item--sort-helper {
     pointer-events: none;
     position: absolute;
-    width: 304px; }
+    width: 304px;
+    z-index: 99; }
     .mh-gallery-item--sort-helper .mh-file-viewer__buttons,
     .mh-gallery-item--sort-helper .mh-image-viewer__buttons {
       display: none; }

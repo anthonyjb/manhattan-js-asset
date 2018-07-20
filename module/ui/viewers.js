@@ -13,7 +13,9 @@ function createIconButton(viewerElm, css, eventType) {
         {
             'click': (event) => {
                 event.preventDefault()
-                $.dispatch(viewerElm, eventType)
+                if (event.buttons === 0) {
+                    $.dispatch(viewerElm, eventType)
+                }
             }
         }
     )
