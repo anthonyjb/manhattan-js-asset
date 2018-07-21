@@ -75,9 +75,13 @@ export class GalleryItem {
      * Remove the gallery item.
      */
     destroy() {
-        if (this._dom.item) {
-            this._dom.item.parentNode.removeChild(this._dom.item)
+        if (this.item) {
+            this._destroyStateComponent()
+            this.item.parentNode.removeChild(this._dom.item)
         }
+
+        // Remove the gallery item reference from the item
+        this.item._mhGalleryItem = null
     }
 
     /**

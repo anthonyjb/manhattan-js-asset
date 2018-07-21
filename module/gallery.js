@@ -78,7 +78,7 @@ export class Gallery {
                  * The maximum number of assets that can be added to the
                  * gallery.
                  */
-                'maxAssets': 2,
+                'maxAssets': 0,
 
                 /**
                  * The maximum number of simultaneous uploads the gallery
@@ -218,14 +218,36 @@ export class Gallery {
     // -- Public methods --
 
     /**
-     * @@ Remove the gallery.
+     * Remove the gallery.
      */
     destroy() {
-        // @@ Reset the semaphore
+        // Reset the semaphore
+        this._semaphore.reset()
 
-        // @@ Remove sort behaviour
+        if (this._sortable !== null) {
+            // Remove any sortable behaviour
+            this._sortable.destroy()
+            this._sortable = null
+        }
 
-        return this.todo
+        if (this.gallery) {
+
+            // Remove any gallery items
+            for (let item of this._items) {
+                item.destroy()
+            }
+
+            // Remove the element
+            this.gallery.parentNode.removeChild(this.tokenizer)
+
+            // Nullify dom elements
+            this._dom.acceptor = null
+            this._dom.items = null
+            this._dom.gallery = null
+        }
+
+        // Remove the gallery reference from the input
+        this.input._mhGallery = null
     }
 
     /**

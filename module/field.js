@@ -216,6 +216,9 @@ export class FileField {
 
         // Set the new state
         this._state = 'accepting'
+
+        // Remove the field reference from the input
+        delete this._dom.input._mhFileField
     }
 
     /**
@@ -224,7 +227,11 @@ export class FileField {
     destroy() {
         if (this._dom.field) {
             this._dom.field.parentNode.removeChild(this._dom.field)
+            this._dom.field = null
         }
+
+        // Remove the file field reference from the input
+        delete this._dom.input._mhFileField
     }
 
     /**
@@ -241,6 +248,9 @@ export class FileField {
      */
     init() {
         const cls = this.constructor
+
+        // Store a reference to the file field instance against the input
+        this._dom.input._mhFileField = this
 
         // Store a reference to the file field instance against the input
         this.input._mhFileField = this
