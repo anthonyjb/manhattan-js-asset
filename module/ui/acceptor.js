@@ -110,7 +110,7 @@ export class Acceptor {
                 $.dispatch(
                     this.acceptor,
                     'accepted',
-                    {files, a: files}
+                    {files}
                 )
             },
 

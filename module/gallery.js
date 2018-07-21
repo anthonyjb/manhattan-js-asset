@@ -162,7 +162,7 @@ export class Gallery {
             'removeItem': (event) => {
 
                 // Remove the item from the gallery
-                var index = this._items.indexOf(event.item)
+                const index = this._items.indexOf(event.item)
                 if (index > -1) {
                     this._items.splice(index, 1)
                 }
@@ -363,7 +363,7 @@ export class Gallery {
         // Check there's capacity to add another gallery item
         if (this._options.maxAssets > 0) {
             if (this._items.length >= this._options.maxAssets) {
-                return
+                return null
             }
         }
 

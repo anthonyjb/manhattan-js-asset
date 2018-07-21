@@ -105,7 +105,6 @@ export class Overlay {
             {
                 'click': (event) => {
                     event.preventDefault()
-                    console.log(event.buttons)
                     if (event.buttons === 0) {
                         $.dispatch(this.overlay, eventType)
                     }

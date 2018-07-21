@@ -113,7 +113,7 @@ export class Uploader {
 
                 // Free the semaphore
                 if (this._semaphore) {
-                   this._semaphore.free()
+                    this._semaphore.free()
                 }
 
                 // Dispatch an uploaded event
