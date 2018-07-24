@@ -1,9 +1,3 @@
-- Drag and drop support
-- Multiple file upload (with semaphore support to prevent overloading of the 
-  system)
-- Gallery with order support
-- Meta attribute editing
-- Rotation support
-- Crop support
-- Progress support
-- Prevent submission of related form until an upload is finished
+alpha.2
+    - Prevent submission of related form until an upload is
+      finished.
