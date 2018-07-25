@@ -305,7 +305,7 @@ export class CropTool {
                     matrix[1][0] = 1.0
                     if (ratio !== 0.0) {
                         matrix[1][0] = 0.0
-                        matrix[0][0] = -ratio
+                        matrix[0][0] = -1 / ratio
                     }
 
                     point = [region[1][0], region[0][1]]
@@ -315,8 +315,8 @@ export class CropTool {
 
                 case 'e':
                     matrix[0][1] = 1.0
-                    matrix[0][0] = -ratio / 2.0
-                    matrix[0][2] = ratio / 2.0
+                    matrix[0][0] = (-1 / ratio) / 2.0
+                    matrix[0][2] = (1 / ratio) / 2.0
 
                     point = [
                         region[1][0],
@@ -329,9 +329,12 @@ export class CropTool {
                             point[1],
                             maxRect[1][1] - point[1]
                         )
-                        maxRect[0][1] = point[1] - distanceToEdge
-                        maxRect[1][1] = point[1] + distanceToEdge
+                        maxRect[0][1] = (point[1] - distanceToEdge)
+                        maxRect[1][1] = (point[1] + distanceToEdge)
                     }
+
+                    // @@ Why does vert work but not horz
+
                     break
 
                 case 'se':
@@ -339,7 +342,7 @@ export class CropTool {
                     matrix[1][2] = 1.0
                     if (ratio !== 0.0) {
                         matrix[1][2] = 0.0
-                        matrix[0][2] = ratio
+                        matrix[0][2] = 1 / ratio
                     }
 
                     point = [region[1][0], region[1][1]]
@@ -373,7 +376,7 @@ export class CropTool {
                     matrix[1][2] = 1.0
                     if (ratio !== 0.0) {
                         matrix[1][2] = 0.0
-                        matrix[0][2] = -ratio
+                        matrix[0][2] = -1 / ratio
                     }
 
                     point = [region[0][0], region[1][1]]
@@ -383,8 +386,8 @@ export class CropTool {
 
                 case 'w':
                     matrix[0][3] = 1.0
-                    matrix[0][0] = ratio / 2.0
-                    matrix[0][2] = -ratio / 2.0
+                    matrix[0][0] = (1 / ratio) / 2.0
+                    matrix[0][2] = (-1 / ratio) / 2.0
 
                     point = [
                         region[0][0],
@@ -407,7 +410,7 @@ export class CropTool {
                     matrix[1][0] = 1.0
                     if (ratio !== 0.0) {
                         matrix[1][0] = 0.0
-                        matrix[0][0] = ratio
+                        matrix[0][0] = 1 / ratio
                     }
 
                     point = [region[0][0], region[0][1]]
