@@ -36,12 +36,6 @@ export class FileField {
                 'allowDrop': false,
 
                 /**
-                 * If true then an edit button will be displayed in the
-                 * viewer component.
-                 */
-                'allowEdit': false,
-
-                /**
                  * The initial aspect ratio to apply to the crop region for
                  * an image.
                  */
@@ -271,7 +265,7 @@ export class FileField {
         )
 
         if (this.input.value) {
-            this.populate(this.input.value)
+            this.populate(JSON.parse(this.input.value))
 
         } else {
             this.clear()
