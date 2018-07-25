@@ -453,14 +453,19 @@ export class FileField {
         this._uploader.init()
 
         // Set up event handlers for the uploader
+        $.dispatch(this.input, 'uploading')
+
         $.listen(
             this._uploader.uploader,
             {
                 'aborted cancelled error': () => {
+                    $.dispatch(this.input, 'uploadfailed')
                     this.clear()
                 },
 
                 'uploaded': (event) => {
+                    $.dispatch(this.input, 'uploaded')
+
                     try {
                         // Extract the asset from the response
                         const behaviour = this._behaviours.asset
@@ -471,6 +476,7 @@ export class FileField {
 
                         // Populate the field
                         this.populate(asset)
+
                     } catch (error) {
                         if (error instanceof ResponseError) {
                             // Clear the field
@@ -485,6 +491,7 @@ export class FileField {
                             throw error
                         }
                     }
+
                 }
             }
         )

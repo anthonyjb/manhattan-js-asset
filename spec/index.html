@@ -61,6 +61,14 @@
             for (let fieldElm of $.many('[data-mh-file-field]')) {
                 let field = new FileField(fieldElm)
                 field.init()
+
+                $.listen(
+                    fieldElm,
+                    {
+                        'uploading': () => { console.log('up') },
+                        'uploaded uploadfailed': () => { console.log('down') }
+                    }
+                )
             }
 
         </script>

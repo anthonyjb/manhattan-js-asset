@@ -35,7 +35,7 @@
                     data-mh-gallery--upload-url="http://3dtotal.local/x/upload-picture"
                     data-mh-gallery--crop-aspect-ratio="2.5"
                     data-mh-gallery--fix-crop-aspect-ratio
-
+                    >
         </form>
 
         <script src="../node_modules/manhattan-essentials/umd/index.js"></script>
@@ -49,6 +49,14 @@
             for (let galleryElm of $.many('[data-mh-gallery]')) {
                 let gallery = new Gallery(galleryElm, {})
                 gallery.init()
+
+                $.listen(
+                    galleryElm,
+                    {
+                        'uploading': () => { console.log('up') },
+                        'uploaded uploadfailed': () => { console.log('down') }
+                    }
+                )
             }
 
         </script>

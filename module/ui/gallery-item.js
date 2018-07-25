@@ -312,10 +312,14 @@ export class GalleryItem {
         this._uploader.init()
 
         // Set up event handlers for the uploader
+        $.dispatch(this._gallery.input, 'uploading')
+
         $.listen(
             this._uploader.uploader,
             {
                 'cancelled aborted error': () => {
+                    $.dispatch(this._gallery.input, 'uploadfailed')
+
                     // Remove the item
                     this.destroy()
 
@@ -324,6 +328,8 @@ export class GalleryItem {
                 },
 
                 'uploaded': (event) => {
+                    $.dispatch(this._gallery.input, 'uploaded')
+
                     try {
                         // Extract the asset from the response
                         const asset = behaviourMap.asset[behaviours.asset](
