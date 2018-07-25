@@ -177,6 +177,9 @@ export class GalleryItem {
                                         imageEditor.transforms
                                     )
 
+                                    // Set the preview URL
+                                    this.setAssetProp('previewURL', dataURI)
+
                                     imageEditor.hide()
                                 })
                             },

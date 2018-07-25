@@ -77,6 +77,13 @@ export function assetProp(assetAttr, optionsAttr) {
             return _asset['core_meta']['image']['size'].join(' x ')
 
         case 'previewURL':
+            if (action === 'set') {
+                _asset['preview_uri'] = value
+                return value
+            }
+            if (_asset['preview_uri']) {
+                return _asset['preview_uri']
+            }
             return _asset['variations'][options.preview].url
 
         case 'transforms':

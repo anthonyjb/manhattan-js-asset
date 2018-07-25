@@ -40,7 +40,7 @@ export class Gallery {
                  * The initial aspect ratio to apply to the crop region for
                  * an image.
                  */
-                'cropAspectRatio': 1.0,
+                'cropAspectRatio': '1.0',
 
                 /**
                  * The label displayed when the user is dragging a file over
@@ -107,6 +107,10 @@ export class Gallery {
             input,
             prefix
         )
+
+        // Convert the crop ratio to a float
+        this._options.cropAspectRatio
+            = parseFloat(this._options.cropAspectRatio)
 
         // Convert `maxPreviewSize` option given as an attribute to a list
         if (typeof this._options.maxPreviewSize === 'string') {

@@ -39,7 +39,7 @@ export class FileField {
                  * The initial aspect ratio to apply to the crop region for
                  * an image.
                  */
-                'cropAspectRatio': 1.0,
+                'cropAspectRatio': '1.0',
 
                 /**
                  * The label displayed when the field is not populated and the
@@ -94,6 +94,10 @@ export class FileField {
             input,
             prefix
         )
+
+        // Convert the crop ratio to a float
+        this._options.cropAspectRatio
+            = parseFloat(this._options.cropAspectRatio)
 
         // Convert `maxPreviewSize` option given as an attribute to a list
         if (typeof this._options.maxPreviewSize === 'string') {
@@ -335,6 +339,9 @@ export class FileField {
                                         'transforms',
                                         imageEditor.transforms
                                     )
+
+                                    // Set the preview URL
+                                    this.setAssetProp('previewURL', dataURI)
 
                                     imageEditor.hide()
                                 })

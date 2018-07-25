@@ -29,9 +29,9 @@
                     data-mh-gallery
                     data-mh-gallery--allow-drop
                     data-mh-gallery--editing="editing"
-                    data-mh-gallery--file-type="image"
                     data-mh-gallery--max-uploads="2"
                     data-mh-gallery--preview="large"
+                    data-mh-gallery--file-type="image"
                     data-mh-gallery--upload-url="http://3dtotal.local/x/upload-picture"
                 >
             </div>
@@ -39,6 +39,7 @@
         </form>
 
         <script src="../node_modules/manhattan-essentials/umd/index.js"></script>
+        <script src="../node_modules/manhattan-sortable/umd/index.js"></script>
         <script src="../umd/index.js"></script>
         <script>
 
@@ -46,7 +47,7 @@
             const Gallery = window['manhattan-assets'].gallery.Gallery
 
             for (let galleryElm of $.many('[data-mh-gallery]')) {
-                let gallery = new Gallery(galleryElm)
+                let gallery = new Gallery(galleryElm, {})
                 gallery.init()
             }
 
