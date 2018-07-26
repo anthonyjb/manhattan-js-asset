@@ -197,14 +197,14 @@ export class ImageEditor extends Overlay {
                     resizeCanvas.height
                 )
 
-                resolve(
+                resolve([
                     resizeCanvas.toDataURL(),
                     {
                         'width': resizeCanvas.width,
                         'height': resizeCanvas.height,
                         'maxWidth': cropCanvas.width
                     }
-                )
+                ])
             }
         })
     }

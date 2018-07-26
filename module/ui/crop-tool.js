@@ -329,8 +329,8 @@ export class CropTool {
                             point[1],
                             maxRect[1][1] - point[1]
                         )
-                        maxRect[0][1] = (point[1] - distanceToEdge)
-                        maxRect[1][1] = (point[1] + distanceToEdge)
+                        maxRect[0][1] = point[1] - distanceToEdge
+                        maxRect[1][1] = point[1] + distanceToEdge
                     }
 
                     // @@ Why does vert work but not horz

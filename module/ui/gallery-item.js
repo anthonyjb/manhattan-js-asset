@@ -166,7 +166,7 @@ export class GalleryItem {
                                 const {transforms} = imageEditor
                                 const {previewDataURI} = imageEditor
 
-                                previewDataURI.then((dataURI) => {
+                                previewDataURI.then(([dataURI, sizeInfo]) => {
 
                                     // Set the preview image
                                     this._viewer.imageURL = dataURI
