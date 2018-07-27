@@ -281,8 +281,6 @@ export class CropTool {
 
                 case 'n':
                     matrix[1][0] = 1
-                    matrix[1][1] = -ratio / 2.0
-                    matrix[1][3] = ratio / 2.0
 
                     point = [
                         region[0][0] + (getWidth(region) / 2),
@@ -291,6 +289,9 @@ export class CropTool {
                     maxRect[1][1] = region[1][1] // eslint-disable-line
 
                     if (ratio !== 0.0) {
+                        matrix[1][1] = -ratio / 2.0
+                        matrix[1][3] = ratio / 2.0
+
                         distanceToEdge = Math.min(
                             point[0],
                             maxRect[1][0] - point[0]
@@ -315,9 +316,6 @@ export class CropTool {
 
                 case 'e':
                     matrix[0][1] = 1.0
-                    matrix[0][0] = (-1 / ratio) / 2.0
-                    matrix[0][2] = (1 / ratio) / 2.0
-
                     point = [
                         region[1][0],
                         region[0][1] + (getHeight(region) / 2)
@@ -325,6 +323,9 @@ export class CropTool {
                     maxRect[0][0] = region[0][0] // eslint-disable-line
 
                     if (ratio !== 0.0) {
+                        matrix[0][0] = (-1 / ratio) / 2.0
+                        matrix[0][2] = (1 / ratio) / 2.0
+
                         distanceToEdge = Math.min(
                             point[1],
                             maxRect[1][1] - point[1]
@@ -332,8 +333,6 @@ export class CropTool {
                         maxRect[0][1] = point[1] - distanceToEdge
                         maxRect[1][1] = point[1] + distanceToEdge
                     }
-
-                    // @@ Why does vert work but not horz
 
                     break
 
@@ -352,8 +351,6 @@ export class CropTool {
 
                 case 's':
                     matrix[1][2] = 1.0
-                    matrix[1][1] = ratio / 2.0
-                    matrix[1][3] = -ratio / 2.0
 
                     point = [
                         region[0][0] + (getWidth(region) / 2),
@@ -362,6 +359,9 @@ export class CropTool {
                     maxRect[0][1] = region[0][1] // eslint-disable-line
 
                     if (ratio !== 0.0) {
+                        matrix[1][1] = ratio / 2.0
+                        matrix[1][3] = -ratio / 2.0
+
                         distanceToEdge = Math.min(
                             point[0],
                             maxRect[1][0] - point[0]
@@ -386,8 +386,6 @@ export class CropTool {
 
                 case 'w':
                     matrix[0][3] = 1.0
-                    matrix[0][0] = (1 / ratio) / 2.0
-                    matrix[0][2] = (-1 / ratio) / 2.0
 
                     point = [
                         region[0][0],
@@ -396,6 +394,9 @@ export class CropTool {
                     maxRect[1][0] = region[1][0] // eslint-disable-line
 
                     if (ratio !== 0.0) {
+                        matrix[0][0] = (1 / ratio) / 2.0
+                        matrix[0][2] = (-1 / ratio) / 2.0
+
                         distanceToEdge = Math.min(
                             point[1],
                             maxRect[1][1] - point[1]
