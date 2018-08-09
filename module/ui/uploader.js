@@ -9,7 +9,7 @@ export function defaultStatusTemplate(progress) {
     } else if (progress >= 100) {
         return 'Processing'
     }
-    return `Uploading ${progress}%`
+    return `Uploading ${parseInt(progress)}%`
 }
 
 
@@ -96,13 +96,15 @@ export class Uploader {
             'reqProgress': (event) => {
                 // Update the progress bar
                 if (event.lengthComputable) {
-                    this._progress(event.loaded / event.total)
+                    const total = Math.max(1, event.total)
+                    this._progress(event.loaded / total * 100)
                 } else {
                     this._progress(0)
                 }
             },
 
             'reqLoad': (event) => {
+                console.log(event)
                 const {response} = this._xhr
 
                 // Clear the handle to the request
@@ -141,8 +143,13 @@ export class Uploader {
                 {
                     'abort': this._handlers.reqAbort,
                     'error': this._handlers.reqError,
-                    'progress': this._handlers.reqProgress,
                     'load': this._handlers.reqLoad
+                }
+            )
+            $.ignore(
+                this._xhr.upload,
+                {
+                    'progress': this._handlers.reqProgress,
                 }
             )
             this._xhr.abort()
@@ -260,8 +267,14 @@ export class Uploader {
             {
                 'abort': this._handlers.reqAbort,
                 'error': this._handlers.reqError,
-                'progress': this._handlers.reqProgress,
                 'load': this._handlers.reqLoad
+            }
+        )
+
+        $.listen(
+            this._xhr.upload,
+            {
+                'progress': this._handlers.reqProgress,
             }
         )
 

@@ -107,7 +107,6 @@ export class ImageEditor extends Overlay {
 
             // Create the base image to paste into the canvas
             const baseImage = new Image()
-            baseImage.setAttribute('crossOrigin', 'anonymous')
             baseImage.src = this._imageURL
 
             baseImage.onload = () => {
