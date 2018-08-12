@@ -214,9 +214,6 @@ export class FileField {
 
         // Set the new state
         this._state = 'accepting'
-
-        // Remove the field reference from the input
-        delete this._dom.input._mhFileField
     }
 
     /**
