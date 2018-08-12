@@ -18,9 +18,10 @@ export class ImageEditor extends Overlay {
         imageURL,
         cropAspectRatio=1.0,
         fixCropAspectRatio=false,
-        maxPreviewSize=[600, 600]
+        maxPreviewSize=[600, 600],
+        container=null
     ) {
-        super()
+        super(container)
 
         // The URL of the image being edited (typically a working draft
         // version of the image to keep load times optimal).

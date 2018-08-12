@@ -9,7 +9,7 @@ import * as $ from 'manhattan-essentials'
 
 export class Overlay {
 
-    constructor() {
+    constructor(container=null) {
 
         // Flag indicating if the overlay is transitioning between hidden and
         // visible state.
@@ -22,6 +22,7 @@ export class Overlay {
         this._dom = {
             'buttons': null,
             'close': null,
+            'container': container || document.body,
             'content': null,
             'overlay': null
         }
@@ -130,7 +131,7 @@ export class Overlay {
 
         // Remove the overlay
         if (this.overlay) {
-            document.body.removeChild(this.overlay)
+            this._dom.container.removeChild(this.overlay)
         }
 
         // Clear DOM references
@@ -180,7 +181,7 @@ export class Overlay {
         this.overlay.appendChild(this._dom.buttons)
 
         // Add the overlay to the page
-        document.body.appendChild(this.overlay)
+        this._dom.container.appendChild(this.overlay)
 
         // Prevent the page from scrolling whilst the overlay is open
         document.body.style.overflow = 'hidden'

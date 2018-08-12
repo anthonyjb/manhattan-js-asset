@@ -134,8 +134,8 @@ MetaProp.css = {
  */
 export class Metadata extends Overlay {
 
-    constructor(props) {
-        super()
+    constructor(props, container=null) {
+        super(container)
 
         // A list meta properties to present, the format of the list should be
         // as follows:
