@@ -131,6 +131,7 @@ export class Gallery {
                 'asset': 'manhattan',
                 'assetProp': 'manhattan',
                 'formData': 'default',
+                'imageEditor': 'default',
                 'metadata': 'manhattan',
                 'uploader': 'default',
                 'viewer': 'default'
@@ -461,6 +462,12 @@ Gallery.behaviours = {
      * example a CSRF token.
      */
     'formData': {'default': defaultFactories.formData()},
+
+    /**
+     * The `imageEditor` behaviour is used to create an image editor which
+     * allows users to edit an image they have uploaded.
+     */
+    'imageEditor': {'default': defaultFactories.imageEditor('parentOptions')},
 
     /**
      * The `metadata` behaviour is used to create a metadata UI overlay which

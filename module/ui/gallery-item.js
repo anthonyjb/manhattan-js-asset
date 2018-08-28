@@ -149,13 +149,11 @@ export class GalleryItem {
                 },
 
                 'edit': () => {
-                    const editingURL = this.getAssetProp('editingURL')
-                    const imageEditor = new ImageEditor(
-                        editingURL,
-                        this.parentOptions.cropAspectRatio,
-                        this.parentOptions.fixCropAspectRatio,
-                        this.parentOptions.maxPreviewSize
-                    )
+
+                    const imageEditorBehaviour = this.parentBehaviours
+                        .imageEditor
+                    const imageEditor = behaviourMap
+                        .imageEditor[imageEditorBehaviour](this)
                     imageEditor.init()
                     imageEditor.show()
 

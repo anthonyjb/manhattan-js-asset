@@ -118,6 +118,7 @@ export class FileField {
                 'asset': 'manhattan',
                 'assetProp': 'manhattan',
                 'formData': 'default',
+                'imageEditor': 'default',
                 'metadata': 'manhattan',
                 'uploader': 'default',
                 'viewer': 'default'
@@ -309,13 +310,9 @@ export class FileField {
                 },
 
                 'edit': () => {
-                    const editingURL = this.getAssetProp('editingURL')
-                    const imageEditor = new ImageEditor(
-                        editingURL,
-                        this._options.cropAspectRatio,
-                        this._options.fixCropAspectRatio,
-                        this._options.maxPreviewSize
-                    )
+                    const imageEditorBehaviour = this._behaviours.imageEditor
+                    const imageEditor = cls.behaviours
+                        .imageEditor[imageEditorBehaviour](this)
                     imageEditor.init()
                     imageEditor.show()
 
@@ -577,6 +574,12 @@ FileField.behaviours = {
      * example a CSRF token.
      */
     'formData': {'default': defaultFactories.formData()},
+
+    /**
+     * The `imageEditor` behaviour is used to create an image editor which
+     * allows users to edit an image they have uploaded.
+     */
+    'imageEditor': {'default': defaultFactories.imageEditor('_options')},
 
     /**
      * The `metadata` behaviour is used to create a metadata UI overlay which

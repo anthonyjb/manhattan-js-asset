@@ -6,6 +6,7 @@
 import * as $ from 'manhattan-essentials'
 
 import {Acceptor} from './../../ui/acceptor'
+import {ImageEditor} from './../../ui/image-editor'
 import {Uploader, defaultStatusTemplate} from './../../ui/uploader'
 import {FileViewer, ImageViewer} from './../../ui/viewers'
 
@@ -44,6 +45,22 @@ export function formData() {
     }
 
     return _formData
+}
+
+export function imageEditor(optionsAttr) {
+
+    function _imageEditor(inst) {
+        const options = inst[optionsAttr]
+
+        return new ImageEditor(
+            inst.getAssetProp('editingURL'),
+            options.cropAspectRatio,
+            options.fixCropAspectRatio,
+            options.maxPreviewSize
+        )
+    }
+
+    return _imageEditor
 }
 
 export function uploader(containerAttr, semaphoreAttr=null) {
