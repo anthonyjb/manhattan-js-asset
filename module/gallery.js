@@ -99,6 +99,12 @@ export class Gallery {
                 'preview': 'preview',
 
                 /**
+                 * The sortable helper to use in galleries where gallery items
+                 * can be sorted.
+                 */
+                'sortableHelper': 'cloneGalleryItem',
+
+                /**
                  * The URL that any file will be uploaded to.
                  */
                 'uploadUrl': '/upload'
@@ -309,7 +315,7 @@ export class Gallery {
                 'grabSelector':
                     '.mh-file-viewer__handle, .mh-image-viewer__handle',
                 'grabber': 'selector',
-                'helper': 'cloneGalleryItem'
+                'helper': this._options.sortableHelper
             }
         )
         this._sortable.init()
