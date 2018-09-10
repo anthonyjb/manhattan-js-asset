@@ -215,6 +215,9 @@ export class FileField {
 
         // Set the new state
         this._state = 'accepting'
+
+        // Trigger a change event against the input
+        $.dispatch(this.input, 'change')
     }
 
     /**
@@ -389,6 +392,9 @@ export class FileField {
 
         // Set the new state
         this._state = 'viewing'
+
+        // Trigger a change event against the input
+        $.dispatch(this.input, 'change')
     }
 
     /**

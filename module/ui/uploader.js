@@ -9,7 +9,7 @@ export function defaultStatusTemplate(progress) {
     } else if (progress >= 100) {
         return 'Processing'
     }
-    return `Uploading ${parseInt(progress)}%`
+    return `Uploading ${parseInt(progress, 10)}%`
 }
 
 
@@ -147,9 +147,7 @@ export class Uploader {
             )
             $.ignore(
                 this._xhr.upload,
-                {
-                    'progress': this._handlers.reqProgress,
-                }
+                {'progress': this._handlers.reqProgress}
             )
             this._xhr.abort()
         }
@@ -272,9 +270,7 @@ export class Uploader {
 
         $.listen(
             this._xhr.upload,
-            {
-                'progress': this._handlers.reqProgress,
-            }
+            {'progress': this._handlers.reqProgress}
         )
 
         // Send the request
