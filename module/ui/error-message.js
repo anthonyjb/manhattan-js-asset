@@ -67,7 +67,13 @@ export class ErrorMessage {
         const cls = this.constructor
 
         // Create the error element
-        this._dom.error = $.create('div', {'class': cls.css['error']})
+        this._dom.error = $.create(
+            'div',
+            {
+                'class': cls.css['error'],
+                'title': message
+            }
+        )
 
         // Create the clear element
         this._dom.clear = $.create('div', {'class': cls.css['clear']})
