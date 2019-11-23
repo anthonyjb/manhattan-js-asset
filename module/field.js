@@ -408,6 +408,19 @@ export class FileField {
         this._error = new ErrorMessage(this.field)
         this._error.init(message)
 
+        // Add clear handler
+        $.listen(
+            this._error.error,
+            {
+                'clear': () => {
+
+                    // Clear the error
+                    this.clearError()
+
+                }
+            }
+        )
+
         // Add the error CSS modifier to the field
         this.field.classList.add(this.constructor.css['hasError'])
     }

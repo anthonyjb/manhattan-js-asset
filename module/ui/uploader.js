@@ -67,6 +67,8 @@ export class Uploader {
         this._handlers = {
 
             'cancel': (event) => {
+                const uploader = this.uploader
+
                 // Abort the upload
                 event.preventDefault()
                 if (this._xhr) {
@@ -74,7 +76,7 @@ export class Uploader {
                 }
 
                 // Dispatch a cancelled event against the uploader
-                $.dispatch(this.uploader, 'cancelled')
+                $.dispatch(uploader, 'cancelled')
             },
 
             'reqAbort': (event) => {
