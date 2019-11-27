@@ -49,12 +49,16 @@ export class GalleryItem {
         return null
     }
 
-    get parentBehaviours() {
-        return this._gallery._behaviours
+    get gallery() {
+        return this._gallery
     }
 
     get item() {
         return this._dom.item
+    }
+
+    get parentBehaviours() {
+        return this._gallery._behaviours
     }
 
     get parentOptions() {
