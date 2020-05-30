@@ -530,7 +530,12 @@ Gallery.css = {
          * Applied to the gallery element when the expected file type is an
          * image.
          */
-        'image': 'mh-gallery--image'
+        'image': 'mh-gallery--image',
 
+        /**
+         * Applied to the gallery element when the expected file type is an
+         * SVG image.
+         */
+        'svg_image': 'mh-gallery--image',
     }
 }

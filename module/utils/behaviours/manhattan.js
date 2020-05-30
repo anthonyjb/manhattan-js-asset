@@ -150,6 +150,9 @@ export function assetProp(assetAttr, optionsAttr) {
             }
             return transforms
 
+        case 'url':
+            return _asset.url
+
         // no default
 
         }
@@ -182,6 +185,9 @@ export function metadata(optionsAttr) {
         if (options.fileType === 'image') {
             props.push(['Mode', 'imageMode', getProp('imageMode'), true])
             props.push(['Size', 'imageSize', getProp('imageSize'), true])
+            props.push(['Alt', 'alt', getProp('alt'), false])
+
+        } else if (options.fileType === 'svg_image') {
             props.push(['Alt', 'alt', getProp('alt'), false])
         }
 

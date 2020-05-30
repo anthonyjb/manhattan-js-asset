@@ -108,6 +108,17 @@ export function viewer(containerAttr, optionsAttr) {
                 inst.getAssetProp('previewURL')
             )
 
+        case 'svg_image':
+            return new ImageViewer(
+                inst[containerAttr],
+                inst.getAssetProp('url'),
+                {
+                    'download': true,
+                    'metadata': true,
+                    'remove': true
+                }
+            )
+
         // no default
 
         }

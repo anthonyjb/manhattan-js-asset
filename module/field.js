@@ -292,6 +292,9 @@ export class FileField {
 
         // Set up the viewer
         const behaviour = this._behaviours.viewer
+
+        console.log(cls.behaviours.viewer, behaviour)
+
         this._viewer = cls.behaviours.viewer[behaviour](this)
         this._viewer.init()
 
@@ -650,7 +653,12 @@ FileField.css = {
          * Applied to the field element when the expected file type is an
          * image.
          */
-        'image': 'mh-file-field--image'
+        'image': 'mh-file-field--image',
 
+        /**
+         * Applied to the field element when the expected file type is an
+         * SVG image.
+         */
+        'svg_image': 'mh-file-field--image'
     }
 }
