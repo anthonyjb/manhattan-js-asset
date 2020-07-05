@@ -122,8 +122,8 @@ export class Gallery {
         if (typeof this._options.maxPreviewSize === 'string') {
             const maxPreviewSize = this._options.maxPreviewSize.split(',')
             this._options.maxPreviewSize = [
-                maxPreviewSize[0],
-                maxPreviewSize[1]
+                parseInt(maxPreviewSize[0], 10),
+                parseInt(maxPreviewSize[1], 10)
             ]
         }
 

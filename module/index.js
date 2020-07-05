@@ -1,6 +1,7 @@
 import * as errors from './errors'
 import * as field from './field'
 import * as gallery from './gallery'
+import * as imageSet from './image-set'
 
 import * as acceptor from './ui/acceptor'
 import * as cropTool from './ui/crop-tool'
@@ -24,8 +25,10 @@ const ui = {
     viewers
 }
 
-
-export {errors}
-export {field}
-export {gallery}
-export {ui}
+export {
+    errors,
+    field,
+    gallery,
+    imageSet,
+    ui
+}
