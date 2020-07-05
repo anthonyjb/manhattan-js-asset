@@ -31,24 +31,15 @@ ImageSet.css = {
 
 // @@
 //
-// - How will we specifiy versions anmd version labels?
+// * - Image set fields apply fixed crops and expect crop ratios version
 //
-//     ? data-mh-image-set--versions="s,m,l"
-//     ? data-mh-image-set--version-labels="Small,Medium,Large" (can't have
-//       labels will commas then though)
+// 1 - Consider adding a parameter to smart crop that means it only applies
+//     itself if there is no existing crop transform applied.
 //
-//     ? JSON is the other option
-//
-// - How will crop ratios and fixed crop be specified?
-//
-//     ? data-mh-image-set--crop-aspect-ratios="0.5,0.667,0.75"
-//     ? data-mh-image-set--fixed-crop-aspect-ratio (probably safe to say
-//       fixed for one fixed for all.
-//
-// 1 - Consider adding an ImageField to assets that supports for crop stuff to
-//     make this easier to understand.
-//
-// 2 - Consider making crop stuff something you can set for ImageSetFields.
-//
-// 3 - The above suggestions would remove the need to use custom data fields
-//     in the render_kw.
+// ? - How will analyzers and variations be configured for image sets :/
+//       - We want the same analyzers to run for each separate image.
+//       - We want a specific version of the variations to be generated for
+//         each version of the imge set. We'll potentially end up generating
+//         all the variations for all the images, which may not be a problem
+//         though one option may be to be able to send upload a specific
+//         variation key to generate that prevents the general overall map.

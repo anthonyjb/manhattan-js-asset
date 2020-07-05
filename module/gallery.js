@@ -536,6 +536,6 @@ Gallery.css = {
          * Applied to the gallery element when the expected file type is an
          * SVG image.
          */
-        'svg_image': 'mh-gallery--image',
+        'svg_image': 'mh-gallery--image'
     }
 }

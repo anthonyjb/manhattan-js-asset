@@ -292,9 +292,6 @@ export class FileField {
 
         // Set up the viewer
         const behaviour = this._behaviours.viewer
-
-        console.log(cls.behaviours.viewer, behaviour)
-
         this._viewer = cls.behaviours.viewer[behaviour](this)
         this._viewer.init()
 

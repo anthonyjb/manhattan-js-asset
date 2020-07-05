@@ -84,6 +84,9 @@ export function assetProp(assetAttr, optionsAttr) {
             if (_asset['preview_uri']) {
                 return _asset['preview_uri']
             }
+
+            console.log(options.preview)
+
             return _asset['variations'][options.preview].url
 
         case 'transforms':

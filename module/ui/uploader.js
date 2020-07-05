@@ -67,7 +67,7 @@ export class Uploader {
         this._handlers = {
 
             'cancel': (event) => {
-                const uploader = this.uploader
+                const {uploader} = this
 
                 // Abort the upload
                 event.preventDefault()
