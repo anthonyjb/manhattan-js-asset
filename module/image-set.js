@@ -2,6 +2,7 @@ import * as $ from 'manhattan-essentials'
 
 import {ResponseError} from './errors'
 import {ErrorMessage} from './ui/error-message'
+import * as defaultFactories from './utils/behaviours/defaults'
 
 // -- Class definition --
 
@@ -135,7 +136,9 @@ export class ImageSet {
         }
 
         // Configure the behaviours
-        this._behaviours = {}
+        this._behaviours = {
+            'acceptor': 'default'
+        }
 
         $.config(
             this._behaviours,
@@ -278,6 +281,21 @@ export class ImageSet {
             this.input.nextSibling
         )
 
+        if (this.input.value) {
+            this.populate(JSON.parse(this.input.value))
+
+        } else {
+            this.clear()
+        }
+    }
+
+    /**
+     * Populate the image set (transition to the viewing state).
+     */
+    populate(assets) {
+        const cls = this.constructor
+
+        console.log(assets)
     }
 
     /**
@@ -343,7 +361,15 @@ export class ImageSet {
 
 // -- Behaviours --
 
-ImageSet.behaviours = {}
+ImageSet.behaviours = {
+
+    /**
+     * The `acceptor` behaviour is used to create a file acceptor UI component
+     * for the field.
+     */
+    'acceptor': {'default': defaultFactories.acceptor('imageSet', false)}
+
+}
 
 
 // -- CSS classes --
@@ -375,7 +401,9 @@ ImageSet.css = {
 // - `populate`
 // - `setVersion` (`getAsset` and `getBaseAsset`)
 // - `upload`
-//
+// - `acceptor` needs a special mode (CSS) so that it's available for a non
+//   base image.
+// - Copy over CSS from manage when done
 
 //
 // * - Image set fields apply fixed crops and expect crop ratios version
