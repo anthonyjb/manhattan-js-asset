@@ -2,7 +2,7 @@ import * as $ from 'manhattan-essentials'
 
 import {ResponseError} from './errors'
 import {ErrorMessage} from './ui/error-message'
-import {ImageViewer} from './ui/viewers'
+import {ImageSetViewer} from './ui/viewers'
 import * as defaultFactories from './utils/behaviours/defaults'
 import * as manhattanFactories from './utils/behaviours/manhattan'
 
@@ -134,19 +134,19 @@ export class ImageSet {
         }
 
         // Configure the behaviours
-        this._behaviours = {
-            'acceptor': 'default',
-            'assetProp': 'manhattan',
-            'asset': 'manhattan',
-            'formData': 'default',
-            'input': 'manhattan',
-            'uploader': 'default',
-            'viewer': 'default'
-        }
+        this._behaviours = {}
 
         $.config(
             this._behaviours,
-            {},
+            {
+                'acceptor': 'default',
+                'assetProp': 'manhattan',
+                'asset': 'manhattan',
+                'formData': 'default',
+                'input': 'manhattan',
+                'uploader': 'default',
+                'viewer': 'default'
+            },
             options,
             input,
             prefix
@@ -607,14 +607,29 @@ ImageSet.behaviours = {
      */
     'viewer': {
         'default': (inst, version) => {
-            return new ImageViewer(
-                inst.imageSet,
-                inst.getAssetProp(version, 'url'),
-                {
-                    'download': true,
-                    'metadata': true,
-                    'remove': true
+
+            // @@ NEED TO REPLACE: This should build a map of previews from a
+            // dedicated preview object, or the asset, or the primary asset.
+
+            const {assets} = inst
+            const imageURLs = {}
+            for (const v of inst._options.versions) {
+                if (assets[v]) {
+                    imageURLs[v] = inst.getAssetProp(v, 'previewURL')
+                } else {
+                    imageURLs[v] = inst.getAssetProp(
+                        inst.baseVersion,
+                        'previewURL'
+                    )
                 }
+            }
+
+            return new ImageSetViewer(
+                inst.imageSet,
+                inst._options.versions,
+                inst._options.versionLabels,
+                imageURLs,
+                inst.baseVersion
             )
         }
     }
@@ -639,19 +654,16 @@ ImageSet.css = {
 
 // @@
 //
-// - Build a state map (FSM) to determine the possible image set states to
-//   account for.
-// - `getAssets` needs to return a copy of the map of assets.
 // - `getAsset` needs to return a copy of the asset currently being viewed
 //   based on version if not key is provided.
 // - `clearAsset` to clear an individual asset from the image set and reset
 //   the viewer.
-// - `getAssetProp` and `setAssetProp` should use the `_version`
 // - `populate`
 // - `setVersion` (`getAsset` and `getBaseAsset`)
 // - `upload`
 // - `acceptor` needs a special mode (CSS) so that it's available for a non
 //   base image.
+//
 // - Copy over CSS from manage when done
 
 //

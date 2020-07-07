@@ -371,3 +371,137 @@ ImageViewer.css = {
     'viewer': 'mh-image-viewer'
 
 }
+
+
+/**
+ * Image viewer UI component for image sets.
+ */
+export class ImageSetViewer {
+
+    constructor(
+        container,
+        versions,
+        labels,
+        imageURLs,
+        baseVersion,
+        buttons={}
+    ) {
+        // A list of versions the image set supports
+        this._versions = versions
+
+        // A map of image URLs for each version of the image set
+        this._imageURLs = imageURLs
+
+        // A map of labels for each version of the image set
+        this._labels = labels
+
+        // The base version of the image set (different buttons are presented
+        // for the base version.
+        this._baseVersion = baseVersion
+
+        // A set of flags which indicate which buttons should be displayed in
+        // the viewer.
+        this._buttons = buttons
+
+        // The current version of the image set being viewed
+        this._version = null
+
+        // Domain for related DOM elements
+        this._dom = {
+            'container': null,
+            'image': null,
+            'viewer': null
+        }
+
+        // Store a reference to the container element
+        this._dom.container = container
+    }
+
+    // -- Getters & Setters --
+
+    get version() {
+        return this._version
+    }
+
+    set version(version) {
+        this._version = version
+        const imageURL = this._imageURLs[version]
+        this._dom.image.style.backgroundImage = `url('${imageURL}')`
+    }
+
+    get viewer() {
+        return this._dom.viewer
+    }
+
+    // -- Public methods --
+
+    /**
+     * Remove the image viewer.
+     */
+    destroy() {
+        console.log(this, 'destroy')
+    }
+
+    /**
+     * Initialize the image viewer.
+     */
+    init() {
+        const cls = this.constructor
+
+        // Create the viewer element
+        this._dom.viewer = $.create('div', {'class': cls.css['viewer']})
+
+        // Create the image element
+        this._dom.image = $.create('div', {'class': cls.css['image']})
+        this.viewer.appendChild(this._dom.image)
+
+        // @@ Create the version selector
+
+        // @@ START HERE
+
+        // Initially show the base version for the image set
+        this.version = this._baseVersion
+
+        // Add the viewer element to the container
+        this._dom.container.appendChild(this.viewer)
+    }
+}
+
+
+// -- Tooltips --
+
+ImageSetViewer.tooltips = {}
+
+
+// -- CSS classes --
+
+ImageSetViewer.css = {
+
+    /**
+     * Applied to image component within the viewer.
+     */
+    'image': 'mh-image-set-viewer__image',
+
+    /**
+     * Applied to the image viewer.
+     */
+    'viewer': 'mh-image-set-viewer'
+}
+
+// @@
+//
+// - Ability to set the version
+// - Ability to update the image URL for a version
+// - Ability to hide the view when uploading (but not remove it)
+// - Ability to show an acceptor within the viewer
+// - Button support
+//     - Alt tag
+//     - Clear image set
+//     - Download
+//     - Edit
+//     - Metadata
+//     - Edit
+//     - Clear version
+//     - Upload version
+
+
