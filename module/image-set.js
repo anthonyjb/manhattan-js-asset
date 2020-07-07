@@ -2,7 +2,9 @@ import * as $ from 'manhattan-essentials'
 
 import {ResponseError} from './errors'
 import {ErrorMessage} from './ui/error-message'
+import {ImageViewer} from './ui/viewers'
 import * as defaultFactories from './utils/behaviours/defaults'
+import * as manhattanFactories from './utils/behaviours/manhattan'
 
 // -- Class definition --
 
@@ -16,10 +18,6 @@ export class ImageSet {
 
         // Configure the options
         this._options = {}
-
-        // versions
-        // version-labels
-        // crop-aspect-ratios
 
         $.config(
             this._options,
@@ -137,7 +135,13 @@ export class ImageSet {
 
         // Configure the behaviours
         this._behaviours = {
-            'acceptor': 'default'
+            'acceptor': 'default',
+            'assetProp': 'manhattan',
+            'asset': 'manhattan',
+            'formData': 'default',
+            'input': 'manhattan',
+            'uploader': 'default',
+            'viewer': 'default'
         }
 
         $.config(
@@ -151,6 +155,12 @@ export class ImageSet {
         // A map of assets (for each version) currently being managed by the
         // image set.
         this._assets = null
+
+        // A map of transforms applied to each version of the image set
+        this._baseTransforms = null
+
+        // The base version of the
+        this._baseVersion = null
 
         // The version of the image set currently being viewed
         this._version = null
@@ -181,6 +191,25 @@ export class ImageSet {
     }
 
     // -- Getters & Setters --
+
+    get assets() {
+        if (this._assets) {
+            const assets = {}
+            for (let version in this._assets) {
+                assets[version] = Object.assign(this._assets[version], {})
+            }
+            return assets
+        }
+        return null
+    }
+
+    get baseTransforms() {
+        return Object.assign(this._baseTransforms || {}, {})
+    }
+
+    get baseVersion() {
+        return this._baseVersion || this._options.versions[0]
+    }
 
     get imageSet() {
         return this._dom.imageSet
@@ -222,7 +251,7 @@ export class ImageSet {
         this._destroyStateComponent()
 
         // Clear the asset input value
-        this._assets = null
+        this._assets = {}
         this.input.value = ''
 
         // Set up the acceptor
@@ -235,7 +264,7 @@ export class ImageSet {
             this._acceptor.acceptor,
             {
                 'accepted': (event) => {
-                    this.upload(event.files[0])
+                    this.upload(this.baseVersion, event.files[0])
                 }
             }
         )
@@ -261,6 +290,15 @@ export class ImageSet {
     }
 
     /**
+     * Return the value of the named property from the asset.
+     */
+    getAssetProp(version, name) {
+        const behaviours = this.constructor.behaviours.assetProp
+        const behaviour = this._behaviours.assetProp
+        return behaviours[behaviour](this, 'get', version, name)
+    }
+
+    /**
      * Initialize the image set.
      */
     init() {
@@ -282,8 +320,9 @@ export class ImageSet {
         )
 
         if (this.input.value) {
-            this.populate(JSON.parse(this.input.value))
-
+            const behaviour = this._behaviours.input
+            cls.behaviours.input[behaviour](this, 'get')
+            this.populate(this.baseVersion, this.assets[this.baseVersion])
         } else {
             this.clear()
         }
@@ -292,10 +331,23 @@ export class ImageSet {
     /**
      * Populate the image set (transition to the viewing state).
      */
-    populate(assets) {
+    populate(version, asset) {
         const cls = this.constructor
 
-        console.log(assets)
+        // Clear the current state component
+        this._destroyStateComponent()
+
+        // Update the asset and input value
+        this._assets[version] = asset
+
+        // Sync the input value with the image set
+        const inputBehaviour = this._behaviours.input
+        cls.behaviours.input[inputBehaviour](this, 'set')
+
+        // Set up the viewer
+        const viewerBehaviour = this._behaviours.viewer
+        this._viewer = cls.behaviours.viewer[viewerBehaviour](this, version)
+        this._viewer.init()
     }
 
     /**
@@ -324,6 +376,76 @@ export class ImageSet {
 
         // Add the error CSS modifier to the field
         this.imageSet.classList.add(this.constructor.css['hasError'])
+    }
+
+    /**
+     * Upload a file (transition to the uploading state).
+     */
+    upload(version, file) {
+        const cls = this.constructor
+
+        // Clear the current state component
+        this._destroyStateComponent()
+
+        // Build the form data
+        const formData = cls.behaviours.formData[this._behaviours.formData](
+            this,
+            file
+        )
+
+        // Set up the uploader
+        this._uploader = cls.behaviours.uploader[this._behaviours.uploader](
+            this,
+            this._options.uploadUrl,
+            formData
+        )
+        this._uploader.init()
+
+        // Set up event handlers for the uploader
+        $.dispatch(this.input, 'uploading')
+
+        $.listen(
+            this._uploader.uploader,
+            {
+                'aborted cancelled error': () => {
+                    $.dispatch(this.input, 'uploadfailed')
+                    this.clear()
+                },
+
+                'uploaded': (event) => {
+                    $.dispatch(this.input, 'uploaded')
+
+                    try {
+                        // Extract the asset from the response
+                        const behaviour = this._behaviours.asset
+                        const asset = cls.behaviours.asset[behaviour](
+                            this,
+                            event.response
+                        )
+
+                        // Populate the field
+                        this.populate(version, asset)
+
+                    } catch (error) {
+                        if (error instanceof ResponseError) {
+                            // Clear the field
+                            this.clear()
+
+                            // Display the upload error
+                            this.postError(error.message)
+
+                        } else {
+
+                            // Re-through any JS error
+                            throw error
+                        }
+                    }
+                }
+            }
+        )
+
+        // Set the new state
+        this._state = 'uploading'
     }
 
     // -- Private  methods --
@@ -365,10 +487,137 @@ ImageSet.behaviours = {
 
     /**
      * The `acceptor` behaviour is used to create a file acceptor UI component
-     * for the field.
+     * for the image set.
      */
-    'acceptor': {'default': defaultFactories.acceptor('imageSet', false)}
+    'acceptor': {'default': defaultFactories.acceptor('imageSet', false)},
 
+    /**
+     * The `asset` behaviour is used to extract/build asset information from a
+     * response (e.g the payload returned when uploading/transforming a
+     * file/asset).
+     */
+    'asset': {'manhattan': manhattanFactories.asset()},
+
+    /**
+     * The `assetProp` behaviour is used to provide an interface/mapping for
+     * property names and their values against the asset.
+     *
+     * As a minimum the following list of properties must be supported:
+     *
+     * - alt (get, set)
+     * - contentType (get)
+     * - downloadURL (get)
+     * - filename (get)
+     * - fileLength (get)
+     * - imageMode (get)
+     * - imageSize (get)
+     * - previewURL (get)
+     * - transform (get, set)
+     *
+     */
+    'assetProp': {
+        'manhattan': (inst, action, version, name, value) => {
+            if (action === 'set') {
+                return manhattanFactories.setAssetProp(
+                    inst._assets[version],
+                    inst._options,
+                    name,
+                    value
+                )
+            }
+            return manhattanFactories.getAssetProp(
+                inst._assets[version],
+                inst._options,
+                name
+            )
+        }
+    },
+
+    /**
+     * The `formData` behaviour is used to create a `FormData` instance that
+     * contains the file to be uploaded and any other parameters required, for
+     * example a CSRF token.
+     */
+    'formData': {'default': defaultFactories.formData()},
+
+    /**
+     * The `input` behaviour is used to map the image set data to the input,
+     * the action determines if the value is `set` against input or used to
+     * populate the image set component (`get`).
+     */
+    'input': {
+        'manhattan': (inst, action) => {
+            let baseTransforms = null
+            let imageSetData = null
+
+            if (action === 'set') {
+
+                // Set
+                if (inst.assets) {
+
+                    baseTransforms = {}
+                    for (const [version, transform]
+                        of Object.entries(inst.baseTransforms)) {
+
+                        baseTransforms[version] = manhattanFactories
+                            .transformsToServer(transform)
+                    }
+
+                    imageSetData = {
+                        'images': inst.assets,
+                        'base_transforms': baseTransforms,
+                        'base_version': inst.baseVersion
+                    }
+
+                    inst.input.value = JSON.stringify(imageSetData)
+
+                } else {
+                    inst.input.value = ''
+                }
+
+            } else {
+
+                // Get
+                imageSetData = JSON.parse(inst.input.value)
+
+                baseTransforms = {}
+                for (const [version, transform]
+                    of Object.entries(imageSetData['base_transforms'])) {
+
+                    baseTransforms[version] = manhattanFactories
+                        .transformsToClient(transform)
+                }
+
+                inst._assets = imageSetData['images']
+                inst._baseTransforms = baseTransforms
+                inst._baseVersion = imageSetData['base_version']
+            }
+        }
+    },
+
+    /**
+     * The `uploader` behaviour is used to create a file uploader UI component
+     * for the image set.
+     */
+    'uploader': {'default': defaultFactories.uploader('imageSet')},
+
+    /**
+     * The `viewer` behaviour is used to create a file viewer UI component for
+     * the image set.
+     */
+    'viewer': {
+        'default': (inst, version) => {
+            return new ImageViewer(
+                inst.imageSet,
+                inst.getAssetProp(version, 'url'),
+                {
+                    'download': true,
+                    'metadata': true,
+                    'remove': true
+                }
+            )
+        }
+    }
 }
 
 

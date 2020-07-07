@@ -201,8 +201,8 @@ export class Metadata extends Overlay {
         this.content.appendChild(this._dom.props)
 
         // Create the buttons
-        this.addButton('okay', 'okay')
-        this.addButton('cancel', 'cancel')
+        this.addButton('okay', 'okay', 'okay')
+        this.addButton('cancel', 'cancel', 'cancel')
     }
 }
 

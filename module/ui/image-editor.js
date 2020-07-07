@@ -251,9 +251,9 @@ export class ImageEditor extends Overlay {
         this._dom.table.appendChild(this._dom.image)
 
         // Create the buttons
-        this.addButton('rotate', 'rotate')
-        this.addButton('okay', 'okay')
-        this.addButton('cancel', 'cancel')
+        this.addButton('rotate', 'rotate', 'rotate')
+        this.addButton('okay', 'okay', 'okay')
+        this.addButton('cancel', 'cancel', 'cancel')
 
         // Calculate the aspect ratio of the image
         const img = new Image()

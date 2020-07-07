@@ -190,7 +190,13 @@ export class Uploader {
         this.uploader.appendChild(this._dom.status)
 
         // Create the cancel button element
-        const cancelElm = $.create('div', {'class': cls.css['cancel']})
+        const cancelElm = $.create(
+            'div',
+            {
+                'class': cls.css['cancel'],
+                'title': 'Cancel'
+            }
+        )
         this.uploader.appendChild(cancelElm)
 
         // Add the uploader element to the container

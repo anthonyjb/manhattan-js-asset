@@ -6,8 +6,14 @@ import * as $ from 'manhattan-essentials'
 /**
  * Shortcut for creating an icon button within a viewer.
  */
-function createIconButton(viewerElm, css, eventType) {
-    const buttonElm = $.create('div', {'class': css})
+function createIconButton(viewerElm, css, eventType, tooltip='') {
+    const buttonElm = $.create(
+        'div',
+        {
+            'class': css,
+            'title': tooltip
+        }
+    )
     $.listen(
         buttonElm,
         {
@@ -117,7 +123,8 @@ export class FileViewer {
                 let buttonElm = createIconButton(
                     this.viewer,
                     cls.css[button],
-                    button
+                    button,
+                    cls.tooltips[button]
                 )
                 buttonsElm.appendChild(buttonElm)
             }
@@ -131,6 +138,14 @@ export class FileViewer {
         // Add the viewer element to the container
         this._dom.container.appendChild(this.viewer)
     }
+}
+
+// -- Tooltips --
+
+FileViewer.tooltips = {
+    'download': 'Download',
+    'metadata': 'Metadata',
+    'remove': 'Remove'
 }
 
 
@@ -282,7 +297,8 @@ export class ImageViewer {
                 let buttonElm = createIconButton(
                     this.viewer,
                     cls.css[button],
-                    button
+                    button,
+                    cls.tooltips[button]
                 )
                 buttonsElm.appendChild(buttonElm)
             }
@@ -296,6 +312,16 @@ export class ImageViewer {
         // Add the viewer element to the container
         this._dom.container.appendChild(this.viewer)
     }
+}
+
+
+// -- Tooltips --
+
+ImageViewer.tooltips = {
+    'edit': 'Edit',
+    'download': 'Download',
+    'metadata': 'Metadata',
+    'remove': 'Remove'
 }
 
 

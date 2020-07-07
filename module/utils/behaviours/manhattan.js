@@ -10,6 +10,154 @@ import {Acceptor} from './../../ui/acceptor'
 import {Metadata} from './../../ui/metadata'
 import {formatBytes} from './../formatting'
 
+/**
+ * Convert transforms from manhattan server format to manhattan client
+ * format.
+ */
+export function transformsToClient(transforms) {
+    const convertedTransforms = []
+    for (let transform of transforms) {
+        switch (transform.id) {
+
+        case 'image.rotate':
+            convertedTransforms.push(['rotate', transform.settings.angle])
+            break
+
+        case 'image.crop':
+            convertedTransforms.push([
+                'crop',
+                [
+                    [
+                        transform.settings.left,
+                        transform.settings.top
+                    ],
+                    [
+                        transform.settings.right,
+                        transform.settings.bottom
+                    ]
+                ]
+            ])
+            break
+
+        // no default
+        }
+    }
+    return convertedTransforms
+}
+
+/**
+ * Convert transforms from manhattan client format to manhattan server
+ * format.
+ */
+export function transformsToServer(transforms) {
+    const convertedTransforms = []
+    for (let transform of transforms) {
+        switch (transform[0]) {
+
+        case 'rotate':
+            convertedTransforms.push({
+                'id': 'image.rotate',
+                'settings': {'angle': transform[1]}
+            })
+            break
+
+        case 'crop':
+            convertedTransforms.push({
+                'id': 'image.crop',
+                'settings': {
+                    'top': transform[1][0][1],
+                    'left': transform[1][0][0],
+                    'bottom': transform[1][1][1],
+                    'right': transform[1][1][0]
+                }
+            })
+            break
+
+        // no default
+        }
+    }
+    return convertedTransforms
+}
+
+/**
+ * Manhattan get function for assets (don't use directly as a behaviour, it's
+ * designed to be used inside a behaviour).
+ */
+export function getAssetProp(_asset, options, name, value) {
+    const transforms = []
+
+    switch (name) {
+
+    case 'alt':
+        return _asset['user_meta']['alt'] || ''
+
+    case 'contentType':
+        return _asset['content_type']
+
+    case 'downloadURL':
+        return _asset['url']
+
+    case 'editingURL':
+        return _asset['variations'][options.editing].url
+
+    case 'filename':
+        return _asset['filename']
+
+    case 'fileLength':
+        return formatBytes(_asset['core_meta']['length'])
+
+    case 'imageMode':
+        return _asset['core_meta']['image']['mode']
+
+    case 'imageSize':
+        return _asset['core_meta']['image']['size'].join(' x ')
+
+    case 'previewURL':
+        if (_asset['preview_uri']) {
+            return _asset['preview_uri']
+        }
+        return _asset['variations'][options.preview].url
+
+    case 'transforms':
+        return transformsToClient(_asset['base_transforms'])
+
+    case 'url':
+        return _asset.url
+
+    // no default
+
+    }
+
+    return ''
+}
+
+/**
+ * Manhattan set function for assets (don't use directly as a behaviour, it's
+ * designed to be used inside a behaviour).
+ */
+export function setAssetProp(_asset, options, name, value) {
+    const transforms = []
+
+    switch (name) {
+
+    case 'alt':
+        _asset['user_meta']['alt'] = value
+        return value
+
+    case 'previewURL':
+        _asset['preview_uri'] = value
+        return value
+
+    case 'transforms':
+        _asset['base_transforms'] = transformsToServer(value)
+        return value
+
+    // no default
+
+    }
+
+    return ''
+}
 
 export function asset() {
 
@@ -41,126 +189,13 @@ export function assetProp(assetAttr, optionsAttr) {
      * Get/Set behaviour for asset properties.
      */
     function _assetProp(inst, action, name, value) {
-
         const _asset = inst[assetAttr]
         const options = inst[optionsAttr]
-        const transforms = []
 
-        switch (name) {
-
-        case 'alt':
-            if (action === 'set') {
-                _asset['user_meta']['alt'] = value
-                return value
-            }
-            return _asset['user_meta']['alt'] || ''
-
-        case 'contentType':
-            return _asset['content_type']
-
-        case 'downloadURL':
-            return _asset['url']
-
-        case 'editingURL':
-            return _asset['variations'][options.editing].url
-
-        case 'filename':
-            return _asset['filename']
-
-        case 'fileLength':
-            return formatBytes(_asset['core_meta']['length'])
-
-        case 'imageMode':
-            return _asset['core_meta']['image']['mode']
-
-        case 'imageSize':
-            return _asset['core_meta']['image']['size'].join(' x ')
-
-        case 'previewURL':
-            if (action === 'set') {
-                _asset['preview_uri'] = value
-                return value
-            }
-            if (_asset['preview_uri']) {
-                return _asset['preview_uri']
-            }
-
-            console.log(options.preview)
-
-            return _asset['variations'][options.preview].url
-
-        case 'transforms':
-
-            // Set transforms
-            if (action === 'set') {
-                for (let transform of value) {
-                    switch (transform[0]) {
-
-                    case 'rotate':
-                        transforms.push({
-                            'id': 'image.rotate',
-                            'settings': {'angle': transform[1]}
-                        })
-                        break
-
-                    case 'crop':
-                        transforms.push({
-                            'id': 'image.crop',
-                            'settings': {
-                                'top': transform[1][0][1],
-                                'left': transform[1][0][0],
-                                'bottom': transform[1][1][1],
-                                'right': transform[1][1][0]
-                            }
-                        })
-                        break
-
-                    // no default
-
-                    }
-                }
-                _asset['base_transforms'] = transforms
-                return value
-            }
-
-            // Get transforms
-            for (let transform of _asset['base_transforms']) {
-                switch (transform.id) {
-
-                case 'image.rotate':
-                    transforms.push(['rotate', transform.settings.angle])
-                    break
-
-                case 'image.crop':
-                    transforms.push([
-                        'crop',
-                        [
-                            [
-                                transform.settings.left,
-                                transform.settings.top
-                            ],
-                            [
-                                transform.settings.right,
-                                transform.settings.bottom
-                            ]
-                        ]
-                    ])
-                    break
-
-                    // no default
-
-                }
-            }
-            return transforms
-
-        case 'url':
-            return _asset.url
-
-        // no default
-
+        if (action === 'set') {
+            return setAssetProp(_asset, options, name, value)
         }
-
-        return ''
+        return getAssetProp(_asset, options, name)
     }
 
     return _assetProp

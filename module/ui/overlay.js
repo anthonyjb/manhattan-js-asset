@@ -92,13 +92,16 @@ export class Overlay {
     /**
      * Add a button to the overlay.
      */
-    addButton(css, eventType) {
+    addButton(css, eventType, tooltip) {
 
         // Create the button
         const buttonElm = $.create(
             'div',
             {'class': Overlay.css[css]}
         )
+        if (tooltip) {
+            buttonElm.setAttribute('title', Overlay.tooltips[tooltip])
+        }
 
         // Add event handlers
         $.listen(
@@ -216,6 +219,16 @@ export class Overlay {
         this._transitioning = true
     }
 
+}
+
+
+// -- Tooltips --
+
+Overlay.tooltips = {
+    'cancel': 'cancel',
+    'close': 'close',
+    'okay': 'Confirm',
+    'rotate': 'Rotate'
 }
 
 
