@@ -410,11 +410,68 @@ export class ImageSetViewer {
         this._dom = {
             'container': null,
             'image': null,
+            'versions': null,
             'viewer': null
         }
 
         // Store a reference to the container element
         this._dom.container = container
+
+        // Event handlers
+        this._handlers = {
+
+            /**
+             * Close the version select.
+             */
+            'closeVersionSelect': (ev) => {
+                const cls = this.constructor
+                const openCSS = cls.css['versionsOpen']
+
+                // Ignore this event if the version select is closed
+                if (this._dom.versions.classList.contains(openCSS)) {
+
+                    // Ignore this event if the user select a version
+                    const versionElm = $.closest(
+                        ev.target,
+                        `.${cls.css['version']}`
+                    )
+                    if (!versionElm) {
+                        this._dom.versions.classList.remove(openCSS)
+                    }
+                }
+            },
+
+            /**
+             * Handle the version select interactions.
+             */
+            'versionSelect': (ev) => {
+                const cls = this.constructor
+                const openCSS = cls.css['versionsOpen']
+
+                if (this._dom.versions.classList.contains(openCSS)) {
+
+                    // Close version select
+                    this._dom.versions.classList.remove(openCSS)
+
+                    // Switch to the selected version (if changed)
+                    const versionElm = $.closest(
+                        ev.target,
+                        `.${cls.css['version']}`
+                    )
+                    if (versionElm) {
+                        const {version} = versionElm.dataset
+                        if (version !== this.version) {
+                            this.version = version
+                        }
+                    }
+
+                } else {
+                    // Open version select
+                    this._dom.versions.classList.add(openCSS)
+                }
+            }
+
+        }
     }
 
     // -- Getters & Setters --
@@ -424,9 +481,24 @@ export class ImageSetViewer {
     }
 
     set version(version) {
+        const cls = this.constructor
+
+        // Set the new version
         this._version = version
+
+        // Switch the image displayed
         const imageURL = this._imageURLs[version]
         this._dom.image.style.backgroundImage = `url('${imageURL}')`
+
+        // Select the relevant version in the selector
+        const selectedCSS = cls.css['versionSelected']
+        for (const versionElm of [...this._dom.versions.children]) {
+            if (versionElm.dataset.version === version) {
+                versionElm.classList.add(selectedCSS)
+            } else {
+                versionElm.classList.remove(selectedCSS)
+            }
+        }
     }
 
     get viewer() {
@@ -455,9 +527,26 @@ export class ImageSetViewer {
         this._dom.image = $.create('div', {'class': cls.css['image']})
         this.viewer.appendChild(this._dom.image)
 
-        // @@ Create the version selector
+        // Create the version selector
+        this._dom.versions = $.create('div', {'class': cls.css['versions']})
 
-        // @@ START HERE
+        for (const version of this._versions) {
+            const versionElm = $.create(
+                'div',
+                {
+                    'class': cls.css['version'],
+                    'data-version': version
+                }
+            )
+            versionElm.textContent = this._labels[version]
+            this._dom.versions.appendChild(versionElm)
+        }
+
+        // Handle events for versions
+        $.listen(this._dom.versions, {'click': this._handlers.versionSelect})
+        $.listen(document, {'mousedown': this._handlers.closeVersionSelect})
+
+        this.viewer.appendChild(this._dom.versions)
 
         // Initially show the base version for the image set
         this.version = this._baseVersion
@@ -483,6 +572,26 @@ ImageSetViewer.css = {
     'image': 'mh-image-set-viewer__image',
 
     /**
+     * Applied to each version (item) in the version selector.
+     */
+    'version': 'mh-image-set-viewer__version',
+
+    /**
+     * Applied to the version (item) currently selected.
+     */
+    'versionSelected': 'mh-image-set-viewer__version--selected',
+
+    /**
+     * Applied to the version selector.
+     */
+    'versions': 'mh-image-set-viewer__versions',
+
+    /**
+     * Applied to the version selector when open.
+     */
+    'versionsOpen': 'mh-image-set-viewer__versions--open',
+
+    /**
      * Applied to the image viewer.
      */
     'viewer': 'mh-image-set-viewer'
@@ -490,18 +599,12 @@ ImageSetViewer.css = {
 
 // @@
 //
-// - Ability to set the version
-// - Ability to update the image URL for a version
-// - Ability to hide the view when uploading (but not remove it)
 // - Ability to show an acceptor within the viewer
+// - Ability to hide the view when uploading (but not remove it)
+// - Ability to update the image URL for a version
 // - Button support
 //     - Alt tag
 //     - Clear image set
-//     - Download
-//     - Edit
-//     - Metadata
 //     - Edit
 //     - Clear version
 //     - Upload version
-
-

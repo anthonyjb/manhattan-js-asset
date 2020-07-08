@@ -624,10 +624,15 @@ ImageSet.behaviours = {
                 }
             }
 
+            const labels = {}
+            for (const [i, v] of inst._options.versions.entries()) {
+                labels[v] = inst._options.versionLabels[i]
+            }
+
             return new ImageSetViewer(
                 inst.imageSet,
                 inst._options.versions,
-                inst._options.versionLabels,
+                labels,
                 imageURLs,
                 inst.baseVersion
             )
