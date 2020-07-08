@@ -384,7 +384,7 @@ export class FileField {
                 },
 
                 'remove': () => {
-                    // Clear the asset from the file
+                    // Clear the asset from the file field
                     this.clear()
                 }
             }

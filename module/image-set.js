@@ -348,6 +348,23 @@ export class ImageSet {
         const viewerBehaviour = this._behaviours.viewer
         this._viewer = cls.behaviours.viewer[viewerBehaviour](this, version)
         this._viewer.init()
+
+        // Set up event handlers for the viewer
+        $.listen(
+            this._viewer.viewer,
+            {
+                'remove': () => {
+                    // Clear the image set
+                    this.clear()
+                }
+            }
+        )
+
+        // Set the new state
+        this._state = 'viewing'
+
+        // Trigger a change event against the input
+        $.dispatch(this.input, 'change')
     }
 
     /**

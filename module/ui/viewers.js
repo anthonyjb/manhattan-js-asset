@@ -383,8 +383,7 @@ export class ImageSetViewer {
         versions,
         labels,
         imageURLs,
-        baseVersion,
-        buttons={}
+        baseVersion
     ) {
         // A list of versions the image set supports
         this._versions = versions
@@ -398,10 +397,6 @@ export class ImageSetViewer {
         // The base version of the image set (different buttons are presented
         // for the base version.
         this._baseVersion = baseVersion
-
-        // A set of flags which indicate which buttons should be displayed in
-        // the viewer.
-        this._buttons = buttons
 
         // The current version of the image set being viewed
         this._version = null
@@ -511,7 +506,15 @@ export class ImageSetViewer {
      * Remove the image viewer.
      */
     destroy() {
-        console.log(this, 'destroy')
+        // Remove the viewer element
+        if (this.viewer !== null) {
+            this.viewer.parentNode.removeChild(this.viewer)
+            $.ignore(document, {'mousedown': this._handlers.closeVersionSelect})
+        }
+
+        // Clear DOM element references
+        this._dom.container = null
+        this._dom.viewer = null
     }
 
     /**
@@ -548,7 +551,18 @@ export class ImageSetViewer {
 
         this.viewer.appendChild(this._dom.versions)
 
-        // Initially show the base version for the image set
+        // Create buttons
+
+        // Remove image set
+        const removeElm = createIconButton(
+            this.viewer,
+            cls.css['remove'],
+            'remove',
+            cls.tooltips['remove']
+        )
+        this.viewer.appendChild(removeElm)
+
+        // Initially show theme base version for the image set
         this.version = this._baseVersion
 
         // Add the viewer element to the container
@@ -559,7 +573,9 @@ export class ImageSetViewer {
 
 // -- Tooltips --
 
-ImageSetViewer.tooltips = {}
+ImageSetViewer.tooltips = {
+    'remove': 'Remove image set'
+}
 
 
 // -- CSS classes --
@@ -594,7 +610,14 @@ ImageSetViewer.css = {
     /**
      * Applied to the image viewer.
      */
-    'viewer': 'mh-image-set-viewer'
+    'viewer': 'mh-image-set-viewer',
+
+    // -- Buttons --
+
+    /**
+     * Applied to the remove button within the viewer.
+     */
+    'remove': 'mh-image-set-viewer__remove'
 }
 
 // @@
