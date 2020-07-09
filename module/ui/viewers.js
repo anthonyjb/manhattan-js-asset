@@ -381,22 +381,27 @@ export class ImageSetViewer {
     constructor(
         container,
         versions,
+        baseVersion,
         labels,
         imageURLs,
-        baseVersion
+        ownImages
     ) {
         // A list of versions the image set supports
         this._versions = versions
 
-        // A map of image URLs for each version of the image set
-        this._imageURLs = imageURLs
+        // The base version of the image set (different buttons are presented
+        // for the base version.
+        this._baseVersion = baseVersion
 
         // A map of labels for each version of the image set
         this._labels = labels
 
-        // The base version of the image set (different buttons are presented
-        // for the base version.
-        this._baseVersion = baseVersion
+        // A map of image URLs for each version of the image set
+        this._imageURLs = imageURLs
+
+        // A map of flags (booleans) for each version indicating if they are
+        // using their own image ()true or the base image (false).
+        this._ownImages = ownImages
 
         // The current version of the image set being viewed
         this._version = null
@@ -476,24 +481,8 @@ export class ImageSetViewer {
     }
 
     set version(version) {
-        const cls = this.constructor
-
-        // Set the new version
         this._version = version
-
-        // Switch the image displayed
-        const imageURL = this._imageURLs[version]
-        this._dom.image.style.backgroundImage = `url('${imageURL}')`
-
-        // Select the relevant version in the selector
-        const selectedCSS = cls.css['versionSelected']
-        for (const versionElm of [...this._dom.versions.children]) {
-            if (versionElm.dataset.version === version) {
-                versionElm.classList.add(selectedCSS)
-            } else {
-                versionElm.classList.remove(selectedCSS)
-            }
-        }
+        this._update()
     }
 
     get viewer() {
@@ -571,11 +560,101 @@ export class ImageSetViewer {
         )
         this.viewer.appendChild(removeElm)
 
+        // Add an element bar for version specific buttons
+        const buttonsElm = $.create('div', {'class': cls.css['versionButtons']})
+        this.viewer.appendChild(buttonsElm)
+
+        // Edit version
+        const editElm = createIconButton(
+            this.viewer,
+            cls.css['edit'],
+            'edit',
+            cls.tooltips['edit']
+        )
+        buttonsElm.appendChild(editElm)
+
+        // Upload version
+        const uploadElm = createIconButton(
+            this.viewer,
+            cls.css['upload'],
+            'upload',
+            cls.tooltips['upload']
+        )
+        buttonsElm.appendChild(uploadElm)
+
+        // Clear version
+        const clearElm = createIconButton(
+            this.viewer,
+            cls.css['clear'],
+            'clear',
+            cls.tooltips['clear']
+        )
+        buttonsElm.appendChild(clearElm)
+
         // Initially show theme base version for the image set
         this.version = this._baseVersion
 
         // Add the viewer element to the container
         this._dom.container.appendChild(this.viewer)
+    }
+
+    /**
+     * Set the image URL for a version in the viewer.
+     */
+    setImageURL(version, imageURL) {
+        this._imageURLs[version] = imageURL
+        this._update()
+    }
+
+    /**
+     * Set the own image flag for a version in the viewer.
+     */
+    setOwnImage(version, ownImage) {
+        this._ownImages[version] = ownImage
+        this._update()
+    }
+
+    // -- Private methods --
+
+    /**
+     * Update the viewer UI based on the current version.
+     */
+    _update() {
+        const cls = this.constructor
+
+        // Switch the image displayed
+        const imageURL = this._imageURLs[this._version]
+        this._dom.image.style.backgroundImage = `url('${imageURL}')`
+
+        // Flag if the base version is being displayed
+        const baseCSS = cls.css['viewerBase']
+        const ownImageCSS = cls.css['viewerOwnImage']
+
+        if (this._version === this._baseVersion) {
+            this.viewer.classList.add(baseCSS)
+            this.viewer.classList.remove(ownImageCSS)
+
+        } else {
+            this.viewer.classList.remove(baseCSS)
+
+            // Flag if the version being viewed has it's own image
+            if (this._ownImages[this._version]) {
+                this.viewer.classList.add(ownImageCSS)
+            } else {
+                this.viewer.classList.remove(ownImageCSS)
+            }
+
+        }
+
+        // Select the relevant version in the selector
+        const selectedCSS = cls.css['versionSelected']
+        for (const versionElm of [...this._dom.versions.children]) {
+            if (versionElm.dataset.version === this._version) {
+                versionElm.classList.add(selectedCSS)
+            } else {
+                versionElm.classList.remove(selectedCSS)
+            }
+        }
     }
 }
 
@@ -583,7 +662,11 @@ export class ImageSetViewer {
 // -- Tooltips --
 
 ImageSetViewer.tooltips = {
-    'remove': 'Remove image set'
+    'alt': 'Set alt text for image set',
+    'clear': 'Clear image for version (revert to base)',
+    'edit': 'Edit image',
+    'remove': 'Remove image set',
+    'upload': 'Upload a new image for the version'
 }
 
 
@@ -607,6 +690,12 @@ ImageSetViewer.css = {
     'versionSelected': 'mh-image-set-viewer__version--selected',
 
     /**
+     * Applied to the contain element for version specific buttons (edit,
+     * upload and clear version).
+     */
+    'versionButtons': 'mh-image-set-viewer__version-buttons',
+
+    /**
      * Applied to the version selector.
      */
     'versions': 'mh-image-set-viewer__versions',
@@ -621,7 +710,33 @@ ImageSetViewer.css = {
      */
     'viewer': 'mh-image-set-viewer',
 
+    /**
+     * Applied to the image viewer when the base version is being displayed.
+     */
+    'viewerBase': 'mh-image-set-viewer--base',
+
+    /**
+     * Applied to the image viewer when the version being displayed has its
+     * own image.
+     */
+    'viewerOwnImage': 'mh-image-set-viewer--own-image',
+
     // -- Buttons --
+
+    /**
+     * Applied to the alt tag button within the viewer.
+     */
+    'alt': 'mh-image-set-viewer__alt',
+
+    /**
+     * Applied to the clear version button within the viewer.
+     */
+    'clear': 'mh-image-set-viewer__clear',
+
+    /**
+     * Applied to the edit version button within the viewer.
+     */
+    'edit': 'mh-image-set-viewer__edit',
 
     /**
      * Applied to the remove button within the viewer.
@@ -629,19 +744,13 @@ ImageSetViewer.css = {
     'remove': 'mh-image-set-viewer__remove',
 
     /**
-     * Applied to the alt tag button within the viewer.
+     * Applied to the upload version button within the viewer.
      */
-    'alt': 'mh-image-set-viewer__alt'
+    'upload': 'mh-image-set-viewer__upload'
+
 }
 
 // @@
 //
-// - Ability to show an acceptor within the viewer
-// - Ability to hide the view when uploading (but not remove it)
-// - Ability to update the image URL for a version
-// - Button support
-//     - Alt tag
-//     - Clear image set
-//     - Edit
-//     - Clear version
-//     - Upload version
+// - Support image uploading button
+//
