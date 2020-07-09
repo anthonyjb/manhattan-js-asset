@@ -2,6 +2,7 @@ import * as $ from 'manhattan-essentials'
 
 import {ResponseError} from './errors'
 import {ErrorMessage} from './ui/error-message'
+import {Metadata} from './ui/metadata'
 import {ImageSetViewer} from './ui/viewers'
 import * as defaultFactories from './utils/behaviours/defaults'
 import * as manhattanFactories from './utils/behaviours/manhattan'
@@ -139,6 +140,7 @@ export class ImageSet {
         $.config(
             this._behaviours,
             {
+                'alt': 'default',
                 'acceptor': 'default',
                 'assetProp': 'manhattan',
                 'asset': 'manhattan',
@@ -191,6 +193,24 @@ export class ImageSet {
     }
 
     // -- Getters & Setters --
+
+    get alt() {
+        return this._alt
+    }
+
+    set alt(value) {
+        const cls = this.constructor
+
+        // Set the alt value
+        this._alt = value
+
+        // Sync the input value with the image set
+        const inputBehaviour = this._behaviours.input
+        cls.behaviours.input[inputBehaviour](this, 'set')
+
+        // Trigger a change event against the input
+        $.dispatch(this.input, 'change')
+    }
 
     get assets() {
         if (this._assets) {
@@ -353,6 +373,33 @@ export class ImageSet {
         $.listen(
             this._viewer.viewer,
             {
+
+                'alt': () => {
+                    const altBehaviour = this._behaviours.alt
+                    const altModal = cls.behaviours.alt[altBehaviour](this)
+                    altModal.init()
+                    altModal.show()
+
+                    $.listen(
+                        altModal.overlay,
+                        {
+                            'okay': () => {
+                                // Apply any changes to the alt tag
+                                this.alt = altModal.props.alt || ''
+
+                                // Hide the medata overlay
+                                altModal.hide()
+                            },
+                            'cancel': () => {
+                                altModal.hide()
+                            },
+                            'hidden': () => {
+                                altModal.destroy()
+                            }
+                        }
+                    )
+                },
+
                 'remove': () => {
                     // Clear the image set
                     this.clear()
@@ -509,6 +556,16 @@ ImageSet.behaviours = {
     'acceptor': {'default': defaultFactories.acceptor('imageSet', false)},
 
     /**
+     * The `alt` behaviour is used to create a alt tag UI overlay which
+     * allows users to view and modify alt tag for the image.
+     */
+    'alt': {
+        'default': (inst) => {
+            return new Metadata([['Alt', 'alt', inst._alt, false]])
+        }
+    },
+
+    /**
      * The `asset` behaviour is used to extract/build asset information from a
      * response (e.g the payload returned when uploading/transforming a
      * file/asset).
@@ -581,6 +638,7 @@ ImageSet.behaviours = {
                     }
 
                     imageSetData = {
+                        'alt': inst.alt,
                         'images': inst.assets,
                         'base_transforms': baseTransforms,
                         'base_version': inst.baseVersion
@@ -605,6 +663,9 @@ ImageSet.behaviours = {
                         .transformsToClient(transform)
                 }
 
+                // Values should not be set using setters to avoid updating
+                // the input as part of the read.
+                inst._alt = imageSetData['alt']
                 inst._assets = imageSetData['images']
                 inst._baseTransforms = baseTransforms
                 inst._baseVersion = imageSetData['base_version']

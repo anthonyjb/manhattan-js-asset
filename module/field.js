@@ -364,7 +364,7 @@ export class FileField {
                         metadata.overlay,
                         {
                             'okay': () => {
-                                // Apply any  metadata changes
+                                // Apply any metadata changes
                                 const {props} = metadata
                                 for (let key in props) {
                                     this.setAssetProp(key, props[key])

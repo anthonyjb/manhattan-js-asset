@@ -553,6 +553,15 @@ export class ImageSetViewer {
 
         // Create buttons
 
+        // Set alt tag
+        const altElm = createIconButton(
+            this.viewer,
+            cls.css['alt'],
+            'alt',
+            cls.tooltips['alt']
+        )
+        this.viewer.appendChild(altElm)
+
         // Remove image set
         const removeElm = createIconButton(
             this.viewer,
@@ -617,7 +626,12 @@ ImageSetViewer.css = {
     /**
      * Applied to the remove button within the viewer.
      */
-    'remove': 'mh-image-set-viewer__remove'
+    'remove': 'mh-image-set-viewer__remove',
+
+    /**
+     * Applied to the alt tag button within the viewer.
+     */
+    'alt': 'mh-image-set-viewer__alt'
 }
 
 // @@
