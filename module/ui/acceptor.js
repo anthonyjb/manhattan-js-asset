@@ -38,7 +38,7 @@ export class Acceptor {
         // to the acceptor.
         this._allowDrop = allowDrop
 
-        // A comma separated list of file types that are accepted.
+        // A comma separated list of file types that are accepted
         this._accept = accept
 
         // Flag indicating if the acceptor can accept multiple files
@@ -272,7 +272,6 @@ export class Acceptor {
     }
 }
 
-
 // -- CSS classes --
 
 Acceptor.css = {
@@ -306,4 +305,95 @@ Acceptor.css = {
      * Applied to the file input field within the acceptor.
      */
     'input': 'mh-acceptor__input'
+}
+
+
+/**
+ * Mini file acceptor UI component.
+ *
+ * Acceptors allow users to select a file from the file system. The mini
+ * acceptor is designed to be included as a control rather than a dedicated
+ * component.
+ */
+
+export class MiniAcceptor extends Acceptor {
+
+    constructor(container, name, accept='') {
+        super(container, name, '', '', false, accept, false)
+    }
+
+    /**
+     * Initialize the acceptor.
+     */
+    init() {
+        const cls = this.constructor
+
+        // Create the acceptor element
+        this._dom.acceptor = $.create('div', {'class': cls.css['acceptor']})
+
+        if (this._disabled) {
+            this._dom.acceptor.classList.add(cls.css['disabled'])
+        }
+
+        // Create the file input element for the acceptor
+        this._dom.input = $.create(
+            'input',
+            {
+                'type': 'file',
+                'name': this._name,
+                'class': cls.css['input'],
+                'title': ' '
+            }
+        )
+
+        if (this._accept !== '') {
+            this._dom.input.setAttribute('accept', this._accept)
+        }
+
+        if (this._multiple) {
+            this._dom.input.setAttribute('multiple', '')
+        }
+
+        this.acceptor.appendChild(this._dom.input)
+
+        // Create the faceplate for the acceptor, the faceplate allows a
+        // custom appearance to be presented for the file input.
+        this._dom.faceplate = $.create('div', {'class': cls.css['faceplate']})
+        this.acceptor.appendChild(this._dom.faceplate)
+
+        // Add the acceptor element to the container
+        this._dom.container.appendChild(this.acceptor)
+
+        // Set up event listeners
+        $.listen(
+            this._dom.input,
+            {'change': this._handlers.change}
+        )
+    }
+}
+
+
+// -- CSS classes --
+
+MiniAcceptor.css = {
+
+    /**
+     * Applied to the acceptor element.
+     */
+    'acceptor': 'mh-mini-acceptor',
+
+    /**
+     * Applied to the acceptor to flag when it's disabled.
+     */
+    'disabled': 'mh-mini-acceptor--disabled',
+
+    /**
+     * Applied to the faceplate element within the acceptor.
+     */
+    'faceplate': 'mh-mini-acceptor__faceplate',
+
+    /**
+     * Applied to the file input field within the acceptor.
+     */
+    'input': 'mh-mini-acceptor__input'
 }

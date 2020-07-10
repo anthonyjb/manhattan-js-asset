@@ -1,5 +1,7 @@
 import * as $ from 'manhattan-essentials'
 
+import {MiniAcceptor} from './acceptor'
+
 
 // -- Utils --
 
@@ -384,7 +386,9 @@ export class ImageSetViewer {
         baseVersion,
         labels,
         imageURLs,
-        ownImages
+        ownImages,
+        imageSetName,
+        accept
     ) {
         // A list of versions the image set supports
         this._versions = versions
@@ -403,8 +407,19 @@ export class ImageSetViewer {
         // using their own image ()true or the base image (false).
         this._ownImages = ownImages
 
+        // The field name of the image set (used when naming an input field
+        // for accepting files).
+        this._imageSetName = imageSetName
+
+        // A comma separated list of file types that are accepted when users
+        // upload version images.
+        this._accept = accept
+
         // The current version of the image set being viewed
         this._version = null
+
+        // An acceptor for uploading new version images
+        this._acceptor = null
 
         // Domain for related DOM elements
         this._dom = {
@@ -575,11 +590,12 @@ export class ImageSetViewer {
         buttonsElm.appendChild(editElm)
 
         // Upload version
-        const uploadElm = createIconButton(
-            this.viewer,
-            cls.css['upload'],
-            'upload',
-            cls.tooltips['upload']
+        const uploadElm = $.create(
+            'div',
+            {
+                'class': cls.css['upload'],
+                'title': cls.tooltips['upload']
+            }
         )
         buttonsElm.appendChild(uploadElm)
 
@@ -591,6 +607,27 @@ export class ImageSetViewer {
             cls.tooltips['clear']
         )
         buttonsElm.appendChild(clearElm)
+
+        // Add acceptor to the upload version
+        this._acceptor = new MiniAcceptor(
+            uploadElm,
+            `${this._imageSetName}__version__acceptor`,
+            this._accept
+        )
+        this._acceptor.init()
+
+        // Set up event handlers for the acceptor
+        $.listen(
+            this._acceptor.acceptor,
+            {
+                'accepted': (event) => {
+                    $.dispatch(
+                        this.viewer,
+                        {'files': event.files}
+                    )
+                }
+            }
+        )
 
         // Initially show theme base version for the image set
         this.version = this._baseVersion
@@ -754,8 +791,3 @@ ImageSetViewer.css = {
     'upload': 'mh-image-set-viewer__upload'
 
 }
-
-// @@
-//
-// - Support image uploading button
-//

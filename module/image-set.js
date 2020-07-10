@@ -28,7 +28,7 @@ export class ImageSet {
                 /**
                  * A comma separated list of file types that are accepted.
                  */
-                'accept': '',
+                'accept': 'image/*',
 
                 /**
                  * If true then the field will support users dropping files on
@@ -434,12 +434,14 @@ export class ImageSet {
         // Clear the current state component
         this._destroyStateComponent()
 
-        // Update the asset and input value
         if (asset) {
+            // Add the new asset to the image set (against its version)
             this._assets[version] = asset
-            this._baseTransforms = {}
-            this._previewURIs = {}
-            this._alt = ''
+
+            // Clear any existing base transforms and previews for this
+            // version.
+            delete this._baseTransforms[version]
+            delete this._previewURIs[version]
         }
 
         // Set up the viewer
@@ -451,6 +453,9 @@ export class ImageSet {
         $.listen(
             this._viewer.viewer,
             {
+                'accepted': (event) => {
+                    this.upload(this._viewer.version, event.files[0])
+                },
 
                 'alt': () => {
                     const altBehaviour = this._behaviours.alt
@@ -536,6 +541,9 @@ export class ImageSet {
                 }
             }
         )
+
+        // Set the initial version in the viewer to the one we just populated
+        this._viewer.version = version
 
         // Set the new state
         this._state = 'viewing'
@@ -900,7 +908,9 @@ ImageSet.behaviours = {
                 inst.baseVersion,
                 labels,
                 inst.getPreviews(),
-                inst.getOwnAssets()
+                inst.getOwnAssets(),
+                inst.input.name,
+                inst._options.accept
             )
         }
     }
@@ -927,4 +937,5 @@ ImageSet.css = {
 //
 // * support uploading new images for versions
 // * support saving image sets and generating variations for them
+// * move CSS over from manage
 //
