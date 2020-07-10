@@ -3,6 +3,7 @@ import * as $ from 'manhattan-essentials'
 import {ResponseError} from './errors'
 import {ErrorMessage} from './ui/error-message'
 import {Metadata} from './ui/metadata'
+import {ImageEditor} from './ui/image-editor'
 import {ImageSetViewer} from './ui/viewers'
 import * as defaultFactories from './utils/behaviours/defaults'
 import * as manhattanFactories from './utils/behaviours/manhattan'
@@ -145,6 +146,7 @@ export class ImageSet {
                 'assetProp': 'manhattan',
                 'asset': 'manhattan',
                 'formData': 'default',
+                'imageEditor': 'default',
                 'input': 'manhattan',
                 'uploader': 'default',
                 'viewer': 'default'
@@ -257,18 +259,6 @@ export class ImageSet {
     // -- Public methods --
 
     /**
-     * Clear any error from the field.
-     */
-    clearError() {
-        if (this._error) {
-            this._error.destroy()
-
-            // Clear the error CSS modifier from the field
-            this.imageSet.classList.remove(this.constructor.css['hasError'])
-        }
-    }
-
-    /**
      * Clear the field (transition to the accepting state).
      */
     clear() {
@@ -279,7 +269,9 @@ export class ImageSet {
 
         // Clear the asset input value
         this._assets = {}
-        this.input.value = ''
+        this._baseTransforms = {}
+        this._previewURIs = {}
+        this._alt = ''
 
         // Set up the acceptor
         const behaviour = this._behaviours.acceptor
@@ -299,8 +291,27 @@ export class ImageSet {
         // Set the new state
         this._state = 'accepting'
 
-        // Trigger a change event against the input
-        $.dispatch(this.input, 'change')
+        this._updateInput()
+    }
+
+    /**
+     * Clean the asset from a version of the image set.
+     */
+    clearAsset(version, asset) {
+        delete this._assets[version]
+        this._updateInput()
+    }
+
+    /**
+     * Clear any error from the field.
+     */
+    clearError() {
+        if (this._error) {
+            this._error.destroy()
+
+            // Clear the error CSS modifier from the field
+            this.imageSet.classList.remove(this.constructor.css['hasError'])
+        }
     }
 
     /**
@@ -323,6 +334,65 @@ export class ImageSet {
         const behaviours = this.constructor.behaviours.assetProp
         const behaviour = this._behaviours.assetProp
         return behaviours[behaviour](this, 'get', version, name)
+    }
+
+    /**
+     * Get the crop aspect ratio for a version of the image set.
+     */
+    getCropAspectRatio(version) {
+        return this
+            ._options
+            .cropAspectRatios[this._options.versions.indexOf(version)]
+    }
+
+    /**
+     * Return a map of which versions have a unique asset (vs. using the base
+     * version asset).
+     */
+    getOwnAssets() {
+        const ownImages = {}
+        for (const version of this._options.versions) {
+            ownImages[version] = this._assets.hasOwnProperty(version)
+        }
+        return ownImages
+    }
+
+    /**
+     * Return a preview URL/URI for a version of the image set.
+     */
+    getPreview(version) {
+
+        if (this._previewURIs[version]) {
+
+            // Preview URI available for this version
+            return this._previewURIs[version]
+        }
+
+        if(this._assets[version]) {
+
+            // Preview URL available for this version
+            return this.getAssetProp(version, 'previewURL')
+        }
+
+        if (this._baseTransforms[version]) {
+
+            // Use the variation related to this version against the base
+            // version.
+            return this.getAssetProp(version, 'previewURL')
+        }
+
+        return this.getAssetProp(this.baseVersion, 'editingURL')
+    }
+
+    /**
+     * Return a map of preview URL/URIs for versions of the image set.
+     */
+    getPreviews() {
+        const previews = {}
+        for (const version of this._options.versions) {
+            previews[version] = this.getPreview(version)
+        }
+        return previews
     }
 
     /**
@@ -349,7 +419,7 @@ export class ImageSet {
         if (this.input.value) {
             const behaviour = this._behaviours.input
             cls.behaviours.input[behaviour](this, 'get')
-            this.populate(this.baseVersion, this.assets[this.baseVersion])
+            this.populate(this.baseVersion)
         } else {
             this.clear()
         }
@@ -365,11 +435,12 @@ export class ImageSet {
         this._destroyStateComponent()
 
         // Update the asset and input value
-        this._assets[version] = asset
-
-        // Sync the input value with the image set
-        const inputBehaviour = this._behaviours.input
-        cls.behaviours.input[inputBehaviour](this, 'set')
+        if (asset) {
+            this._assets[version] = asset
+            this._baseTransforms = {}
+            this._previewURIs = {}
+            this._alt = ''
+        }
 
         // Set up the viewer
         const viewerBehaviour = this._behaviours.viewer
@@ -407,6 +478,58 @@ export class ImageSet {
                     )
                 },
 
+                'edit': () => {
+                    const imageEditorBehaviour = this._behaviours.imageEditor
+                    const imageEditor = cls.behaviours
+                        .imageEditor[imageEditorBehaviour](
+                            this,
+                            this._viewer.version
+                        )
+                    imageEditor.init()
+                    imageEditor.show()
+
+                    $.listen(
+                        imageEditor.overlay,
+                        {
+                            'okay': () => {
+                                const {transforms} = imageEditor
+                                const {previewDataURI} = imageEditor
+
+                                previewDataURI.then(([dataURI, sizeInfo]) => {
+
+                                    // Set base transforms against the image
+                                    this.setBaseTransform(
+                                        this._viewer.version,
+                                        imageEditor.transforms
+                                    )
+
+                                    // Set the preview URI
+                                    this.setPreview(
+                                        this._viewer.version,
+                                        dataURI
+                                    )
+
+                                    // Update the image URLs for the viewer
+                                    console.log()
+                                    for (const [v, imageURL]
+                                        of Object.entries(this.getPreviews())) {
+
+                                        this._viewer.setImageURL(v, imageURL)
+                                    }
+
+                                    imageEditor.hide()
+                                })
+                            },
+                            'cancel': () => {
+                                imageEditor.hide()
+                            },
+                            'hidden': () => {
+                                imageEditor.destroy()
+                            }
+                        }
+                    )
+                },
+
                 'remove': () => {
                     // Clear the image set
                     this.clear()
@@ -417,8 +540,7 @@ export class ImageSet {
         // Set the new state
         this._state = 'viewing'
 
-        // Trigger a change event against the input
-        $.dispatch(this.input, 'change')
+        this._updateInput()
     }
 
     /**
@@ -447,6 +569,30 @@ export class ImageSet {
 
         // Add the error CSS modifier to the field
         this.imageSet.classList.add(this.constructor.css['hasError'])
+    }
+
+    /**
+     * Set the asset for a version of the image set.
+     */
+    setAsset(version, asset) {
+        this._assets[version] = asset
+        this._updateInput()
+    }
+
+    /**
+     * Set the base transforms for a version of the image set.
+     */
+    setBaseTransform(version, transforms) {
+        this._baseTransforms[version] = transforms
+        this._updateInput()
+    }
+
+    /**
+     * Set the preview URI for a version of the image set.
+     */
+    setPreview(version, uri) {
+        this._previewURIs[version] = uri
+        this._updateInput()
     }
 
     /**
@@ -549,6 +695,20 @@ export class ImageSet {
 
         }
     }
+
+    /**
+     * Update the input value to the current state of the image set.
+     */
+    _updateInput() {
+        const cls = this.constructor
+
+        // Sync the input value with the image set
+        const inputBehaviour = this._behaviours.input
+        cls.behaviours.input[inputBehaviour](this, 'set')
+
+        // Trigger a change event against the input
+        $.dispatch(this.input, 'change')
+    }
 }
 
 
@@ -598,6 +758,9 @@ ImageSet.behaviours = {
      */
     'assetProp': {
         'manhattan': (inst, action, version, name, value) => {
+            const _asset = inst._assets[version]
+            const _baseAsset = inst._assets[inst.baseVersion]
+
             if (action === 'set') {
                 return manhattanFactories.setAssetProp(
                     inst._assets[version],
@@ -606,8 +769,15 @@ ImageSet.behaviours = {
                     value
                 )
             }
+
+            if (name === 'previewURL' && version !== inst.baseVersion) {
+                if (!_asset) {
+                    return _baseAsset['variations'][version].url
+                }
+            }
+
             return manhattanFactories.getAssetProp(
-                inst._assets[version],
+                _asset || _baseAsset,
                 inst._options,
                 name
             )
@@ -620,6 +790,21 @@ ImageSet.behaviours = {
      * example a CSRF token.
      */
     'formData': {'default': defaultFactories.formData()},
+
+    /**
+     * The `imageEditor` behaviour is used to create an image editor which
+     * allows users to edit an image in the image set.
+     */
+    'imageEditor': {
+        'default': (inst, version) => {
+            return new ImageEditor(
+                inst.getAssetProp(version, 'editingURL'),
+                inst.getCropAspectRatio(version),
+                true,
+                inst._options.maxPreviewSize
+            )
+        }
+    },
 
     /**
      * The `input` behaviour is used to map the image set data to the input,
@@ -694,22 +879,7 @@ ImageSet.behaviours = {
      */
     'viewer': {
         'default': (inst, version) => {
-
-            // @@ NEED TO REPLACE: This should build a map of previews from a
-            // dedicated preview object, or the asset, or the primary asset.
-
             const {assets} = inst
-            const imageURLs = {}
-            for (const v of inst._options.versions) {
-                if (assets[v]) {
-                    imageURLs[v] = inst.getAssetProp(v, 'previewURL')
-                } else {
-                    imageURLs[v] = inst.getAssetProp(
-                        inst.baseVersion,
-                        'previewURL'
-                    )
-                }
-            }
 
             // Build a map of labels for the image viewer
             const labels = {}
@@ -729,8 +899,8 @@ ImageSet.behaviours = {
                 inst._options.versions,
                 inst.baseVersion,
                 labels,
-                imageURLs,
-                ownImages
+                inst.getPreviews(),
+                inst.getOwnAssets()
             )
         }
     }
@@ -755,19 +925,6 @@ ImageSet.css = {
 
 // @@
 //
-// - setPreviewURI(version, previewURI)
-// - setBaseTransform(version, transforms)
-// - setAsset(version, asset)
-// - clearAsset(version)
-// - build the image URLs as follows:
-//    - own previewURI
-//    - own asset / own previewURL
-//    - base asset
-//        - own base transforms / use the variation image against the base asset
-//        - base asset / base previewURI
-//        - base asset / base previewURL
-// - On editing an image
-//    - set the base transform
-//    - set the previewURI
-//    - update the viewer imageURLs
+// * support uploading new images for versions
+// * support saving image sets and generating variations for them
 //

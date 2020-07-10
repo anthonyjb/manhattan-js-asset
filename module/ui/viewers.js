@@ -430,12 +430,13 @@ export class ImageSetViewer {
                 // Ignore this event if the version select is closed
                 if (this._dom.versions.classList.contains(openCSS)) {
 
-                    // Ignore this event if the user select a version
-                    const versionElm = $.closest(
+                    // Ignore this event if the user clicked on the versions
+                    // element.
+                    const versionsElm = $.closest(
                         ev.target,
-                        `.${cls.css['version']}`
+                        `.${cls.css['versions']}`
                     )
-                    if (!versionElm) {
+                    if (!versionsElm) {
                         this._dom.versions.classList.remove(openCSS)
                     }
                 }
@@ -603,7 +604,9 @@ export class ImageSetViewer {
      */
     setImageURL(version, imageURL) {
         this._imageURLs[version] = imageURL
-        this._update()
+        if (version === this._version) {
+            this._update()
+        }
     }
 
     /**
@@ -611,7 +614,9 @@ export class ImageSetViewer {
      */
     setOwnImage(version, ownImage) {
         this._ownImages[version] = ownImage
-        this._update()
+        if (version === this._version) {
+            this._update()
+        }
     }
 
     // -- Private methods --
