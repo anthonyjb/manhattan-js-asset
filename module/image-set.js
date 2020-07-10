@@ -299,6 +299,9 @@ export class ImageSet {
      */
     clearAsset(version, asset) {
         delete this._assets[version]
+        delete this._baseTransforms[version]
+        delete this._previewURIs[version]
+
         this._updateInput()
     }
 
@@ -483,6 +486,18 @@ export class ImageSet {
                     )
                 },
 
+                'clear': (event) => {
+                    this.clearAsset(this._viewer.version)
+
+                    // Update the viewer with the new preview URI and own
+                    // image flag.
+                    this._viewer.setImageURL(
+                        this._viewer.version,
+                        this.getPreview(this._viewer.version)
+                    )
+                    this._viewer.setOwnImage(this._viewer.version, false)
+                },
+
                 'edit': () => {
                     const imageEditorBehaviour = this._behaviours.imageEditor
                     const imageEditor = cls.behaviours
@@ -515,7 +530,6 @@ export class ImageSet {
                                     )
 
                                     // Update the image URLs for the viewer
-                                    console.log()
                                     for (const [v, imageURL]
                                         of Object.entries(this.getPreviews())) {
 
