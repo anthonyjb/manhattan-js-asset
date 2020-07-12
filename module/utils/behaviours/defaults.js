@@ -38,9 +38,14 @@ export function formData() {
     /**
      * Return the minimal FormData instance required to upload a file.
      */
-    function _formData(inst, file) {
+    function _formData(inst, file, version) {
         const data = new FormData()
         data.append('file', file)
+
+        if (version) {
+            data.append('version', version)
+        }
+
         return data
     }
 

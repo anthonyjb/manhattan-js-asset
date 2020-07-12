@@ -629,7 +629,8 @@ export class ImageSet {
         // Build the form data
         const formData = cls.behaviours.formData[this._behaviours.formData](
             this,
-            file
+            file,
+            version
         )
 
         // Set up the uploader
