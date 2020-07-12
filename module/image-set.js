@@ -946,10 +946,3 @@ ImageSet.css = {
     'hasError': 'mh-file-field--has-error'
 
 }
-
-// @@
-//
-// * support uploading new images for versions
-// * support saving image sets and generating variations for them
-// * move CSS over from manage
-//

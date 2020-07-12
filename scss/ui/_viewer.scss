@@ -65,7 +65,7 @@
             &::before {
                 background:
                     transparent
-                    url('#{$mh_assets_image_path}file.svg')
+                    url('#{$mh_assets_image_path}/file.svg')
                     center center
                     no-repeat;
                 background-size: 32px;
@@ -105,26 +105,26 @@
     &__download {
         @extend %icon-btn;
 
-        background-image: url('#{$mh_assets_image_path}drop.svg');
+        background-image: url('#{$mh_assets_image_path}/drop.svg');
     }
 
     &__metadata {
         @extend %icon-btn;
 
-        background-image: url('#{$mh_assets_image_path}metadata.svg');
+        background-image: url('#{$mh_assets_image_path}/metadata.svg');
     }
 
     &__remove {
         @extend %icon-btn;
 
-        background-image: url('#{$mh_assets_image_path}remove.svg');
+        background-image: url('#{$mh_assets_image_path}/remove.svg');
     }
 }
 
 .mh-image-viewer {
     background:
         transparent
-        url('#{$mh_assets_image_path}checkers.svg')
+        url('#{$mh_assets_image_path}/checkers.svg')
         top left
         repeat;
     bottom: 0;
@@ -168,24 +168,198 @@
     &__download {
         @extend %icon-btn;
 
-        background-image: url('#{$mh_assets_image_path}drop.svg');
+        background-image: url('#{$mh_assets_image_path}/drop.svg');
     }
 
     &__edit {
         @extend %icon-btn;
 
-        background-image: url('#{$mh_assets_image_path}edit.svg');
+        background-image: url('#{$mh_assets_image_path}/edit.svg');
     }
 
     &__metadata {
         @extend %icon-btn;
 
-        background-image: url('#{$mh_assets_image_path}metadata.svg');
+        background-image: url('#{$mh_assets_image_path}/metadata.svg');
     }
 
     &__remove {
         @extend %icon-btn;
 
-        background-image: url('#{$mh_assets_image_path}remove.svg');
+        background-image: url('#{$mh_assets_image_path}/remove.svg');
+    }
+}
+
+
+.mh-image-set-viewer {
+    background:
+        transparent
+        url('#{$mh_assets_image_path}/checkers.svg')
+        top left
+        repeat;
+    bottom: 0;
+    left: 0;
+    overflow: hidden;
+    position: absolute;
+    right: 0;
+    top: 0;
+
+    &__image {
+        background-position: center center;
+        background-repeat: no-repeat;
+        background-size: contain;
+        bottom: 0;
+        left: 0;
+        overflow: hidden;
+        position: absolute;
+        right: 0;
+        top: 0;
+    }
+
+    &__versions {
+        background-color: rgba(0, 0, 0, 0.5);
+        border-radius: 2px;
+        left: 8px;
+        max-height: 32px;
+        overflow: hidden;
+        padding-top: 32px;
+        position: absolute;
+        top: 8px;
+        width: 160px;
+
+        &::after {
+            content: '';
+            display: block;
+            pointer-events: none;
+            margin-top: -2px;
+            height: 0;
+            width: 0;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-top: 4px solid #EFF2F4;
+            position: absolute;
+            top: 16px;
+            right: 12px;
+        }
+
+        &--open {
+            max-height: calc(100% - 16px);
+
+            &::after {
+                transform: scaleY(-1.0);
+            }
+
+            .mh-image-set-viewer {
+                &__version {
+                    position: static !important;
+                }
+            }
+        }
+    }
+
+    &__version {
+        cursor: pointer;
+        font-size: 15px;
+        height: 32px;
+        line-height: 32px;
+        overflow: hidden;
+        padding: 0 32px 0 8px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        &:hover {
+            background: rgba(0, 0, 0, 0.25);
+        }
+
+        &--selected {
+            left: 0;
+            position: absolute;
+            width: 100%;
+            top: 0;
+        }
+    }
+
+    // Buttons
+
+    &__version-buttons {
+        bottom: 8px;
+        display: flex;
+        justify-content: center;
+        height: 32px;
+        left: 0;
+        position: absolute;
+        right: 0;
+    }
+
+
+    &__clear,
+    &__edit,
+    &__upload {
+        @extend %icon-btn;
+        margin: 0 8px;
+    }
+
+    &__alt,
+    &__remove {
+        @extend %icon-btn;
+        position: absolute;
+    }
+
+    &__alt {
+        background-image: url('#{$mh_assets_image_path}tag.svg');
+        right: 48px;
+        top: 8px;
+    }
+
+    &__clear {
+        background-image:
+            url('#{$mh_assets_image_path}clear.svg');
+        display: none;
+    }
+
+    &__edit {
+        background-image:
+            url('#{$mh_assets_image_path}edit.svg');
+    }
+
+    &__remove {
+        background-image:
+            url('#{$mh_assets_image_path}remove.svg');
+        right: 8px;
+        top: 8px;
+    }
+
+    &__upload {
+        background-image:
+            url('#{$mh_assets_image_path}upload.svg');
+        position: relative;
+    }
+
+    // -- Viewer states --
+
+    &--base {
+        .mh-image-set-viewer {
+
+            // Hide the clear and upload buttons when viewing the base version
+            &__clear,
+            &__upload {
+                display: none;
+            }
+        }
+    }
+
+    &--own-image {
+        .mh-image-set-viewer {
+
+            // Show the clear button and hide the upload button when viewing a
+            // version with it's own image.
+            &__clear {
+                display: block;
+            }
+
+            &__upload {
+                display: none;
+            }
+        }
     }
 }
