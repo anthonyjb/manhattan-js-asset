@@ -1,6 +1,6 @@
 {
   "name": "manhattan-assets",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "File and image uploads for forms.",
   "engines": {
     "node": ">=8.9.4"
