@@ -842,7 +842,7 @@ ImageSet.behaviours = {
             if (action === 'set') {
 
                 // Set
-                if (inst.assets) {
+                if (inst.assets[inst.baseVersion]) {
 
                     baseTransforms = {}
                     for (const [version, transform]
@@ -885,7 +885,7 @@ ImageSet.behaviours = {
                 inst._assets = imageSetData['images']
                 inst._baseTransforms = baseTransforms
                 inst._baseVersion = imageSetData['base_version']
-                inst._previewURIs = imageSetData['preview_uris']
+                inst._previewURIs = imageSetData['preview_uris'] || {}
             }
         }
     },
