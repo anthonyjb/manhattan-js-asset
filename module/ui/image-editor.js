@@ -265,25 +265,8 @@ export class ImageEditor extends Overlay {
                     // Calculate the aspect ratio
                     this._imageSize = [img.naturalWidth, img.naturalHeight]
 
-                    // Create the crop tool for the editor
-                    this._cropTool = new CropTool(
-                        this._dom.table,
-                        this._imageURL,
-                        this._cropAspectRatio,
-                        this._fixCropAspectRatio
-                    )
-                    this._cropTool.init()
-
-                    // Fit the image within the table
-                    this._fit(true)
-
-                    // Set the image's background image
-                    this._dom.mask.style
-                        .backgroundImage = `url(${this._imageURL})`
-
-                    // Reset the crop tool
-                    this._cropTool.reset()
-                    this._cropTool.visible = true
+                    // Add the crop tool
+                    this._addCropTool()
                 }
             }
         )
@@ -342,6 +325,31 @@ export class ImageEditor extends Overlay {
     }
 
     // -- Private methods --
+
+    /**
+     * Add the crop tool to the editor table.
+     */
+    _addCropTool() {
+        // Create the crop tool for the editor
+        this._cropTool = new CropTool(
+            this._dom.table,
+            this._imageURL,
+            this._cropAspectRatio,
+            this._fixCropAspectRatio
+        )
+        this._cropTool.init()
+
+        // Fit the image within the table
+        this._fit(true)
+
+        // Set the image's background image
+        this._dom.mask.style
+            .backgroundImage = `url(${this._imageURL})`
+
+        // Reset the crop tool
+        this._cropTool.reset()
+        this._cropTool.visible = true
+    }
 
     /**
      * Fit the image and place it centered within the table.

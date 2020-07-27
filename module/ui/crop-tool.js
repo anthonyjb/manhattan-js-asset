@@ -718,6 +718,27 @@ export class CropTool {
     }
 
     /**
+     * Set the orientation and crop region.
+     */
+    set(orientation, cropRegion) {
+
+        // Set the orientation
+        this._orientation = orientation
+
+        // Set the region
+        if (cropRegion) {
+            let width = getWidth(this.bounds)
+            let height = getHeight(this.bounds)
+            this.region = [
+                [cropRegion[0][0] * width, cropRegion[0][1] * height],
+                [cropRegion[1][0] * width, cropRegion[1][1] * height]
+            ]
+        } else {
+            this.reset()
+        }
+    }
+
+    /**
      * Reset the crop region (select a crop that is central to the image).
      */
     reset() {
@@ -744,8 +765,6 @@ export class CropTool {
             [x, y],
             [x + width, y + height]
         ]
-
-        this._updateImage()
     }
 
     // -- Private functions --
