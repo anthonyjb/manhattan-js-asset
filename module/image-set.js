@@ -56,6 +56,12 @@ export class ImageSet {
                 'editing': 'editing',
 
                 /**
+                 * Flag indicating if the aspect ratio of the crop region for
+                 * the image versions should be fixed.
+                 */
+                'fixCropAspectRatio': false,
+
+                /**
                  * The label displayed when the field is not populated.
                  */
                 'label': 'Select an image...',
@@ -823,7 +829,7 @@ ImageSet.behaviours = {
             return new ImageEditor(
                 inst.getAssetProp(version, 'editingURL'),
                 inst.getCropAspectRatio(version),
-                true,
+                inst._options.fixCropAspectRatio,
                 inst._options.maxPreviewSize
             )
         }
