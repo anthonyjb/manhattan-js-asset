@@ -124,11 +124,13 @@ export class ImageSet {
                     ._options
                     .cropAspectRatios.push(parseFloat(cropAspectRatio))
             }
+        }
 
-            if (this._options.versions.length
-                    !== this._options.cropAspectRatios.length) {
-                throw Error('Length of crop aspect ratios must match versions')
-            }
+        if (this._options.cropAspectRatios.length > 0
+            && this._options.versions.length
+            !== this._options.cropAspectRatios.length) {
+
+            throw Error('Length of crop aspect ratios must match versions')
         }
 
         // Conver `maxPreviewSize` option given as an attribute to a list of
@@ -829,7 +831,7 @@ ImageSet.behaviours = {
             return new ImageEditor(
                 inst.getAssetProp(version, 'editingURL'),
                 inst.baseTransforms[version],
-                inst.getCropAspectRatio(version),
+                inst.getCropAspectRatio(version) || null,
                 inst._options.fixCropAspectRatio,
                 inst._options.maxPreviewSize
             )
