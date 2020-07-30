@@ -59,6 +59,7 @@ export function imageEditor(optionsAttr) {
 
         return new ImageEditor(
             inst.getAssetProp('editingURL'),
+            inst.getAssetProp('transforms'),
             options.cropAspectRatio,
             options.fixCropAspectRatio,
             options.maxPreviewSize

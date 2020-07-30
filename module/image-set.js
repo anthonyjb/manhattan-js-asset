@@ -828,6 +828,7 @@ ImageSet.behaviours = {
         'default': (inst, version) => {
             return new ImageEditor(
                 inst.getAssetProp(version, 'editingURL'),
+                inst.baseTransforms[version],
                 inst.getCropAspectRatio(version),
                 inst._options.fixCropAspectRatio,
                 inst._options.maxPreviewSize

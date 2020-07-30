@@ -16,6 +16,7 @@ export class ImageEditor extends Overlay {
 
     constructor(
         imageURL,
+        initialTransforms=null,
         cropAspectRatio=1.0,
         fixCropAspectRatio=false,
         maxPreviewSize=[600, 600],
@@ -26,6 +27,9 @@ export class ImageEditor extends Overlay {
         // The URL of the image being edited (typically a working draft
         // version of the image to keep load times optimal).
         this._imageURL = imageURL
+
+        // The initial transforms to apply within the image editor
+        this._initialTransforms = (initialTransforms || []).slice()
 
         // An optional initial aspect ratio for the cropping region
         this._cropAspectRatio = cropAspectRatio
@@ -330,24 +334,27 @@ export class ImageEditor extends Overlay {
      * Add the crop tool to the editor table.
      */
     _addCropTool() {
+        const {orientation, cropRegion} = this._transformsToProperties()
+
         // Create the crop tool for the editor
         this._cropTool = new CropTool(
             this._dom.table,
             this._imageURL,
-            this._cropAspectRatio,
+            this._cropAspectRatio || this._imageSize[0] / this._imageSize[1],
             this._fixCropAspectRatio
         )
         this._cropTool.init()
 
         // Fit the image within the table
+        this._orientation = orientation
         this._fit(true)
 
         // Set the image's background image
         this._dom.mask.style
             .backgroundImage = `url(${this._imageURL})`
 
-        // Reset the crop tool
-        this._cropTool.reset()
+        // Set the orientation and region for the crop tool
+        this._cropTool.set(orientation, cropRegion)
         this._cropTool.visible = true
     }
 
@@ -413,6 +420,38 @@ export class ImageEditor extends Overlay {
 
             this._dom.table.getBoundingClientRect()
             this._dom.table.classList.remove(cls.css['noTransitions'])
+        }
+    }
+
+    /**
+     * Get the orientation and crop region from a list of transforms.
+     */
+    _transformsToProperties() {
+
+        // Defaults (orientation to zero, crop to use the aspect ratio and be
+        // centered.
+        let orientation = 0
+        let cropRegion = null
+
+        for (let transform of this._initialTransforms || []) {
+            switch (transform[0]) {
+
+            case 'rotate':
+                [transform, orientation] = transform
+                break
+
+            case 'crop':
+                [transform, cropRegion] = transform
+                break
+
+            // no default
+
+            }
+        }
+
+        return {
+            orientation,
+            cropRegion
         }
     }
 }
