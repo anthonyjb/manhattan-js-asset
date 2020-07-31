@@ -203,7 +203,7 @@ export class ImageEditor extends Overlay {
                 )
 
                 resolve([
-                    resizeCanvas.toDataURL(),
+                    resizeCanvas.toDataURL('image/jpeg', 0.9),
                     {
                         'width': resizeCanvas.width,
                         'height': resizeCanvas.height,
